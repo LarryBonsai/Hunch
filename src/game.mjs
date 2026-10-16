@@ -1,6 +1,6 @@
 import { randomInt } from 'node:crypto';
 import { QUESTIONS } from './questions.mjs';
-import { REGIONS, NEIGHBORS, YEAR_SCALE, NUMBER_SCALE, COLORS, bucket } from '../public/board.mjs';
+import { REGIONS, NEIGHBORS, YEAR_SCALE, NUMBER_SCALE, COLORS, CATEGORIES, usedCategories, bucket } from '../public/board.mjs';
 
 export const TURN_MS = 45_000;
 export class GameError extends Error {
@@ -68,7 +68,7 @@ function advance(room) {
   const start = room.players.findIndex(p => p.id === room.currentPlayerId);
   for (let n = 1; n <= room.players.length; n++) {
     const player = room.players[(start + n) % room.players.length];
-    if (!player.left && !player.passed && player.cubes > 0) { setTurn(room, player); return; }
+    if (!player.left && !player.passed && player.cubes > 0 && usedCategories(room, player.id).length < CATEGORIES.length) { setTurn(room, player); return; }
   }
   reveal(room);
 }
@@ -85,7 +85,8 @@ export function scorePlacement(card, axis, slot) {
 }
 export function place(room, id, axis, slot, turnId) {
   requireTurn(room, id, turnId);
-  requireThat(['map', 'year', 'number'].includes(axis), 'Wybierz mapę lub skalę.');
+  requireThat(CATEGORIES.includes(axis), 'Wybierz mapę lub skalę.');
+  requireThat(!usedCategories(room, id).includes(axis), 'W tej kategorii masz już znacznik w tej rundzie.', 409);
   if (axis === 'map') requireThat(REGIONS.some(r => r.id === slot), 'Nieznany region.');
   else requireThat(Number.isInteger(slot) && slot >= 0 && slot < (axis === 'year' ? YEAR_SCALE : NUMBER_SCALE).length, 'Niepoprawny przedział.');
   requireThat(!room.placements.some(p => p.axis === axis && p.slot === slot), 'To pole jest już zajęte.', 409);
@@ -159,7 +160,7 @@ export function botMove(room) {
     ...REGIONS.map(r => ({ axis: 'map', slot: r.id })),
     ...YEAR_SCALE.map((_, slot) => ({ axis: 'year', slot })),
     ...NUMBER_SCALE.map((_, slot) => ({ axis: 'number', slot }))
-  ].filter(c => !room.placements.some(p => p.axis === c.axis && p.slot === c.slot));
+  ].filter(c => !usedCategories(room, bot.id).includes(c.axis) && !room.placements.some(p => p.axis === c.axis && p.slot === c.slot));
   if (!candidates.length || (bot.cubes < 3 && randomInt(4) === 0)) { pass(room, bot.id, room.turnId); return; }
   const roll = randomInt(10);
   const ideal = candidates.filter(c => scorePlacement(card, c.axis, c.slot) === (roll < 4 ? 7 : roll < 8 ? 3 : 0));
