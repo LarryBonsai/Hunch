@@ -1,7 +1,9 @@
 @import url('/theme.css');
 
-.world-map path.region{stroke:var(--paper);stroke-width:.55;vector-effect:non-scaling-stroke}
-.world-map path.region:is(.selected,.correct,.available:hover){stroke:var(--paper);stroke-width:.55}
+.world-map path.region{stroke-width:.55;vector-effect:non-scaling-stroke}
+.world-map .coastline{fill:none;stroke:#688269;stroke-width:.65;stroke-linejoin:round;stroke-linecap:round;pointer-events:none;opacity:.72;vector-effect:non-scaling-stroke}
+.world-map path.region:focus{outline:none}
+.world-map path.region:focus-visible{fill:#d4a37e;stroke:var(--rust);stroke-width:2;outline:none}
 .map-panel>.world-map{background-color:#eef2ed}
 .category-limit{display:inline-flex;align-items:center;gap:4px;white-space:nowrap;flex-shrink:0;padding:4px 7px;border-radius:4px;background:#eeeee4;color:#727e67;font-size:8px;font-weight:500;letter-spacing:0}
 .category-limit.used{background:#e2ead7;color:#365b2d}
