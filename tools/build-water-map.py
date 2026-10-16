@@ -26,31 +26,20 @@ AREAS = [
     ('ocean-pacific-north', 'North Pacific Ocean', 'Pacyfik Północny', -145, 25),
     ('ocean-pacific-south', 'South Pacific Ocean', 'Pacyfik Południowy', -125, -25),
     ('ocean-indian', 'INDIAN OCEAN', 'Ocean Indyjski', 75, -25),
-    ('sea-baltic', 'Baltic Sea', 'Morze Bałtyckie', 19, 56),
-    ('sea-north', 'North Sea', 'Morze Północne', 3, 56),
-    ('sea-norwegian', 'Norwegian Sea', 'Morze Norweskie', 3, 68),
-    ('sea-greenland', 'Greenland Sea', 'Morze Grenlandzkie', -8, 75),
-    ('sea-barents', 'Barents Sea', 'Morze Barentsa', 40, 74),
-    ('sea-bering', 'Bering Sea', 'Morze Beringa', -175, 57),
-    ('sea-okhotsk', 'Sea of Okhotsk', 'Morze Ochockie', 150, 55),
-    ('sea-japan', 'Sea of Japan', 'Morze Japońskie', 135, 40),
-    ('sea-east-china', 'East China Sea', 'Morze Wschodniochińskie', 125, 28),
-    ('sea-south-china', 'South China Sea', 'Morze Południowochińskie', 114, 14),
-    ('sea-philippine', 'Philippine Sea', 'Morze Filipińskie', 135, 18),
-    ('sea-coral', 'Coral Sea', 'Morze Koralowe', 155, -20),
-    ('sea-tasman', 'Tasman Sea', 'Morze Tasmana', 160, -38),
-    ('sea-mediterranean', 'Mediterranean Sea', 'Morze Śródziemne', 18, 35),
-    ('sea-black', 'Black Sea', 'Morze Czarne', 35, 43),
-    ('sea-red', 'Red Sea', 'Morze Czerwone', 38, 20),
-    ('sea-arabian', 'Arabian Sea', 'Morze Arabskie', 65, 15),
-    ('sea-caribbean', 'Caribbean Sea', 'Morze Karaibskie', -75, 15),
-    ('sea-labrador', 'Labrador Sea', 'Morze Labradorskie', -53, 58),
-    ('sea-weddell', 'Weddell Sea', 'Morze Weddella', -40, -70),
-    ('sea-ross', 'Ross Sea', 'Morze Rossa', 175, -72),
-    ('gulf-mexico', 'Gulf of Mexico', 'Zatoka Meksykańska', -90, 25),
-    ('bay-bengal', 'Bay of Bengal', 'Zatoka Bengalska', 88, 14),
-    ('gulf-persian', 'Persian Gulf', 'Zatoka Perska', 51, 26),
 ]
+
+# Marginal seas belong to their ocean, with no separate sea fields or borders.
+MARGINAL_SEAS = {
+    'ocean-arctic': ['Greenland Sea', 'Barents Sea'],
+    'ocean-southern': ['Weddell Sea', 'Ross Sea'],
+    'ocean-atlantic-north': ['Baltic Sea', 'North Sea', 'Norwegian Sea',
+                             'Mediterranean Sea', 'Black Sea', 'Caribbean Sea',
+                             'Labrador Sea', 'Gulf of Mexico'],
+    'ocean-pacific-north': ['Bering Sea', 'Sea of Okhotsk', 'Sea of Japan',
+                            'East China Sea', 'South China Sea', 'Philippine Sea'],
+    'ocean-pacific-south': ['Coral Sea', 'Tasman Sea'],
+    'ocean-indian': ['Red Sea', 'Arabian Sea', 'Bay of Bengal', 'Persian Gulf'],
+}
 
 
 def project(lon, lat, z=None):
@@ -95,10 +84,12 @@ features = {f['properties']['name']: f for f in json.loads(source)['features']}
 geometries = {}
 remaining = water
 
-# Seas first: a sea is a separate choice, not a second layer over an ocean choice.
-for area in AREAS[7:] + AREAS[:7]:
+# Each basin includes its marginal seas before being clipped against land.
+for area in AREAS:
     region_id, source_name, _, _, _ = area
     geometry = polygonal(transform(project, shape(features[source_name]['geometry'])))
+    for sea in MARGINAL_SEAS.get(region_id, []):
+        geometry = geometry.union(transform(project, shape(features[sea]['geometry'])))
     if region_id == 'ocean-southern':
         # Antarctica is outside this board's land coverage. Keep the southern
         # margin one basin instead of drawing a phantom continent from labels.
@@ -138,28 +129,38 @@ for region_id, source_name, name, lon, lat in AREAS:
         lon = (anchor.x - 25) / SCALE - 180
         lat = 85 - (anchor.y - 25) / SCALE
     regions.append(dict(id=region_id, name=name, short=name,
-                        kind='ocean' if region_id.startswith('ocean-') else 'sea',
+                        kind='ocean',
                         lon=round(lon, 5), lat=round(lat, 5),
                         x=round(anchor.x, 2), y=round(anchor.y, 2), path=path(geometry)))
 
 # Derive water-water and coastal land-water neighbors from the visible shapes.
 # Boundary length excludes corner-only contacts.
 edges = []
+dividers = []
 all_regions = {**land_regions, **geometries}
 for i, a in enumerate(all_regions):
     for b in list(all_regions)[i + 1:]:
         if a in land_regions and b in land_regions:
             continue
-        shared = all_regions[a].boundary.intersection(all_regions[b].boundary).length
-        if shared > 0.5:
+        boundary = all_regions[a].boundary.intersection(all_regions[b].boundary)
+        if boundary.length > 0.5:
             edges.append([a, b])
+            if a in geometries and b in geometries:
+                def lines(geometry):
+                    if geometry.geom_type == 'LineString':
+                        return [geometry]
+                    return [line for g in getattr(geometry, 'geoms', []) for line in lines(g)]
+                for line in lines(boundary):
+                    dividers.append(''.join(f'{"M" if i == 0 else "L"}{x:.2f} {y:.2f}'
+                                           for i, (x, y) in enumerate(line.coords)))
 
-assert len(regions) == 31
+assert len(regions) == 7
 assert water.difference(unary_union(list(geometries.values()))).area < 0.01
 output = '// Generated by tools/build-water-map.py. Natural Earth 1:50m, public domain.\n'
 output += f'// Source SHA-256: {hashlib.sha256(source).hexdigest()}\n'
 output += 'export const WATER_REGIONS = ' + json.dumps(regions, ensure_ascii=False, indent=2) + ';\n'
 output += 'export const WATER_EDGES = ' + json.dumps(edges, ensure_ascii=False, indent=2) + ';\n'
+output += 'export const OCEAN_BORDERS = ' + json.dumps(''.join(dividers)) + ';\n'
 (ROOT / 'public/water-regions.mjs').write_text(output, encoding='utf-8', newline='\n')
 print(f'Built {len(regions)} water regions, {len(edges)} adjacency pairs; {len(output) // 1024} KiB.')
 print(f'Filled {remaining.area / water.area:.2%} of water omitted by marine label polygons.')
