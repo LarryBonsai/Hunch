@@ -2,11 +2,11 @@
 
 .world-map path.region{stroke-width:.55;vector-effect:non-scaling-stroke}
 .world-map .coastline{fill:none;stroke:#688269;stroke-width:.65;stroke-linejoin:round;stroke-linecap:round;pointer-events:none;opacity:.72;vector-effect:non-scaling-stroke}
-.world-map path.water{fill:#dce9e8;stroke:#9db9bc;stroke-width:.65}
-.world-map path.water-1{fill:#d3e3e5}
-.world-map path.water-2{fill:#e3eeec}
-.world-map path.water-3{fill:#d9e6ed}
-.world-map .water.available:hover:not(.selected){fill:#b4d2d7;stroke:#527f88}
+.world-map path.water{fill:transparent;stroke:none}
+.world-map .ocean-boundary{fill:none;stroke:#aebeb6;stroke-opacity:.8;stroke-width:.75;stroke-dasharray:2 7;stroke-linecap:round;stroke-linejoin:round;pointer-events:none;vector-effect:non-scaling-stroke}
+.world-map path.water.available:hover:not(.selected){fill:#e5eeeb;stroke:none}
+.world-map path.water:is(.selected,:focus-visible){fill:#b9dbe9;stroke:#80adbf;stroke-width:1;outline:none}
+.world-map path.water.occupied:not(.correct){fill:#d1e5ec;stroke:none}
 .world-map .water-label{font-size:8px;letter-spacing:.6px;fill:#66878c}
 .world-map .map-token{pointer-events:none}
 .world-map path.region:focus{outline:none}

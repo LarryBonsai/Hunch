@@ -1,5 +1,6 @@
 import { MAP_PATHS } from './map-paths.mjs';
 import { WATER_REGIONS, WATER_EDGES } from './water-regions.mjs';
+export { OCEAN_BORDERS } from './water-regions.mjs';
 export { COASTLINE } from './map-paths.mjs';
 export { WATER_REGIONS };
 
