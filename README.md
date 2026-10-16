@@ -22,8 +22,9 @@ Otwórz **http://localhost:3000**. Przycisk treningu uruchamia partię z botem A
 
 - Pokoje na sześcioznakowy kod i zaproszenia przez link, bez rejestracji.
 - 2–6 graczy, partie po 3, 6 lub 9 rund; trening z botem.
-- Klikalna autorska mapa 17 regionów i dwie skale przedziałowe.
+- Klikalna mapa 17 regionów na konturach Natural Earth i dwie skale przedziałowe.
 - Ruchy na zmianę: jeden znacznik albo pas; 45 sekund na ruch.
+- W każdej rundzie jeden gracz może postawić najwyżej jeden znacznik na kategorię: mapa, rok, wielkość. Po trzecim typie automatycznie kończy ruchy. Limit obowiązuje również bota i jest sprawdzany przez serwer.
 - Punktacja: 7 punktów za dokładny region/przedział, 3 za sąsiedni, 0 za dalszy typ.
 - Zajęte pola są blokowane dla wszystkich graczy, również ich właściciela.
 - Zarządzanie pięcioma znacznikami: udane wracają, chybione przepadają; przed następną rundą odzyskujesz jeden, z zapasem minimum 3 i maksimum 5.
@@ -35,7 +36,7 @@ Otwórz **http://localhost:3000**. Przycisk treningu uruchamia partię z botem A
 
 ### Interpretacja mapy i skal
 
-Mapa jest schematem regionów do gry, a nie mapą granic państw. Sąsiedztwo definiuje jawny, symetryczny graf w `public/board.mjs`; po wybraniu regionu interfejs pokazuje sąsiadów punktowanych za 3 pkt.
+Linia brzegowa pochodzi z danych Natural Earth 1:110m. Zarys lądów, półwyspów i większych wysp jest geograficzny; podział na 17 regionów pozostaje umowny. Sąsiedztwo definiuje jawny, symetryczny graf w `public/board.mjs`; po wybraniu regionu interfejs pokazuje sąsiadów punktowanych za 3 pkt. Zasady pochodzenia danych opisuje `THIRD_PARTY_NOTICES.md`. Mapa jest dostarczana z aplikacją i działa bez zewnętrznego serwisu mapowego.
 
 Przedziały zawierają dolną granicę, a nie zawierają następnej. Np. pole 250 oznacza `[250, 500)`. Ostatni przedział jest otwarty w górę. Jednostkę i definicję pomiaru podaje każda karta.
 
@@ -47,9 +48,11 @@ src/game.mjs             Autorytatywny silnik rozgrywki i punktacja
 src/questions.mjs        Karty z odpowiedziami i źródłami (tylko serwer)
 public/app.js            Interfejs, wybór pól i komunikacja
 public/board.mjs          Mapa, sąsiedztwo, skale
+public/map-paths.mjs      Wygenerowane kontury lądów i regionów Natural Earth
 public/art.mjs            Autorskie ilustracje SVG i ikony
 public/style.css          Responsywny wygląd
 test/                    Testy zasad i integracji HTTP/SSE
+tools/build-map.mjs       Generator konturów z danych GeoJSON Natural Earth
 ```
 
 Serwer sprawdza przynależność do pokoju, gospodarza, aktualną turę, zajętość pola i poprawność danych. Odpowiedzi i kolejność talii nie są wysyłane do klienta przed odkryciem rundy. Tożsamość gracza jest związana z losowym ciasteczkiem HttpOnly, bez identyfikatorów uwierzytelniających w linku. Przy ponownym połączeniu klient dostaje cały aktualny stan.
@@ -89,8 +92,8 @@ Przykładowe wartości są w `.env.example`. Aplikacja czyta środowisko procesu
 
 Stan pokojów i sesji jest przechowywany **w pamięci**. Restart procesu usuwa rozgrywki; nie ma bazy danych, logowania ani trwałej historii graczy. Nie uruchamiaj wielu replik bez wspólnego magazynu stanu i synchronizacji. Nieaktywne pokoje wygasają po 24 godzinach. Nowi gracze mogą dołączyć przed startem partii; gracz, który świadomie opuścił rozpoczętą partię, nie może wrócić do niej jako nowy uczestnik. Przy pozostaniu mniej niż dwóch graczy partia kończy się wcześniej.
 
-To działająca wersja startowa z małą talią i uproszczoną mapą. Następne rozszerzenia to większa baza pytań, trwały magazyn pokojów i publiczny hosting.
+To działająca wersja startowa z małą talią i umownym podziałem regionów. Następne rozszerzenia to większa baza pytań, trwały magazyn pokojów i publiczny hosting.
 
 ## Inspiracja i materiały
 
-Hunch ma własny interfejs, mapę, ilustracje i pytania. Nie jest oficjalną aplikacją TERRA ani nie zawiera skanów planszy, kart czy instrukcji. TERRA autorstwa Friedemanna Friesego, wydana przez HUCH!, jest inspiracją mechaniki. Źródła faktów są zapisane przy każdej karcie i dostępne w aplikacji po rundzie.
+Hunch ma własny interfejs, podział regionów, ilustracje i pytania. Kontury lądów pochodzą z Natural Earth (domena publiczna). Nie jest oficjalną aplikacją TERRA ani nie zawiera skanów planszy, kart czy instrukcji. TERRA autorstwa Friedemanna Friesego, wydana przez HUCH!, jest inspiracją mechaniki. Źródła faktów są zapisane przy każdej karcie i dostępne w aplikacji po rundzie.
