@@ -129,15 +129,16 @@ test('each player can place only one marker in each category per round', () => {
 
 test('water fields support placement, occupancy, scoring and the shared map limit', () => {
   const room = game();
-  room.deck[0] = { ...QUESTIONS[0], region: 'sea-mediterranean' };
-  place(room, 'alice', 'map', 'sea-mediterranean', room.turnId);
-  assert.throws(() => place(room, 'bob', 'map', 'sea-mediterranean', room.turnId), /zajęte/);
-  place(room, 'bob', 'map', 'ocean-atlantic-north', room.turnId);
+  room.deck[0] = { ...QUESTIONS[0], region: 'ocean-atlantic-north' };
+  assert.throws(() => place(room, 'alice', 'map', 'sea-mediterranean', room.turnId), /region/);
+  place(room, 'alice', 'map', 'ocean-atlantic-north', room.turnId);
+  assert.throws(() => place(room, 'bob', 'map', 'ocean-atlantic-north', room.turnId), /zajęte/);
+  place(room, 'bob', 'map', 'ocean-atlantic-south', room.turnId);
   assert.throws(() => place(room, 'alice', 'map', 'eu-west', room.turnId), /kategorii/);
   passAll(room);
   assert.equal(room.result.alice.gained, 7);
   assert.equal(room.result.bob.gained, 3);
-  assert.equal(publicRoom(room, 'alice').answer.region, 'sea-mediterranean');
+  assert.equal(publicRoom(room, 'alice').answer.region, 'ocean-atlantic-north');
 });
 test('a player who has used all categories is skipped even with spare markers', () => {
   const room = game();
@@ -201,10 +202,9 @@ test('practice bot can finish every round without illegal moves', () => {
 test('all questions and map neighbors form valid game data', () => {
   assert.ok(QUESTIONS.length >= 9);
   assert.equal(LAND_REGIONS.length, 17);
-  assert.equal(WATER_REGIONS.length, 31);
+  assert.equal(WATER_REGIONS.length, 7);
+  assert.ok(WATER_REGIONS.every(r => r.kind === 'ocean' && r.id.startsWith('ocean-')));
   assert.equal(new Set(REGIONS.map(r => r.id)).size, REGIONS.length);
-  assert.ok(!NEIGHBORS['ocean-arctic'].includes('sea-mediterranean'));
-  assert.ok(!NEIGHBORS['ocean-arctic'].includes('sea-caribbean'));
   assert.equal(new Set(QUESTIONS.map(q => q.id)).size, QUESTIONS.length);
   for (const q of QUESTIONS) {
     assert.ok(REGIONS.some(r => r.id === q.region));
