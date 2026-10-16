@@ -1,4 +1,4 @@
-import { REGIONS, NEIGHBORS, YEAR_SCALE, NUMBER_SCALE, fmt, intervalLabel } from './board.mjs';
+import { REGIONS, NEIGHBORS, COASTLINE, YEAR_SCALE, NUMBER_SCALE, CATEGORIES, usedCategories, fmt, intervalLabel } from './board.mjs';
 import { icon, illustration } from './art.mjs';
 
 const app = document.querySelector('#app');
@@ -10,6 +10,9 @@ const state = { id: null, room: null, tab: invite ? 'join' : 'create', name: sav
 const esc = value => String(value ?? '').replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
 const mine = () => state.room?.players.find(p => p.id === state.id);
 const myTurn = () => state.connected && !state.busy && state.room?.phase === 'playing' && state.room?.currentPlayerId === state.id;
+const categoryUsed = axis => usedCategories(state.room, state.id).includes(axis);
+const canSelectCategory = axis => myTurn() && !categoryUsed(axis);
+const categoryLimit = axis => `<span class="category-limit ${categoryUsed(axis) ? 'used' : ''}">${categoryUsed(axis) ? icon('check') : ''}Twój typ: ${categoryUsed(axis) ? '1' : '0'}/1</span>`;
 const isHost = () => state.room?.hostId === state.id;
 let toastTimer;
 function toast(message, error = false) {
@@ -61,17 +64,18 @@ function worldMap(preview = false) {
   return `<svg class="world-map ${preview ? 'preview' : ''}" viewBox="25 15 920 445" ${preview ? 'aria-hidden="true"' : 'role="group" aria-label="Mapa świata — wybierz region"'}>
     <defs><pattern id="map-grid" width="46" height="44" patternUnits="userSpaceOnUse"><path d="M46 0H0V44" fill="none" stroke="currentColor" stroke-opacity=".1" stroke-width=".6"/></pattern></defs>
     <rect x="25" y="15" width="920" height="445" fill="url(#map-grid)"/>
-    <path d="M25 250H945" stroke="currentColor" stroke-opacity=".15" stroke-dasharray="4 6"/>
-    <text x="43" y="244" class="map-coordinate">0°</text><text x="43" y="115" class="map-coordinate">60° N</text><text x="43" y="390" class="map-coordinate">60° S</text>
+    <path d="M25 242.22H945" stroke="currentColor" stroke-opacity=".15" stroke-dasharray="4 6"/>
+    <text x="43" y="236" class="map-coordinate">0°</text><text x="43" y="89" class="map-coordinate">60° N</text><text x="43" y="396" class="map-coordinate">60° S</text>
     ${REGIONS.map(r => {
       const placed = !preview && room?.placements.find(p => p.axis === 'map' && p.slot === r.id);
       const player = placed && room.players.find(p => p.id === placed.playerId);
       const correct = !preview && room?.answer?.region === r.id;
-      return `<path d="${r.path}" class="region ${selected === r.id ? 'selected' : ''} ${correct ? 'correct' : ''} ${placed ? 'occupied' : ''} ${preview ? '' : myTurn() && !placed ? 'available' : ''}" ${preview ? '' : `data-region="${r.id}" tabindex="${myTurn() && !placed ? 0 : -1}" role="button" aria-label="${esc(r.name)}${placed ? ` — zajęte: ${esc(player.name)}` : ''}${correct ? ' — poprawna odpowiedź' : ''}" aria-disabled="${!myTurn() || Boolean(placed)}" aria-pressed="${selected === r.id}"`}><title>${esc(r.name)}${player ? ` — ${esc(player.name)}` : ''}</title></path>${player ? `<g class="map-token" style="--player:${player.color}" aria-hidden="true"><rect x="${r.x - 9}" y="${r.y - 9}" width="18" height="18" rx="4"/><text x="${r.x}" y="${r.y + 4}">${esc(player.name[0].toUpperCase())}</text></g>` : ''}`;
+      return `<path d="${r.path}" fill-rule="evenodd" class="region ${selected === r.id ? 'selected' : ''} ${correct ? 'correct' : ''} ${placed ? 'occupied' : ''} ${preview ? '' : canSelectCategory('map') && !placed ? 'available' : ''}" ${preview ? '' : `data-region="${r.id}" tabindex="${canSelectCategory('map') && !placed ? 0 : -1}" role="button" aria-label="${esc(r.name)}${placed ? ` — zajęte: ${esc(player.name)}` : ''}${correct ? ' — poprawna odpowiedź' : ''}" aria-disabled="${!canSelectCategory('map') || Boolean(placed)}" aria-pressed="${selected === r.id}"`}><title>${esc(r.name)}${player ? ` — ${esc(player.name)}` : ''}</title></path>${player ? `<g class="map-token" style="--player:${player.color}" aria-hidden="true"><rect x="${r.x - 9}" y="${r.y - 9}" width="18" height="18" rx="4"/><text x="${r.x}" y="${r.y + 4}">${esc(player.name[0].toUpperCase())}</text></g>` : ''}`;
     }).join('')}
-    <text x="144" y="62" class="ocean-name">ARKTYKA</text><text x="344" y="213" class="ocean-name ocean-vertical">ATLANTYK</text><text x="80" y="330" class="ocean-name">PACYFIK</text><text x="615" y="350" class="ocean-name">OCEAN INDYJSKI</text>
-    <g transform="translate(903 65)" class="compass-rose"><path d="M0-21 5-5 21 0 5 5 0 21-5 5-21 0-5-5Z" fill="none" stroke="currentColor" stroke-width=".7"/><path d="M0-21 5-5 0 0Z" fill="currentColor"/><text y="-29" text-anchor="middle">N</text></g>
-    ${preview ? '<path d="M261 128Q395 30 480 132T820 363" fill="none" stroke="#b65c3e" stroke-width="1.4" stroke-dasharray="5 7" opacity=".6"/><circle cx="480" cy="132" r="7" fill="#b65c3e" stroke="#f6f4ec" stroke-width="3"/><circle cx="261" cy="128" r="6" fill="#386d69" stroke="#f6f4ec" stroke-width="3"/><circle cx="820" cy="363" r="6" fill="#b18b2c" stroke="#f6f4ec" stroke-width="3"/>' : ''}
+    <path d="${COASTLINE}" class="coastline" aria-hidden="true"/>
+    <text x="144" y="27" class="ocean-name">ARKTYKA</text><text x="344" y="213" class="ocean-name ocean-vertical">ATLANTYK</text><text x="80" y="330" class="ocean-name">PACYFIK</text><text x="615" y="350" class="ocean-name">OCEAN INDYJSKI</text>
+    <g transform="translate(903 417)" class="compass-rose"><path d="M0-21 5-5 21 0 5 5 0 21-5 5-21 0-5-5Z" fill="none" stroke="currentColor" stroke-width=".7"/><path d="M0-21 5-5 0 0Z" fill="currentColor"/><text y="-29" text-anchor="middle">N</text></g>
+    ${preview ? '<path d="M273 132Q395 30 500 120T827 306" fill="none" stroke="#b65c3e" stroke-width="1.4" stroke-dasharray="5 7" opacity=".6"/><circle cx="500" cy="120" r="7" fill="#b65c3e" stroke="#f6f4ec" stroke-width="3"/><circle cx="273" cy="132" r="6" fill="#386d69" stroke="#f6f4ec" stroke-width="3"/><circle cx="827" cy="306" r="6" fill="#b18b2c" stroke="#f6f4ec" stroke-width="3"/>' : ''}
   </svg>`;
 }
 function home() {
@@ -92,7 +96,7 @@ function playerList(final = false) {
   return `<ol class="player-list ${final ? 'final-players' : ''}">${players.map((p, i) => {
     const current = room.currentPlayerId === p.id;
     const result = room.result?.[p.id];
-    return `<li class="player-row ${current ? 'current' : ''} ${p.left ? 'left' : ''}" style="--player:${p.color}">${final ? `<span class="rank">${players.filter(other => other.score > p.score).length + 1}</span>` : ''}<span class="avatar">${esc(p.name[0].toUpperCase())}<i class="presence ${p.connected && !p.left ? 'on' : ''}"></i></span><div class="player-info"><strong>${esc(p.name)}${p.id === state.id ? ' <span>(ty)</span>' : ''}</strong><span>${p.left ? 'Opuścił pokój' : p.bot ? 'Towarzysz treningu' : room.phase === 'lobby' ? (p.id === room.hostId ? 'Gospodarz wyprawy' : 'Gotowy na przygodę') : final ? `${room.history.length} rozegranych rund` : current ? 'Teraz obstawia' : p.passed || p.cubes === 0 ? 'Koniec ruchów' : `${p.cubes} znaczników`}</span></div><div class="player-score"><strong>${p.score}</strong><span>${['reveal', 'finished'].includes(room.phase) && result && !final ? `+${result.gained} w rundzie` : 'pkt'}</span></div></li>`;
+    return `<li class="player-row ${current ? 'current' : ''} ${p.left ? 'left' : ''}" style="--player:${p.color}">${final ? `<span class="rank">${players.filter(other => other.score > p.score).length + 1}</span>` : ''}<span class="avatar">${esc(p.name[0].toUpperCase())}<i class="presence ${p.connected && !p.left ? 'on' : ''}"></i></span><div class="player-info"><strong>${esc(p.name)}${p.id === state.id ? ' <span>(ty)</span>' : ''}</strong><span>${p.left ? 'Opuścił pokój' : p.bot ? 'Towarzysz treningu' : room.phase === 'lobby' ? (p.id === room.hostId ? 'Gospodarz wyprawy' : 'Gotowy na przygodę') : final ? `${room.history.length} rozegranych rund` : current ? 'Teraz obstawia' : p.passed || p.cubes === 0 || usedCategories(room, p.id).length === CATEGORIES.length ? 'Koniec ruchów' : `${p.cubes} znaczników`}</span></div><div class="player-score"><strong>${p.score}</strong><span>${['reveal', 'finished'].includes(room.phase) && result && !final ? `+${result.gained} w rundzie` : 'pkt'}</span></div></li>`;
   }).join('')}</ol>`;
 }
 function roomTop() {
@@ -107,11 +111,11 @@ function lobby() {
 function scale(axis, title, label, unit, values) {
   const room = state.room;
   const answerSlot = room.answer?.[axis === 'year' ? 'yearSlot' : 'numberSlot'];
-  return `<section class="scale-panel paper"><div class="scale-heading"><span class="section-label">${icon(axis === 'year' ? 'time' : 'chart')}${title}</span><span>${esc(label)}${unit ? ` <b>(${esc(unit)})</b>` : ''}</span></div><div class="scale-track">${values.map((value, slot) => {
+  return `<section class="scale-panel paper ${categoryUsed(axis) ? 'category-used' : ''}"><div class="scale-heading"><span class="section-label">${icon(axis === 'year' ? 'time' : 'chart')}${title} ${categoryLimit(axis)}</span><span>${esc(label)}${unit ? ` <b>(${esc(unit)})</b>` : ''}</span></div><div class="scale-track">${values.map((value, slot) => {
     const placed = room.placements.find(p => p.axis === axis && p.slot === slot);
     const player = placed && room.players.find(p => p.id === placed.playerId);
     const selected = state.selection?.axis === axis && state.selection.slot === slot;
-    return `<button class="scale-slot ${selected ? 'selected' : ''} ${answerSlot === slot ? 'correct' : ''} ${player ? 'occupied' : ''}" ${!myTurn() || placed ? 'disabled' : ''} data-axis="${axis}" data-slot="${slot}" aria-pressed="${selected}" aria-label="${intervalLabel(values, slot)}${unit ? ` ${esc(unit)}` : ''}${player ? ` — ${esc(player.name)}` : ''}" title="${intervalLabel(values, slot)}${unit ? ` ${esc(unit)}` : ''}" ${player ? `style="--player:${player.color}"` : ''}><span class="slot-marker">${player ? esc(player.name[0].toUpperCase()) : answerSlot === slot ? icon('check') : '+'}</span><span class="slot-label">${axis === 'year' ? value : value >= 1000 ? `${fmt(value / 1000)} tys.` : fmt(value)}${slot === values.length - 1 ? '+' : ''}</span></button>`;
+    return `<button class="scale-slot ${selected ? 'selected' : ''} ${answerSlot === slot ? 'correct' : ''} ${player ? 'occupied' : ''}" ${!canSelectCategory(axis) || placed ? 'disabled' : ''} data-axis="${axis}" data-slot="${slot}" aria-pressed="${selected}" aria-label="${intervalLabel(values, slot)}${unit ? ` ${esc(unit)}` : ''}${player ? ` — ${esc(player.name)}` : ''}" title="${intervalLabel(values, slot)}${unit ? ` ${esc(unit)}` : ''}" ${player ? `style="--player:${player.color}"` : ''}><span class="slot-marker">${player ? esc(player.name[0].toUpperCase()) : answerSlot === slot ? icon('check') : '+'}</span><span class="slot-label">${axis === 'year' ? value : value >= 1000 ? `${fmt(value / 1000)} tys.` : fmt(value)}${slot === values.length - 1 ? '+' : ''}</span></button>`;
   }).join('')}</div><div class="scale-foot"><span>Każde pole to przedział od podanej liczby do następnej.</span>${room.answer ? `<strong>${axis === 'year' ? fmt(room.answer.year) : `${fmt(room.answer.number)} ${esc(unit)}`}</strong>` : '<span>7 pkt celnie · 3 pkt obok</span>'}</div></section>`;
 }
 function selectionLabel() {
@@ -134,7 +138,7 @@ function game() {
   const room = state.room;
   const selectedRegion = state.selection?.axis === 'map' && REGIONS.find(r => r.id === state.selection.slot);
   const nextLabel = room.round === room.rounds ? 'Zobacz wyniki wyprawy' : 'Kolejne odkrycie';
-  return `<main class="room-page game-page">${roomTop()}<div class="game-layout"><div class="board-column">${turnBar()}<section class="map-panel paper"><div class="map-heading"><div><span class="eyebrow">01 · Gdzie na świecie?</span><h2>Postaw na dobry kierunek.</h2></div><span class="map-tag">17 regionów ${icon('globe')}</span></div>${worldMap()}<div class="map-bottom"><div class="map-legend"><span><i></i> ${room.answer ? 'Poprawny region zaznaczony na zielono' : 'Wybierz region i potwierdź swój typ'}</span><span>Mapa umowna</span></div><label class="sr-only" for="region-picker">Wybierz region z listy</label><select id="region-picker" ${!myTurn() ? 'disabled' : ''}><option value="">Wybierz region z listy…</option>${REGIONS.map(r => `<option value="${r.id}" ${selectedRegion?.id === r.id ? 'selected' : ''} ${room.placements.some(p => p.axis === 'map' && p.slot === r.id) ? 'disabled' : ''}>${esc(r.name)}</option>`).join('')}</select>${selectedRegion ? `<p class="neighbors">Sąsiedzi za 3 pkt: ${NEIGHBORS[selectedRegion.id].map(id => esc(REGIONS.find(r => r.id === id).name)).join(', ')}.</p>` : ''}</div></section>
+  return `<main class="room-page game-page">${roomTop()}<div class="game-layout"><div class="board-column">${turnBar()}<section class="map-panel paper"><div class="map-heading"><div><span class="eyebrow">01 · Gdzie na świecie?</span><h2>Postaw na dobry kierunek.</h2></div>${categoryLimit('map')}</div>${worldMap()}<div class="map-bottom"><div class="map-legend"><span><i></i> ${room.answer ? 'Poprawny region zaznaczony na zielono' : 'Jeden znacznik na mapie w tej rundzie'}</span><span>Regiony umowne</span></div><label class="sr-only" for="region-picker">Wybierz region z listy</label><select id="region-picker" ${!canSelectCategory('map') ? 'disabled' : ''}><option value="">Wybierz region z listy…</option>${REGIONS.map(r => `<option value="${r.id}" ${selectedRegion?.id === r.id ? 'selected' : ''} ${room.placements.some(p => p.axis === 'map' && p.slot === r.id) ? 'disabled' : ''}>${esc(r.name)}</option>`).join('')}</select>${selectedRegion ? `<p class="neighbors">Sąsiedzi za 3 pkt: ${NEIGHBORS[selectedRegion.id].map(id => esc(REGIONS.find(r => r.id === id).name)).join(', ')}.</p>` : ''}</div></section>
       ${scale('year', '02 · Kiedy?', room.question.yearLabel, '', YEAR_SCALE)}${scale('number', '03 · Ile?', room.question.numberLabel, room.question.unit, NUMBER_SCALE)}
       ${room.phase === 'playing' ? `<div class="move-controls paper"><div><span class="eyebrow">${myTurn() ? 'Twój typ' : 'Wspólna plansza'}</span><strong>${myTurn() ? esc(selectionLabel()) : 'Obserwuj typy pozostałych graczy.'}</strong></div><div class="move-buttons"><button class="button quiet" data-action="pass" ${!myTurn() ? 'disabled' : ''}>Pasuję</button><button class="button primary" data-action="confirm" ${!myTurn() || !state.selection ? 'disabled' : ''}>Stawiam znacznik ${icon('arrow')}</button></div></div>` : `<div class="next-controls paper"><span>${isHost() ? 'Gotowi na kolejną podróż?' : 'Gospodarz za chwilę poprowadzi was dalej.'}</span><button class="button primary" data-action="next" ${!isHost() || state.busy || !state.connected ? 'disabled' : ''}>${nextLabel} ${icon('arrow')}</button></div>`}
     </div><aside class="game-sidebar">${questionCard()}<section class="roster paper"><div class="section-label">${icon('users')} Twoja ekipa <span>${room.players.filter(p => !p.left).length} graczy</span></div>${playerList()}<div class="cube-supply"><span>Twoje znaczniki</span><div>${Array.from({ length: 5 }, (_, i) => `<i class="cube ${i < (mine()?.cubes ?? 0) ? 'filled' : ''}" style="--player:${mine()?.color}"></i>`).join('')}</div></div></section>${room.phase === 'reveal' && room.result?.[state.id] ? `<div class="round-recap"><span class="eyebrow">Twój bilans rundy</span><strong>+${room.result[state.id].gained}<span>punktów</span></strong><p>${room.result[state.id].hits} celnych · ${room.result[state.id].close} bliskich · ${room.result[state.id].lost} nietrafionych</p></div>` : '<p class="sidebar-note">'+icon('compass')+'Za trafienie 7 pkt. Za dobry trop 3 pkt.<br>Każde przeczucie ma znaczenie.</p>'}</aside></div></main>`;
@@ -164,7 +168,7 @@ function updateClock() {
   }
 }
 function select(axis, slot) {
-  if (!myTurn()) return;
+  if (!canSelectCategory(axis)) return;
   if (state.room.placements.some(p => p.axis === axis && p.slot === slot)) return;
   state.selection = { axis, slot };
   render();
