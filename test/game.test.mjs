@@ -91,15 +91,51 @@ test('passing ends participation in the round; all pass reveals once', () => {
   assert.throws(() => pass(room, 'alice', room.turnId));
   assert.equal(room.history.length, 1);
 });
-test('exhaustion ends the round and replenishment guarantees at least three cubes', () => {
+test('three used categories end participation and replenishment guarantees three cubes', () => {
   const room = game();
   pass(room, 'alice', room.turnId);
-  for (const slot of [0, 1, 2, 3, 8]) place(room, 'bob', 'number', slot, room.turnId);
+  place(room, 'bob', 'map', 'oceania', room.turnId);
+  place(room, 'bob', 'year', 0, room.turnId);
+  place(room, 'bob', 'number', 0, room.turnId);
   assert.equal(room.phase, 'reveal');
-  assert.equal(room.players[1].cubes, 0);
+  assert.equal(room.players[1].cubes, 2);
   nextRound(room, 'alice');
   assert.equal(room.players[1].cubes, 3);
   assert.equal(room.currentPlayerId, 'bob');
+  place(room, 'bob', 'map', 'na-east', room.turnId);
+  assert.equal(room.placements.length, 1);
+});
+test('each player can place only one marker in each category per round', () => {
+  const room = game();
+  place(room, 'alice', 'map', 'eu-west', room.turnId);
+  place(room, 'bob', 'map', 'eu-east', room.turnId);
+  let before = JSON.stringify(room);
+  assert.throws(() => place(room, 'alice', 'map', 'oceania', room.turnId), /kategorii/);
+  assert.equal(JSON.stringify(room), before);
+  place(room, 'alice', 'year', 5, room.turnId);
+  place(room, 'bob', 'year', 6, room.turnId);
+  before = JSON.stringify(room);
+  assert.throws(() => place(room, 'alice', 'year', 4, room.turnId), /kategorii/);
+  assert.equal(JSON.stringify(room), before);
+  place(room, 'alice', 'number', 5, room.turnId);
+  assert.equal(room.currentPlayerId, 'bob');
+  assert.throws(() => place(room, 'bob', 'year', 7, room.turnId), /kategorii/);
+  place(room, 'bob', 'number', 6, room.turnId);
+  assert.equal(room.phase, 'reveal');
+  assert.equal(room.placements.length, 6);
+  assert.equal(room.result.alice.gained, 21);
+  assert.equal(room.result.bob.gained, 9);
+});
+test('a player who has used all categories is skipped even with spare markers', () => {
+  const room = game();
+  for (const [axis, a, b] of [['map', 'eu-west', 'eu-east'], ['year', 5, 6]]) {
+    place(room, 'alice', axis, a, room.turnId);
+    place(room, 'bob', axis, b, room.turnId);
+  }
+  place(room, 'alice', 'number', 5, room.turnId);
+  assert.equal(room.players[0].cubes, 2);
+  pass(room, 'bob', room.turnId);
+  assert.equal(room.phase, 'reveal');
 });
 test('only host can advance and a complete match supports a clean rematch', () => {
   const room = game();
@@ -142,6 +178,9 @@ test('practice bot can finish every round without illegal moves', () => {
       else botMove(room);
       assert.ok(++steps <= 20);
     }
+    const botPlacements = room.placements.filter(p => p.playerId !== 'a');
+    assert.ok(botPlacements.length <= 3);
+    assert.equal(new Set(botPlacements.map(p => p.axis)).size, botPlacements.length);
     nextRound(room, 'a');
   }
   assert.equal(room.phase, 'finished');

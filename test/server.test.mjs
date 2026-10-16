@@ -110,3 +110,19 @@ test('expired turns pass automatically and a disconnected host is replaced', asy
   assert.equal(snapshot.hostId, bob.playerId);
   assert.equal(snapshot.players[0].passed, true);
 });
+test('HTTP rejects a second marker in a category without consuming a cube', async t => {
+  const { client } = await fixture(t);
+  const alice = await client(), bob = await client();
+  const created = await alice.request('/api/rooms', { name: 'Alicja' });
+  await bob.request('/api/rooms/join', { name: 'Bartosz', code: created.body.room.code });
+  let room = (await alice.request('/api/room/action', { action: 'start' })).body.room;
+  room = (await alice.request('/api/room/action', { action: 'place', axis: 'map', slot: 'eu-west', turnId: room.turnId })).body.room;
+  room = (await bob.request('/api/room/action', { action: 'pass', turnId: room.turnId })).body.room;
+  const blocked = await alice.request('/api/room/action', { action: 'place', axis: 'map', slot: 'eu-east', turnId: room.turnId });
+  assert.equal(blocked.status, 409);
+  assert.match(blocked.body.error, /kategorii/);
+  const resumed = (await alice.request('/api/session')).body.room;
+  assert.equal(resumed.placements.length, 1);
+  assert.equal(resumed.players[0].cubes, 4);
+  assert.equal(resumed.turnId, room.turnId);
+});
