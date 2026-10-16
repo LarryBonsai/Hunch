@@ -1,8 +1,10 @@
 import { MAP_PATHS } from './map-paths.mjs';
+import { WATER_REGIONS, WATER_EDGES } from './water-regions.mjs';
 export { COASTLINE } from './map-paths.mjs';
+export { WATER_REGIONS };
 
 // Regiony gry na rzeczywistych konturach Natural Earth; granice regionów są umowne.
-export const REGIONS = [
+export const LAND_REGIONS = [
   { id: 'na-west', name: 'Ameryka Płn. · zachód', short: 'Ameryka Płn. zach.', lon: -115, lat: 45 },
   { id: 'na-east', name: 'Ameryka Płn. · wschód', short: 'Ameryka Płn. wsch.', lon: -83, lat: 43 },
   { id: 'central-america', name: 'Ameryka Środkowa', short: 'Ameryka Środkowa', lon: -90, lat: 18 },
@@ -20,7 +22,9 @@ export const REGIONS = [
   { id: 'asia-east', name: 'Azja Wschodnia', short: 'Azja Wschodnia', lon: 110, lat: 35 },
   { id: 'asia-se', name: 'Azja Południowo-Wschodnia', short: 'Azja Płd.-Wsch.', lon: 105, lat: 15 },
   { id: 'oceania', name: 'Australia i Oceania', short: 'Australia i Oceania', lon: 134, lat: -25 }
-].map(r => ({ ...r, x: 25 + (r.lon + 180) * 920 / 360, y: 25 + (85 - r.lat) * 920 / 360, path: MAP_PATHS[r.id] }));
+].map(r => ({ ...r, kind: 'land', x: 25 + (r.lon + 180) * 920 / 360, y: 25 + (85 - r.lat) * 920 / 360, path: MAP_PATHS[r.id] }));
+
+export const REGIONS = [...LAND_REGIONS, ...WATER_REGIONS];
 
 export const CATEGORIES = ['map', 'year', 'number'];
 export const usedCategories = (room, playerId) => [...new Set((room?.placements ?? []).filter(p => p.playerId === playerId).map(p => p.axis))];
@@ -33,7 +37,8 @@ const edges = [
   ['af-west', 'af-east'], ['af-west', 'af-south'], ['af-east', 'af-south'],
   ['af-east', 'asia-west'], ['asia-north', 'asia-west'], ['asia-north', 'asia-south'],
   ['asia-north', 'asia-east'], ['asia-west', 'asia-south'], ['asia-south', 'asia-east'],
-  ['asia-south', 'asia-se'], ['asia-east', 'asia-se'], ['asia-se', 'oceania']
+  ['asia-south', 'asia-se'], ['asia-east', 'asia-se'], ['asia-se', 'oceania'],
+  ...WATER_EDGES
 ];
 export const NEIGHBORS = Object.fromEntries(REGIONS.map(r => [r.id,
   edges.filter(e => e.includes(r.id)).map(e => e.find(id => id !== r.id))]));
