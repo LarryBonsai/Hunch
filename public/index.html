@@ -1,0 +1,31 @@
+<!doctype html>
+<html lang="pl">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="theme-color" content="#f6f4ec">
+    <meta name="description" content="Hunch — multiplayerowa gra geograficzna. Zaproś znajomych, zaufaj intuicji i odkrywaj świat, jeden strzał na raz.">
+    <title>Hunch — świat na wyczucie</title>
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg">
+    <link rel="stylesheet" href="/style.css">
+    <script type="module" src="/app.js"></script>
+  </head>
+  <body>
+    <div id="app"><div class="boot">hunch<span>Rozkładamy mapę…</span></div></div>
+    <div id="toast" role="status" aria-live="polite"></div>
+    <dialog id="rules">
+      <div class="dialog-top"><span class="eyebrow">Twój mały przewodnik</span><button class="icon-button" data-close-rules aria-label="Zamknij zasady">×</button></div>
+      <h2>Nie musisz wiedzieć.<br>Wystarczy mieć przeczucie.</h2>
+      <p>W każdej rundzie odkrywacie jedno miejsce. W swojej turze połóż <strong>jeden znacznik</strong> na mapie, skali lat lub skali wielkości. Potem ruch wykonuje kolejna osoba.</p>
+      <ol class="rules-list">
+        <li><strong>Obstawiaj po swojemu.</strong> Każde pole mieści tylko jeden znacznik. Możesz obstawić kilka pól tej samej skali w kolejnych turach.</li>
+        <li><strong>Blisko też się liczy.</strong> Trafiony region lub przedział to 7 punktów. Sąsiedni region albo przedział to 3 punkty. Dalszy strzał: 0 punktów.</li>
+        <li><strong>Zarządzaj znacznikami.</strong> Zaczynasz z pięcioma. Trafione i bliskie wracają; nietrafione tracisz. Przed kolejną rundą odzyskujesz jeden, a zapas uzupełnia się do minimum trzech (maksimum pięć).</li>
+        <li><strong>Możesz spasować.</strong> Pas kończy twoje ruchy w tej rundzie. Masz 45 sekund na ruch; po upływie czasu następuje pas. Kiedy wszyscy skończą, odkrywamy odpowiedzi.</li>
+      </ol>
+      <p class="small">Mapa ma 17 umownych regionów. Sąsiadów wybranego regionu zobaczysz pod planszą. Przedziały liczbowe zawierają dolną granicę i kończą się przed następną; ostatni nie ma górnej granicy. Np. 250–499 obejmuje 330.</p>
+      <p class="small">Wygrywa najwyższy wynik po wybranej liczbie rund. Remis oznacza wspólne zwycięstwo. Trening rozgrywasz z botem Atlas.</p>
+      <button class="button primary full" data-close-rules>Mapa czeka. Rozumiem!</button>
+    </dialog>
+  </body>
+</html>
