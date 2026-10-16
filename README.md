@@ -22,7 +22,7 @@ Otwórz **http://localhost:3000**. Przycisk treningu uruchamia partię z botem A
 
 - Pokoje na sześcioznakowy kod i zaproszenia przez link, bez rejestracji.
 - 2–6 graczy, partie po 3, 6 lub 9 rund; trening z botem.
-- Klikalna mapa 17 regionów lądowych i 31 akwenów na konturach Natural Earth oraz dwie skale przedziałowe. Wybór bezpośrednio na mapie lub z listy podzielonej na lądy, oceany oraz morza i zatoki.
+- Klikalna mapa 17 regionów lądowych i 7 obszarów oceanicznych na konturach Natural Earth oraz dwie skale przedziałowe. Wybór bezpośrednio na mapie lub z listy podzielonej na lądy i oceany.
 - Ruchy na zmianę: jeden znacznik albo pas; 45 sekund na ruch.
 - W każdej rundzie jeden gracz może postawić najwyżej jeden znacznik na kategorię: mapa, rok, wielkość. Po trzecim typie automatycznie kończy ruchy. Limit obowiązuje również bota i jest sprawdzany przez serwer.
 - Punktacja: 7 punktów za dokładny region/przedział, 3 za sąsiedni, 0 za dalszy typ.
@@ -36,7 +36,7 @@ Otwórz **http://localhost:3000**. Przycisk treningu uruchamia partię z botem A
 
 ### Interpretacja mapy i skal
 
-Linia brzegowa pochodzi z danych Natural Earth 1:110m. Zarys lądów, półwyspów i większych wysp jest geograficzny; podział na 17 regionów pozostaje umowny. Akweny korzystają z Natural Earth 1:50m Marine Polygons i są przycięte do tego samego zarysu lądów. Pięć oceanów tworzy 7 pól (Atlantyk i Pacyfik osobno na północy i południu); pozostałe 24 pola to wybrane morza i zatoki, w tym Bałtyk, Morze Północne, Śródziemne i Czerwone. Podział jest umowną planszą gry, a nie granicami administracyjnymi. Morza nie nakładają się na oceany ani na lądy; oba brzegi mapy należą do tego samego pola Pacyfiku.
+Linia brzegowa pochodzi z danych Natural Earth 1:110m. Zarys lądów, półwyspów i większych wysp jest geograficzny; podział na 17 regionów pozostaje umowny. Akweny korzystają z Natural Earth 1:50m Marine Polygons i są przycięte do tego samego zarysu lądów. Pięć oceanów tworzy 7 pól (Atlantyk i Pacyfik osobno na północy i południu). Morza i zatoki są częścią odpowiednich oceanów, bez osobnych pól ani granic. Woda zachowuje jasne tło mapy; wybrany ocean jest niebieski, a granice oceanów są delikatne i przerywane. Podział jest umowną planszą gry, a nie granicami administracyjnymi. Obszary oceaniczne nie nakładają się na siebie ani na lądy; oba brzegi mapy należą do tego samego pola Pacyfiku.
 
 Sąsiedztwo definiuje symetryczny graf w `public/board.mjs`, łączący dotychczasowe pary lądowe z wygenerowanymi parami wodnymi i przybrzeżnymi. Po wybraniu regionu interfejs pokazuje sąsiadów punktowanych za 3 pkt. Wszystkie akweny obsługują zajętość, znaczniki i punktację, a ląd oraz woda wspólnie zużywają jeden typ na mapie w rundzie. Obecna talia nadal zawiera pytania lądowe; akweny są gotowe na kolejne kategorie bez zmiany silnika. Zasady pochodzenia danych opisuje `THIRD_PARTY_NOTICES.md`. Mapa jest dostarczana z aplikacją i działa bez zewnętrznego serwisu mapowego.
 
@@ -73,7 +73,7 @@ Testy obejmują zasady gry, kolejność tur, uprawnienia gospodarza, ukrycie odp
 
 Nową kartę dodaj do `src/questions.mjs`, podając unikalne `id`, tytuł, kategorię, wariant ilustracji, opis, region, rok, wartość i jednostkę, jednoznaczne pytania oraz źródła. Nie dodawaj odpowiedzi do katalogu `public/`.
 
-Dla kart wodnych użyj `region` z `public/water-regions.mjs`, np. `sea-baltic`, `sea-mediterranean` albo `ocean-pacific-north`. Każde `id` oznacza jedno pole także przy przejściu przez krawędź mapy. Do odtworzenia pól akwenów pobierz [Natural Earth Marine Polygons 1:50m](https://raw.githubusercontent.com/nvkelso/natural-earth-vector/master/geojson/ne_50m_geography_marine_polys.geojson) do `artifacts/natural-earth-marine.geojson`, zainstaluj Shapely 2.1.2 w środowisku Pythona i uruchom `python tools/build-water-map.py`. Generator korzysta również z istniejących `public/map-paths.mjs`. Python i Shapely nie są potrzebne do uruchomienia gry ani testów.
+Dla kart wodnych użyj `region` z `public/water-regions.mjs`, np. `ocean-atlantic-north`, `ocean-indian` albo `ocean-pacific-north`. Każde `id` oznacza jedno pole także przy przejściu przez krawędź mapy. Do odtworzenia pól akwenów pobierz [Natural Earth Marine Polygons 1:50m](https://raw.githubusercontent.com/nvkelso/natural-earth-vector/master/geojson/ne_50m_geography_marine_polys.geojson) do `artifacts/natural-earth-marine.geojson`, zainstaluj Shapely 2.1.2 w środowisku Pythona i uruchom `python tools/build-water-map.py`. Generator korzysta również z istniejących `public/map-paths.mjs`. Python i Shapely nie są potrzebne do uruchomienia gry ani testów.
 
 ## Wdrożenie
 
