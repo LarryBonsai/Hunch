@@ -2,7 +2,7 @@ import test from 'node:test';
 import assert from 'node:assert/strict';
 import { createRoom, addPlayer, startGame, place, pass, nextRound, restart, leave, scorePlacement, publicRoom, botMove, cleanName } from '../src/game.mjs';
 import { QUESTIONS } from '../src/questions.mjs';
-import { REGIONS, NEIGHBORS, YEAR_SCALE, NUMBER_SCALE, bucket } from '../public/board.mjs';
+import { REGIONS, LAND_REGIONS, WATER_REGIONS, NEIGHBORS, YEAR_SCALE, NUMBER_SCALE, bucket } from '../public/board.mjs';
 
 function game() {
   const room = createRoom('ABC234', 'alice', 'Alicja', 3);
@@ -126,6 +126,19 @@ test('each player can place only one marker in each category per round', () => {
   assert.equal(room.result.alice.gained, 21);
   assert.equal(room.result.bob.gained, 9);
 });
+
+test('water fields support placement, occupancy, scoring and the shared map limit', () => {
+  const room = game();
+  room.deck[0] = { ...QUESTIONS[0], region: 'sea-mediterranean' };
+  place(room, 'alice', 'map', 'sea-mediterranean', room.turnId);
+  assert.throws(() => place(room, 'bob', 'map', 'sea-mediterranean', room.turnId), /zajęte/);
+  place(room, 'bob', 'map', 'ocean-atlantic-north', room.turnId);
+  assert.throws(() => place(room, 'alice', 'map', 'eu-west', room.turnId), /kategorii/);
+  passAll(room);
+  assert.equal(room.result.alice.gained, 7);
+  assert.equal(room.result.bob.gained, 3);
+  assert.equal(publicRoom(room, 'alice').answer.region, 'sea-mediterranean');
+});
 test('a player who has used all categories is skipped even with spare markers', () => {
   const room = game();
   for (const [axis, a, b] of [['map', 'eu-west', 'eu-east'], ['year', 5, 6]]) {
@@ -187,7 +200,11 @@ test('practice bot can finish every round without illegal moves', () => {
 });
 test('all questions and map neighbors form valid game data', () => {
   assert.ok(QUESTIONS.length >= 9);
-  assert.equal(REGIONS.length, 17);
+  assert.equal(LAND_REGIONS.length, 17);
+  assert.equal(WATER_REGIONS.length, 31);
+  assert.equal(new Set(REGIONS.map(r => r.id)).size, REGIONS.length);
+  assert.ok(!NEIGHBORS['ocean-arctic'].includes('sea-mediterranean'));
+  assert.ok(!NEIGHBORS['ocean-arctic'].includes('sea-caribbean'));
   assert.equal(new Set(QUESTIONS.map(q => q.id)).size, QUESTIONS.length);
   for (const q of QUESTIONS) {
     assert.ok(REGIONS.some(r => r.id === q.region));
@@ -195,7 +212,14 @@ test('all questions and map neighbors form valid game data', () => {
     assert.ok(bucket(q.number, NUMBER_SCALE) >= 0);
     assert.ok(q.sources.every(s => new URL(s).protocol === 'https:'));
   }
-  for (const [id, neighbors] of Object.entries(NEIGHBORS)) for (const other of neighbors) assert.ok(NEIGHBORS[other].includes(id));
+  for (const [id, neighbors] of Object.entries(NEIGHBORS)) {
+    assert.ok(neighbors.length > 0, id);
+    assert.equal(new Set(neighbors).size, neighbors.length, id);
+    for (const other of neighbors) {
+      assert.notEqual(other, id);
+      assert.ok(NEIGHBORS[other]?.includes(id), `${id} / ${other}`);
+    }
+  }
   assert.equal(bucket(250, NUMBER_SCALE), 5);
   assert.equal(bucket(499, NUMBER_SCALE), 5);
   assert.equal(bucket(500, NUMBER_SCALE), 6);
