@@ -38,7 +38,7 @@ Otwórz **http://localhost:3000**. Przycisk treningu uruchamia partię z botem A
 
 Linia brzegowa pochodzi z danych Natural Earth 1:110m. Zarys lądów, półwyspów i większych wysp jest geograficzny; podział na 17 regionów pozostaje umowny. Sąsiedztwo definiuje jawny, symetryczny graf w `public/board.mjs`; po wybraniu regionu interfejs pokazuje sąsiadów punktowanych za 3 pkt. Zasady pochodzenia danych opisuje `THIRD_PARTY_NOTICES.md`. Mapa jest dostarczana z aplikacją i działa bez zewnętrznego serwisu mapowego.
 
-Przedziały zawierają dolną granicę, a nie zawierają następnej. Np. pole 250 oznacza `[250, 500)`. Ostatni przedział jest otwarty w górę. Jednostkę i definicję pomiaru podaje każda karta.
+Przyciski pokazują pełne przedziały lat i wielkości z jednostką, np. `1850–1900` i `50–100 m`. Przedziały zawierają dolną granicę, a górna otwiera następny przedział: `50–100 m` oznacza `[50, 100)`, więc dokładnie 100 m należy do `100–250 m`. Ostatni przedział jest otwarty w górę. Jednostkę i definicję pomiaru podaje każda karta.
 
 ## Architektura
 
