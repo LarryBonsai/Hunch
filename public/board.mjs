@@ -44,7 +44,7 @@ export const NUMBER_SCALE = [0, 10, 25, 50, 100, 250, 500, 1000, 2500, 5000, 100
 export const COLORS = ['#b65c3e', '#386d69', '#9270a4', '#b18b2c', '#4a75a3', '#bd6b88'];
 export const fmt = n => new Intl.NumberFormat('pl-PL').format(n);
 export const intervalLabel = (scale, i) => i === scale.length - 1
-  ? `${fmt(scale[i])}+` : `${fmt(scale[i])}–${fmt(scale[i + 1] - 1)}`;
+  ? `${fmt(scale[i])}+` : `${fmt(scale[i])}–${fmt(scale[i + 1])}`;
 export const bucket = (value, scale) => {
   const i = scale.findIndex((min, index) => value >= min && (index === scale.length - 1 || value < scale[index + 1]));
   if (i < 0) throw new RangeError('Wartość poza skalą');

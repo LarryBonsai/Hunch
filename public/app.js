@@ -1,4 +1,4 @@
-import { REGIONS, NEIGHBORS, COASTLINE, YEAR_SCALE, NUMBER_SCALE, CATEGORIES, usedCategories, fmt, intervalLabel } from './board.mjs';
+import { REGIONS, NEIGHBORS, YEAR_SCALE, NUMBER_SCALE, CATEGORIES, usedCategories, fmt, intervalLabel } from './board.mjs';
 import { icon, illustration } from './art.mjs';
 
 const app = document.querySelector('#app');
@@ -72,7 +72,6 @@ function worldMap(preview = false) {
       const correct = !preview && room?.answer?.region === r.id;
       return `<path d="${r.path}" fill-rule="evenodd" class="region ${selected === r.id ? 'selected' : ''} ${correct ? 'correct' : ''} ${placed ? 'occupied' : ''} ${preview ? '' : canSelectCategory('map') && !placed ? 'available' : ''}" ${preview ? '' : `data-region="${r.id}" tabindex="${canSelectCategory('map') && !placed ? 0 : -1}" role="button" aria-label="${esc(r.name)}${placed ? ` — zajęte: ${esc(player.name)}` : ''}${correct ? ' — poprawna odpowiedź' : ''}" aria-disabled="${!canSelectCategory('map') || Boolean(placed)}" aria-pressed="${selected === r.id}"`}><title>${esc(r.name)}${player ? ` — ${esc(player.name)}` : ''}</title></path>${player ? `<g class="map-token" style="--player:${player.color}" aria-hidden="true"><rect x="${r.x - 9}" y="${r.y - 9}" width="18" height="18" rx="4"/><text x="${r.x}" y="${r.y + 4}">${esc(player.name[0].toUpperCase())}</text></g>` : ''}`;
     }).join('')}
-    <path d="${COASTLINE}" class="coastline" aria-hidden="true"/>
     <text x="144" y="27" class="ocean-name">ARKTYKA</text><text x="344" y="213" class="ocean-name ocean-vertical">ATLANTYK</text><text x="80" y="330" class="ocean-name">PACYFIK</text><text x="615" y="350" class="ocean-name">OCEAN INDYJSKI</text>
     <g transform="translate(903 417)" class="compass-rose"><path d="M0-21 5-5 21 0 5 5 0 21-5 5-21 0-5-5Z" fill="none" stroke="currentColor" stroke-width=".7"/><path d="M0-21 5-5 0 0Z" fill="currentColor"/><text y="-29" text-anchor="middle">N</text></g>
     ${preview ? '<path d="M273 132Q395 30 500 120T827 306" fill="none" stroke="#b65c3e" stroke-width="1.4" stroke-dasharray="5 7" opacity=".6"/><circle cx="500" cy="120" r="7" fill="#b65c3e" stroke="#f6f4ec" stroke-width="3"/><circle cx="273" cy="132" r="6" fill="#386d69" stroke="#f6f4ec" stroke-width="3"/><circle cx="827" cy="306" r="6" fill="#b18b2c" stroke="#f6f4ec" stroke-width="3"/>' : ''}
@@ -115,8 +114,9 @@ function scale(axis, title, label, unit, values) {
     const placed = room.placements.find(p => p.axis === axis && p.slot === slot);
     const player = placed && room.players.find(p => p.id === placed.playerId);
     const selected = state.selection?.axis === axis && state.selection.slot === slot;
-    return `<button class="scale-slot ${selected ? 'selected' : ''} ${answerSlot === slot ? 'correct' : ''} ${player ? 'occupied' : ''}" ${!canSelectCategory(axis) || placed ? 'disabled' : ''} data-axis="${axis}" data-slot="${slot}" aria-pressed="${selected}" aria-label="${intervalLabel(values, slot)}${unit ? ` ${esc(unit)}` : ''}${player ? ` — ${esc(player.name)}` : ''}" title="${intervalLabel(values, slot)}${unit ? ` ${esc(unit)}` : ''}" ${player ? `style="--player:${player.color}"` : ''}><span class="slot-marker">${player ? esc(player.name[0].toUpperCase()) : answerSlot === slot ? icon('check') : '+'}</span><span class="slot-label">${axis === 'year' ? value : value >= 1000 ? `${fmt(value / 1000)} tys.` : fmt(value)}${slot === values.length - 1 ? '+' : ''}</span></button>`;
-  }).join('')}</div><div class="scale-foot"><span>Każde pole to przedział od podanej liczby do następnej.</span>${room.answer ? `<strong>${axis === 'year' ? fmt(room.answer.year) : `${fmt(room.answer.number)} ${esc(unit)}`}</strong>` : '<span>7 pkt celnie · 3 pkt obok</span>'}</div></section>`;
+    const range = `${intervalLabel(values, slot)}${unit ? ` ${esc(unit)}` : ''}`;
+    return `<button class="scale-slot ${selected ? 'selected' : ''} ${answerSlot === slot ? 'correct' : ''} ${player ? 'occupied' : ''}" ${!canSelectCategory(axis) || placed ? 'disabled' : ''} data-axis="${axis}" data-slot="${slot}" aria-pressed="${selected}" aria-label="${range}${player ? ` — ${esc(player.name)}` : ''}" title="${range}" ${player ? `style="--player:${player.color}"` : ''}><span class="slot-marker">${player ? esc(player.name[0].toUpperCase()) : answerSlot === slot ? icon('check') : '+'}</span><span class="slot-label">${range}</span></button>`;
+  }).join('')}</div><div class="scale-foot"><span>Górna granica otwiera kolejny przedział.</span>${room.answer ? `<strong>${axis === 'year' ? fmt(room.answer.year) : `${fmt(room.answer.number)} ${esc(unit)}`}</strong>` : '<span>7 pkt celnie · 3 pkt obok</span>'}</div></section>`;
 }
 function selectionLabel() {
   const s = state.selection;
