@@ -131,6 +131,10 @@ export function submitAnswers(room, id, turnId) {
   const player = requireHiddenRound(room, id, turnId);
   requireThat(usedCategories(room, id).length === CATEGORIES.length, 'Wybierz region, rok i wielkość przed zatwierdzeniem.', 409);
   player.ready = true;
+  revealWhenReady(room);
+}
+function revealWhenReady(room) {
+  if (room.mode === 'hidden' && room.phase === 'playing' && activePlayers(room).every(p => p.ready)) reveal(room);
 }
 export function expireRound(room, now = Date.now()) {
   if (room.mode !== 'hidden' || room.phase !== 'playing' || now < room.deadline) return false;
@@ -187,7 +191,8 @@ export function leave(room, id) {
     if (activePlayers(room).length < 2) {
       reveal(room);
       room.phase = 'finished';
-    } else if (room.mode !== 'hidden' && room.currentPlayerId === id) advance(room);
+    } else if (room.mode === 'hidden') revealWhenReady(room);
+    else if (room.currentPlayerId === id) advance(room);
   } else if (room.phase === 'reveal' && activePlayers(room).length < 2) room.phase = 'finished';
 }
 export function botMove(room) {
