@@ -26,8 +26,8 @@ Przy tworzeniu pokoju wybierz **Klasyczny** albo **Ukryte odpowiedzi · 30 sekun
 - 2–6 graczy, partie po 3, 6 lub 9 rund; trening z botem.
 - Klikalna mapa 17 regionów lądowych i 7 obszarów oceanicznych na konturach Natural Earth oraz dwie skale przedziałowe. Wybór bezpośrednio na mapie lub z listy podzielonej na lądy i oceany.
 - Tryb klasyczny: ruchy na zmianę, jeden znacznik albo pas; 45 sekund na ruch.
-- Tryb ukrytych odpowiedzi: po 5 sekundach prezentacji karty wszyscy mają wspólne 30 sekund na region, rok i wielkość. Wybory zapisują się na serwerze automatycznie, także bez zatwierdzenia. Można poprawiać po jednym typie w kategorii do zatwierdzenia pełnego zestawu lub końca czasu. Zatwierdzenie blokuje własny zestaw; wyniki zawsze czekają na wspólny koniec odliczania. Brak typu daje 0 pkt. Wszyscy mogą wybierać te same pola.
-- W nowym trybie HTTP i SSE wysyłają graczowi wyłącznie jego własne typy. Znaczniki są rozliczane dopiero po rundzie, więc zapas pozostałych osób nie zdradza postępu. Po upływie czasu odpowiedzi zostają odkryte razem z tabelą trzech typów i punktów każdego gracza.
+- Tryb ukrytych odpowiedzi: po 5 sekundach prezentacji karty wszyscy mają wspólne 30 sekund na region, rok i wielkość. Wybory zapisują się na serwerze automatycznie, także bez zatwierdzenia. Można poprawiać po jednym typie w kategorii do zatwierdzenia pełnego zestawu lub końca czasu. Zatwierdzenie blokuje własny zestaw. Ostatnie zatwierdzenie natychmiast kończy rundę i odkrywa wyniki; jeśli ktoś nie zatwierdzi, działa limit czasu. Brak typu daje 0 pkt. Wszyscy mogą wybierać te same pola.
+- W nowym trybie HTTP i SSE wysyłają graczowi wyłącznie jego własne typy. Znaczniki są rozliczane dopiero po rundzie, więc zapas pozostałych osób nie zdradza postępu. Po zatwierdzeniu przez wszystkich lub upływie czasu odpowiedzi zostają odkryte razem z tabelą trzech typów i punktów każdego gracza. Na środku ekranu pojawia się animowany ranking z punktami rundy i sumą punktów. Kliknięcie, Escape albo 5 sekund zamyka okno; aktualizacje na żywo nie otwierają go ponownie w tej samej rundzie.
 - W każdej rundzie jeden gracz może postawić najwyżej jeden znacznik na kategorię: mapa, rok, wielkość. Po trzecim typie automatycznie kończy ruchy. Limit obowiązuje również bota i jest sprawdzany przez serwer.
 - Punktacja: 7 punktów za dokładny region/przedział, 3 za sąsiedni, 0 za dalszy typ.
 - W trybie klasycznym zajęte pola są blokowane dla wszystkich graczy, również ich właściciela.
@@ -56,6 +56,7 @@ src/game.mjs             Autorytatywny silnik rozgrywki i punktacja
 src/questions.mjs        Karty z odpowiedziami i źródłami (tylko serwer)
 public/app.js            Interfejs, wybór pól i komunikacja
 public/card-intro.mjs     Prezentacja nowej karty, timer i powrót do panelu
+public/round-results.mjs  Centralne okno rankingu po rundzie ukrytych odpowiedzi
 public/board.mjs          Mapa, sąsiedztwo, skale
 public/map-paths.mjs      Wygenerowane kontury lądów i regionów Natural Earth
 public/water-regions.mjs  Wygenerowane pola akwenów i ich sąsiedztwo
