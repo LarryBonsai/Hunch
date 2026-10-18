@@ -1,5 +1,6 @@
 import { REGIONS, LAND_REGIONS, WATER_REGIONS, COASTLINE, OCEAN_BORDERS, NEIGHBORS, YEAR_SCALE, NUMBER_SCALE, CATEGORIES, usedCategories, fmt, intervalLabel } from './board.mjs';
 import { icon, illustration } from './art.mjs';
+import { mountCardIntro } from './card-intro.mjs';
 
 const app = document.querySelector('#app');
 const rules = document.querySelector('#rules');
@@ -15,6 +16,7 @@ const canSelectCategory = axis => myTurn() && !categoryUsed(axis);
 const categoryLimit = axis => `<span class="category-limit ${categoryUsed(axis) ? 'used' : ''}">${categoryUsed(axis) ? icon('check') : ''}Twój typ: ${categoryUsed(axis) ? '1' : '0'}/1</span>`;
 const isHost = () => state.room?.hostId === state.id;
 let toastTimer;
+const cardIntro = mountCardIntro({ renderCard: introCard, getTarget: () => document.querySelector('.game-sidebar .question-card') });
 function toast(message, error = false) {
   const el = document.querySelector('#toast');
   el.textContent = message;
@@ -39,6 +41,7 @@ function updateRoom(room) {
   if (room && !room.practice) history.replaceState(null, '', `?room=${room.code}`);
   if (!room && previous) history.replaceState(null, '', location.pathname);
   render();
+  cardIntro.update(room);
 }
 async function mutate(path, body) {
   if (state.busy) return;
@@ -112,12 +115,15 @@ function lobby() {
 function scale(axis, title, label, unit, values) {
   const room = state.room;
   const answerSlot = room.answer?.[axis === 'year' ? 'yearSlot' : 'numberSlot'];
-  return `<section class="scale-panel paper ${categoryUsed(axis) ? 'category-used' : ''}"><div class="scale-heading"><span class="section-label">${icon(axis === 'year' ? 'time' : 'chart')}${title} ${categoryLimit(axis)}</span><span>${esc(label)}${unit ? ` <b>(${esc(unit)})</b>` : ''}</span></div><div class="scale-track">${values.map((value, slot) => {
+  const status = room.answer ? 'Odpowiedź odkryta' : categoryUsed(axis) ? 'Twój typ zapisany'
+    : state.selection?.axis === axis ? 'Gotowe do zatwierdzenia' : canSelectCategory(axis) ? 'Wybierz przedział' : 'Czekaj na swoją turę';
+  return `<section class="scale-panel paper scale-${axis} ${categoryUsed(axis) ? 'category-used' : ''}"><div class="scale-heading"><div class="scale-title"><span class="section-label">${icon(axis === 'year' ? 'time' : 'chart')}${title}</span><span class="scale-question">${esc(label)}${unit ? ` <b>(${esc(unit)})</b>` : ''}</span></div><div class="scale-meta">${categoryLimit(axis)}<span class="scale-status" aria-live="polite">${status}</span></div></div><div class="scale-track" role="group" aria-label="${esc(label)}">${values.map((value, slot) => {
     const placed = room.placements.find(p => p.axis === axis && p.slot === slot);
     const player = placed && room.players.find(p => p.id === placed.playerId);
     const selected = state.selection?.axis === axis && state.selection.slot === slot;
+    const correct = answerSlot === slot;
     const range = `${intervalLabel(values, slot)}${unit ? ` ${esc(unit)}` : ''}`;
-    return `<button class="scale-slot ${selected ? 'selected' : ''} ${answerSlot === slot ? 'correct' : ''} ${player ? 'occupied' : ''}" ${!canSelectCategory(axis) || placed ? 'disabled' : ''} data-axis="${axis}" data-slot="${slot}" aria-pressed="${selected}" aria-label="${range}${player ? ` — ${esc(player.name)}` : ''}" title="${range}" ${player ? `style="--player:${player.color}"` : ''}><span class="slot-marker">${player ? esc(player.name[0].toUpperCase()) : answerSlot === slot ? icon('check') : '+'}</span><span class="slot-label">${range}</span></button>`;
+    return `<button class="scale-slot ${selected ? 'selected' : ''} ${correct ? 'correct' : ''} ${player ? 'occupied' : ''}" ${!canSelectCategory(axis) || placed ? 'disabled' : ''} data-axis="${axis}" data-slot="${slot}" aria-pressed="${selected}" aria-label="${range}${player ? ` — ${esc(player.name)}` : ''}${correct ? ' — poprawna odpowiedź' : ''}" title="${range}${player ? ` — ${esc(player.name)}` : ''}" ${player ? `style="--player:${player.color}"` : ''}><span class="slot-marker" aria-hidden="true">${player ? esc(player.name[0].toUpperCase()) : correct || selected ? icon('check') : '+'}</span><span class="slot-copy"><span class="slot-label">${intervalLabel(values, slot)}</span><span class="slot-unit">${unit ? esc(unit) : 'r.'}</span></span></button>`;
   }).join('')}</div><div class="scale-foot"><span>Górna granica otwiera kolejny przedział.</span>${room.answer ? `<strong>${axis === 'year' ? fmt(room.answer.year) : `${fmt(room.answer.number)} ${esc(unit)}`}</strong>` : '<span>7 pkt celnie · 3 pkt obok</span>'}</div></section>`;
 }
 function selectionLabel() {
@@ -134,7 +140,11 @@ function turnBar() {
 }
 function questionCard() {
   const room = state.room, q = room.question;
-  return `<section class="question-card paper"><div class="question-top"><span class="eyebrow">Karta odkrywcy</span><span>${String(room.round).padStart(2, '0')} / ${String(room.rounds).padStart(2, '0')}</span></div>${illustration(q.art)}<span class="eyebrow">${esc(q.category)}</span><h2>${esc(q.title)}</h2><p class="question-intro">${esc(q.intro)}</p><div class="question-details"><div>${icon('pin')}<span>${esc(q.location)}</span></div><div>${icon('time')}<span>${esc(q.yearLabel)}</span></div><div>${icon('chart')}<span>${esc(q.numberLabel)} <b>(${esc(q.unit)})</b></span></div></div>${room.answer ? `<div class="answer-box"><span class="eyebrow">Tak wygląda odpowiedź</span><strong>${esc(room.answer.place)}</strong><p>${fmt(room.answer.year)} <span>·</span> ${fmt(room.answer.number)} ${esc(q.unit)}</p><small>${esc(room.answer.fact)}</small><div class="source-links">${room.answer.sources.map((s, i) => `<a href="${esc(s)}" target="_blank" rel="noopener noreferrer">Źródło ${i + 1} ↗</a>`).join('')}</div></div>` : '<div class="question-hint">'+icon('spark')+'Niepewność to część przygody.</div>'}</section>`;
+  return `<section class="question-card paper" tabindex="-1" aria-label="Aktualna karta odkrywcy"><div class="question-top"><span class="eyebrow">Karta odkrywcy</span><span>${String(room.round).padStart(2, '0')} / ${String(room.rounds).padStart(2, '0')}</span></div>${illustration(q.art)}<span class="eyebrow">${esc(q.category)}</span><h2>${esc(q.title)}</h2><p class="question-intro">${esc(q.intro)}</p><div class="question-details"><div>${icon('pin')}<span>${esc(q.location)}</span></div><div>${icon('time')}<span>${esc(q.yearLabel)}</span></div><div>${icon('chart')}<span>${esc(q.numberLabel)} <b>(${esc(q.unit)})</b></span></div></div>${room.answer ? `<div class="answer-box"><span class="eyebrow">Tak wygląda odpowiedź</span><strong>${esc(room.answer.place)}</strong><p>${fmt(room.answer.year)} <span>·</span> ${fmt(room.answer.number)} ${esc(q.unit)}</p><small>${esc(room.answer.fact)}</small><div class="source-links">${room.answer.sources.map((s, i) => `<a href="${esc(s)}" target="_blank" rel="noopener noreferrer">Źródło ${i + 1} ↗</a>`).join('')}</div></div>` : '<div class="question-hint">'+icon('spark')+'Niepewność to część przygody.</div>'}</section>`;
+}
+function introCard(room) {
+  const q = room.question;
+  return `<section class="card-reveal-card"><div class="question-top"><span class="eyebrow">Nowe odkrycie</span><span>${String(room.round).padStart(2, '0')} / ${String(room.rounds).padStart(2, '0')}</span></div><div class="card-reveal-art">${illustration(q.art)}</div><span class="eyebrow">${esc(q.category)}</span><h2 id="card-intro-title">${esc(q.title)}</h2><p class="card-reveal-story">${esc(q.intro)}</p><button type="button" class="button primary card-reveal-continue" autofocus>Przejdź do planszy ${icon('arrow')}</button><p id="card-intro-instruction">Kliknij kartę lub poczekaj 5 sekund.</p><span class="card-reveal-progress" aria-hidden="true"></span></section>`;
 }
 function regionOptions(selectedRegion) {
   return [['Lądy', LAND_REGIONS], ['Oceany', WATER_REGIONS]].map(([label, regions]) =>
