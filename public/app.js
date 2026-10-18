@@ -102,7 +102,7 @@ function worldMap(preview = false) {
     <path d="${COASTLINE}" class="coastline" aria-hidden="true"/>
     ${preview ? '<text x="144" y="27" class="ocean-name">ARKTYKA</text><text x="344" y="213" class="ocean-name ocean-vertical">ATLANTYK</text><text x="80" y="330" class="ocean-name">PACYFIK</text><text x="615" y="350" class="ocean-name">OCEAN INDYJSKI</text>' : WATER_REGIONS.filter(r => r.kind === 'ocean').map(r => `<text x="${r.x}" y="${r.y + (r.id === 'ocean-arctic' ? 6 : -12)}" class="ocean-name water-label" text-anchor="middle">${esc(r.short)}</text>`).join('')}
     <g transform="translate(903 417)" class="compass-rose"><path d="M0-21 5-5 21 0 5 5 0 21-5 5-21 0-5-5Z" fill="none" stroke="currentColor" stroke-width=".7"/><path d="M0-21 5-5 0 0Z" fill="currentColor"/><text y="-29" text-anchor="middle">N</text></g>
-    ${preview ? '<path d="M273 132Q395 30 500 120T827 306" fill="none" stroke="#b65c3e" stroke-width="1.4" stroke-dasharray="5 7" opacity=".6"/><circle cx="500" cy="120" r="7" fill="#b65c3e" stroke="#f6f4ec" stroke-width="3"/><circle cx="273" cy="132" r="6" fill="#386d69" stroke="#f6f4ec" stroke-width="3"/><circle cx="827" cy="306" r="6" fill="#b18b2c" stroke="#f6f4ec" stroke-width="3"/>' : ''}
+    ${preview ? '<path d="M273 132Q550 64 827 306" fill="none" stroke="#b65c3e" stroke-width="1.2" opacity=".4"/><circle cx="500" cy="129" r="7" fill="#b65c3e" stroke="#f6f4ec" stroke-width="3"/><circle cx="273" cy="132" r="6" fill="#386d69" stroke="#f6f4ec" stroke-width="3"/><circle cx="827" cy="306" r="6" fill="#b18b2c" stroke="#f6f4ec" stroke-width="3"/>' : ''}
   </svg>`;
 }
 function home() {

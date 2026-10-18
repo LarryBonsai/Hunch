@@ -216,7 +216,7 @@ body.card-is-docking .game-sidebar>.question-card{opacity:1;transition:opacity .
 @media(prefers-reduced-motion:reduce){.setup-options,.card-reveal-card.from-results,.results-page{animation:none}.setup-chevron,.results-next>.icon{transition:none}}
 /* A stable pointer surface surrounds two faces of the same physical card. */
 .sample-flip{position:relative;width:280px;margin:105px auto 0;perspective:1300px;perspective-origin:50% 45%;transform:rotate(5deg);border-radius:10px;cursor:ew-resize;touch-action:pan-y;outline-offset:8px;--card-turn:0deg}
-.sample-card-turner{display:grid;transform-style:preserve-3d;transform:rotateY(var(--card-turn));transition:transform .95s cubic-bezier(.22,.7,.22,1);pointer-events:none;border-radius:inherit}
+.sample-card-turner{display:grid;transform-style:preserve-3d;transform:translate3d(var(--card-x,0px),var(--card-y,0px),0) rotateY(var(--card-turn));pointer-events:none;border-radius:inherit}
 .sample-flip .sample-card{grid-area:1/1;display:flex;flex-direction:column;min-width:0;width:100%;margin:0;transform:translateZ(1px);backface-visibility:hidden;-webkit-backface-visibility:hidden;box-shadow:0 22px 45px #263c2b15,inset 0 0 0 1px #ffffff80;user-select:none}
 .sample-flip .sample-card>.landmark{flex-shrink:0}
 .sample-flip .sample-questions{margin-top:auto}
