@@ -3,7 +3,7 @@ import { randomBytes, randomInt } from 'node:crypto';
 import { readFile } from 'node:fs/promises';
 import { fileURLToPath, pathToFileURL } from 'node:url';
 import path from 'node:path';
-import { GameError, createRoom, addPlayer, startGame, place, pass, nextRound, restart, leave, botMove, publicRoom } from './src/game.mjs';
+import { GameError, createRoom, addPlayer, startGame, place, pass, submitAnswers, expireRound, nextRound, restart, leave, botMove, publicRoom } from './src/game.mjs';
 
 const PUBLIC = path.resolve(fileURLToPath(new URL('./public/', import.meta.url)));
 const TTL = 24 * 60 * 60 * 1000;
@@ -40,13 +40,17 @@ export function createApp() {
       const payload = `data: ${JSON.stringify({ room: publicRoom(room, session.id) })}\n\n`;
       for (const stream of streams.get(session.id) ?? []) stream.write(payload);
     }
-    if (room.phase === 'playing' && room.players.find(p => p.id === room.currentPlayerId)?.bot && !bots.has(room.code)) {
+    const botNeeded = room.phase === 'playing' && (room.mode === 'hidden'
+      ? room.players.some(p => p.bot && !p.left && !p.ready)
+      : room.players.find(p => p.id === room.currentPlayerId)?.bot);
+    if (!botNeeded && bots.has(room.code)) { clearTimeout(bots.get(room.code)); bots.delete(room.code); }
+    if (botNeeded && !bots.has(room.code)) {
       const turnId = room.turnId;
       bots.set(room.code, setTimeout(() => {
         bots.delete(room.code);
         if (room.phase === 'playing' && room.turnId === turnId) botMove(room);
         broadcast(room);
-      }, 1000));
+      }, room.mode === 'hidden' ? 7000 : 1000));
     }
   }
   function markConnected(session, connected) {
@@ -104,7 +108,7 @@ export function createApp() {
           const alphabet = 'ABCDEFGHJKLMNPQRSTUVWXYZ23456789';
           let code;
           do { code = Array.from({ length: 6 }, () => alphabet[randomInt(alphabet.length)]).join(''); } while (rooms.has(code));
-          const room = createRoom(code, session.id, body.name, body.rounds ?? 6, body.practice === true);
+          const room = createRoom(code, session.id, body.name, body.rounds ?? 6, body.practice === true, body.mode ?? 'classic');
           rooms.set(code, room);
           session.roomCode = code;
           room.players[0].connected = Boolean(streams.get(session.id)?.size);
@@ -126,10 +130,12 @@ export function createApp() {
         if (url.pathname === '/api/room/action') {
           const room = roomOf(session);
           if (!room) throw new GameError('Nie jesteś w pokoju.', 404);
+          if (expireRound(room)) broadcast(room);
           switch (body.action) {
             case 'start': startGame(room, session.id); break;
             case 'place': place(room, session.id, body.axis, body.slot, body.turnId); break;
             case 'pass': pass(room, session.id, body.turnId); break;
+            case 'submit': submitAnswers(room, session.id, body.turnId); break;
             case 'next': nextRound(room, session.id); break;
             case 'restart': restart(room, session.id); break;
             case 'leave':
@@ -174,7 +180,11 @@ export function createApp() {
         const replacement = room.players.find(p => !p.bot && !p.left && p.connected);
         if (replacement) { room.hostId = replacement.id; broadcast(room); }
       }
-      if (room.phase === 'playing' && now >= room.deadline) { pass(room, room.currentPlayerId, room.turnId); broadcast(room); }
+      if (room.phase === 'playing' && now >= room.deadline) {
+        if (room.mode === 'hidden') expireRound(room, now);
+        else pass(room, room.currentPlayerId, room.turnId);
+        broadcast(room);
+      }
     }
     for (const [token, session] of sessions) if (!streams.has(session.id) && now - session.seenAt > TTL) { sessions.delete(token); rates.delete(session.id); }
   }, 1000);
