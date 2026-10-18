@@ -3,6 +3,8 @@ import { QUESTIONS } from './questions.mjs';
 import { REGIONS, NEIGHBORS, YEAR_SCALE, NUMBER_SCALE, COLORS, CATEGORIES, usedCategories, bucket } from '../public/board.mjs';
 
 export const TURN_MS = 45_000;
+export const HIDDEN_ROUND_MS = 30_000;
+export const CARD_PREVIEW_MS = 5_000;
 export class GameError extends Error {
   constructor(message, status = 400) { super(message); this.status = status; }
 }
@@ -21,9 +23,10 @@ const shuffle = cards => {
   }
   return result;
 };
-export function createRoom(code, hostId, name, rounds = 6, practice = false) {
+export function createRoom(code, hostId, name, rounds = 6, practice = false, mode = 'classic') {
   requireThat([3, 6, 9].includes(rounds), 'Wybierz 3, 6 lub 9 rund.');
-  const room = { code, hostId, rounds, practice, phase: 'lobby', players: [], round: 0,
+  requireThat(['classic', 'hidden'].includes(mode), 'Wybierz dostępny tryb gry.');
+  const room = { code, hostId, rounds, practice, mode, phase: 'lobby', players: [], round: 0,
     deck: [], placements: [], turnId: 0, currentPlayerId: null, deadline: null,
     result: null, history: [], activityAt: Date.now() };
   addPlayer(room, hostId, name);
@@ -61,8 +64,13 @@ function beginRound(room) {
   room.placements = [];
   room.result = null;
   const players = activePlayers(room);
-  for (const p of players) p.passed = false;
-  setTurn(room, players[(room.round - 1) % players.length]);
+  for (const p of players) { p.passed = false; p.ready = false; }
+  if (room.mode === 'hidden') {
+    room.currentPlayerId = null;
+    room.turnId++;
+    room.answerStartsAt = Date.now() + CARD_PREVIEW_MS;
+    room.deadline = room.answerStartsAt + HIDDEN_ROUND_MS;
+  } else setTurn(room, players[(room.round - 1) % players.length]);
 }
 function advance(room) {
   const start = room.players.findIndex(p => p.id === room.currentPlayerId);
@@ -84,11 +92,19 @@ export function scorePlacement(card, axis, slot) {
   return distance === 0 ? 7 : distance === 1 ? 3 : 0;
 }
 export function place(room, id, axis, slot, turnId) {
-  requireTurn(room, id, turnId);
+  const hidden = room.mode === 'hidden';
+  if (hidden) requireHiddenRound(room, id, turnId);
+  else requireTurn(room, id, turnId);
   requireThat(CATEGORIES.includes(axis), 'Wybierz mapę lub skalę.');
-  requireThat(!usedCategories(room, id).includes(axis), 'W tej kategorii masz już znacznik w tej rundzie.', 409);
+  if (!hidden) requireThat(!usedCategories(room, id).includes(axis), 'W tej kategorii masz już znacznik w tej rundzie.', 409);
   if (axis === 'map') requireThat(REGIONS.some(r => r.id === slot), 'Nieznany region.');
   else requireThat(Number.isInteger(slot) && slot >= 0 && slot < (axis === 'year' ? YEAR_SCALE : NUMBER_SCALE).length, 'Niepoprawny przedział.');
+  if (hidden) {
+    const previous = room.placements.find(p => p.playerId === id && p.axis === axis);
+    if (previous) previous.slot = slot;
+    else room.placements.push({ playerId: id, axis, slot });
+    return;
+  }
   requireThat(!room.placements.some(p => p.axis === axis && p.slot === slot), 'To pole jest już zajęte.', 409);
   const player = room.players.find(p => p.id === id);
   requireThat(player && !player.left && !player.passed && player.cubes > 0, 'Nie masz już znaczników w tej rundzie.', 409);
@@ -97,9 +113,29 @@ export function place(room, id, axis, slot, turnId) {
   advance(room);
 }
 export function pass(room, id, turnId) {
+  requireThat(room.mode !== 'hidden', 'W tym trybie wybierz trzy odpowiedzi i zatwierdź zestaw.', 409);
   requireTurn(room, id, turnId);
   room.players.find(p => p.id === id).passed = true;
   advance(room);
+}
+function requireHiddenRound(room, id, turnId) {
+  requireThat(room.mode === 'hidden', 'Ta czynność jest dostępna w trybie ukrytych odpowiedzi.', 409);
+  requireThat(room.phase === 'playing' && Date.now() < room.deadline, 'Czas na odpowiedzi już się skończył.', 409);
+  requireThat(room.turnId === turnId, 'Runda już się zmieniła. Spróbuj ponownie.', 409);
+  const player = room.players.find(p => p.id === id && !p.left);
+  requireThat(player, 'Nie należysz do tego pokoju.', 403);
+  requireThat(!player.ready, 'Twój zestaw odpowiedzi jest już zatwierdzony.', 409);
+  return player;
+}
+export function submitAnswers(room, id, turnId) {
+  const player = requireHiddenRound(room, id, turnId);
+  requireThat(usedCategories(room, id).length === CATEGORIES.length, 'Wybierz region, rok i wielkość przed zatwierdzeniem.', 409);
+  player.ready = true;
+}
+export function expireRound(room, now = Date.now()) {
+  if (room.mode !== 'hidden' || room.phase !== 'playing' || now < room.deadline) return false;
+  reveal(room);
+  return true;
 }
 function reveal(room) {
   const card = question(room);
@@ -108,6 +144,7 @@ function reveal(room) {
     const points = scorePlacement(card, placement.axis, placement.slot);
     placement.points = points;
     const player = room.players.find(p => p.id === placement.playerId);
+    if (room.mode === 'hidden') player.cubes--;
     const score = scores[player.id];
     score.gained += points;
     if (points > 0) { player.cubes++; score[points === 7 ? 'hits' : 'close']++; }
@@ -117,6 +154,7 @@ function reveal(room) {
   room.phase = 'reveal';
   room.currentPlayerId = null;
   room.deadline = null;
+  room.answerStartsAt = null;
   room.turnId++;
   room.result = scores;
   room.history.push({ round: room.round, title: card.title, scores: structuredClone(scores) });
@@ -149,10 +187,23 @@ export function leave(room, id) {
     if (activePlayers(room).length < 2) {
       reveal(room);
       room.phase = 'finished';
-    } else if (room.currentPlayerId === id) advance(room);
+    } else if (room.mode !== 'hidden' && room.currentPlayerId === id) advance(room);
   } else if (room.phase === 'reveal' && activePlayers(room).length < 2) room.phase = 'finished';
 }
 export function botMove(room) {
+  if (room.mode === 'hidden') {
+    const bot = room.players.find(p => p.bot && !p.left && !p.ready);
+    if (room.phase !== 'playing' || !bot || Date.now() >= room.deadline) return;
+    for (const axis of CATEGORIES) {
+      const candidates = axis === 'map' ? REGIONS.map(r => r.id) : (axis === 'year' ? YEAR_SCALE : NUMBER_SCALE).map((_, slot) => slot);
+      const roll = randomInt(10);
+      const ideal = candidates.filter(slot => scorePlacement(question(room), axis, slot) === (roll < 4 ? 7 : roll < 8 ? 3 : 0));
+      const options = ideal.length ? ideal : candidates;
+      place(room, bot.id, axis, options[randomInt(options.length)], room.turnId);
+    }
+    submitAnswers(room, bot.id, room.turnId);
+    return;
+  }
   const bot = room.players.find(p => p.id === room.currentPlayerId);
   if (room.phase !== 'playing' || !bot?.bot) return;
   const card = question(room);
@@ -174,10 +225,11 @@ export function publicRoom(room, viewerId) {
   const card = question(room);
   const shown = card ? { title: card.title, category: card.category, art: card.art, intro: card.intro,
     location: card.location, yearLabel: card.yearLabel, numberLabel: card.numberLabel, unit: card.unit } : null;
-  return { code: room.code, version: room.version ?? 0, hostId: room.hostId, rounds: room.rounds, practice: room.practice,
-    phase: room.phase, round: room.round, turnId: room.turnId, deadline: room.deadline,
+  const hidden = room.mode === 'hidden' && room.phase === 'playing';
+  return { code: room.code, version: room.version ?? 0, hostId: room.hostId, rounds: room.rounds, practice: room.practice, mode: room.mode,
+    phase: room.phase, round: room.round, turnId: room.turnId, deadline: room.deadline, answerStartsAt: room.answerStartsAt ?? null,
     currentPlayerId: room.currentPlayerId, players: room.players.map(p => ({ ...p })),
-    placements: room.placements.map(p => ({ ...p })), question: shown,
+    placements: room.placements.filter(p => !hidden || p.playerId === viewerId).map(p => ({ ...p })), question: shown,
     answer: ['reveal', 'finished'].includes(room.phase) && card ? {
       region: card.region, place: card.place, year: card.year, number: card.number, fact: card.fact,
       sources: card.sources, yearSlot: bucket(card.year, YEAR_SCALE), numberSlot: bucket(card.number, NUMBER_SCALE)
