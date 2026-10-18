@@ -126,3 +126,67 @@ test('HTTP rejects a second marker in a category without consuming a cube', asyn
   assert.equal(resumed.players[0].cubes, 4);
   assert.equal(resumed.turnId, room.turnId);
 });
+test('hidden choices stay private over HTTP and SSE until the server deadline', async t => {
+  const { app, base, client } = await fixture(t);
+  const alice = await client(), bob = await client();
+  const room = (await alice.request('/api/rooms', { name: 'Alicja', mode: 'hidden', rounds: 3 })).body.room;
+  const joined = await bob.request('/api/rooms/join', { name: 'Bartosz', code: room.code, mode: 'classic' });
+  assert.equal(joined.body.room.mode, 'hidden', 'joining cannot change the host choice');
+  const started = (await alice.request('/api/room/action', { action: 'start' })).body.room;
+  const turnId = started.turnId;
+  const controller = new AbortController();
+  t.after(() => controller.abort());
+  const stream = await fetch(base + '/api/events', { headers: { Cookie: alice.cookie }, signal: controller.signal });
+  const reader = stream.body.getReader();
+  const bobPick = await bob.request('/api/room/action', { action: 'place', axis: 'map', slot: 'oceania', turnId });
+  assert.equal(bobPick.status, 200);
+  assert.equal(bobPick.body.room.placements[0].slot, 'oceania');
+  const revision = bobPick.body.room.version;
+  let buffered = '', observed;
+  const timeout = setTimeout(() => controller.abort(), 3000);
+  try {
+    while (!observed) {
+      const { value, done } = await reader.read();
+      assert.equal(done, false);
+      buffered += new TextDecoder().decode(value);
+      const frames = buffered.split('\n\n');
+      buffered = frames.pop();
+      for (const frame of frames.filter(frame => frame.startsWith('data: '))) {
+        const snapshot = JSON.parse(frame.slice(6)).room;
+        assert.deepEqual(snapshot.placements, [], 'another player’s drafts must never enter the stream');
+        assert.equal(snapshot.answer, null);
+        assert.equal(snapshot.result, null);
+        if (snapshot.version >= revision) observed = snapshot;
+      }
+    }
+  } finally { clearTimeout(timeout); controller.abort(); }
+  assert.deepEqual((await alice.request('/api/session')).body.room.placements, []);
+  const own = await alice.request('/api/room/action', { action: 'place', axis: 'map', slot: 'oceania', turnId });
+  assert.equal(own.status, 200, 'same field remains available to both players');
+  assert.equal(own.body.room.placements.length, 1);
+  app.rooms.get(room.code).deadline = Date.now() - 1;
+  await new Promise(resolve => setTimeout(resolve, 1100));
+  const revealed = (await alice.request('/api/session')).body.room;
+  assert.equal(revealed.phase, 'reveal');
+  assert.equal(revealed.placements.length, 2);
+  assert.ok(revealed.placements.every(p => Number.isInteger(p.points)));
+  assert.ok(revealed.answer.sources.length);
+  assert.equal(revealed.history.length, 1);
+});
+test('late hidden HTTP mutations cannot race the timer and practice supports both modes', async t => {
+  const { app, client } = await fixture(t);
+  const alice = await client();
+  assert.equal((await alice.request('/api/rooms', { name: 'Alicja', mode: 'invalid' })).status, 400);
+  let room = (await alice.request('/api/rooms', { name: 'Alicja', mode: 'hidden', practice: true })).body.room;
+  assert.equal(room.mode, 'hidden');
+  app.rooms.get(room.code).deadline = Date.now() - 1;
+  const late = await alice.request('/api/room/action', { action: 'place', axis: 'map', slot: 'eu-west', turnId: room.turnId });
+  assert.equal(late.status, 409);
+  room = (await alice.request('/api/session')).body.room;
+  assert.equal(room.phase, 'reveal');
+  assert.deepEqual(room.placements, []);
+  await alice.request('/api/room/action', { action: 'leave' });
+  room = (await alice.request('/api/rooms', { name: 'Alicja', practice: true })).body.room;
+  assert.equal(room.mode, 'classic');
+  assert.equal(room.currentPlayerId, alice.playerId);
+});
