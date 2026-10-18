@@ -1,6 +1,7 @@
 import { REGIONS, LAND_REGIONS, WATER_REGIONS, COASTLINE, OCEAN_BORDERS, NEIGHBORS, YEAR_SCALE, NUMBER_SCALE, CATEGORIES, usedCategories, fmt, intervalLabel } from './board.mjs';
 import { icon, illustration } from './art.mjs';
 import { mountCardIntro } from './card-intro.mjs';
+import { mountRoundResults } from './round-results.mjs';
 
 const app = document.querySelector('#app');
 const rules = document.querySelector('#rules');
@@ -21,6 +22,8 @@ const categoryLimit = axis => `<span class="category-limit ${categoryUsed(axis) 
 const isHost = () => state.room?.hostId === state.id;
 let toastTimer;
 const cardIntro = mountCardIntro({ renderCard: introCard, getTarget: () => document.querySelector('.game-sidebar .question-card') });
+const roundResults = mountRoundResults({ renderResults: roundResultsCard,
+  getTarget: () => document.querySelector('.next-controls button:not(:disabled)') ?? document.querySelector('.game-sidebar .question-card') });
 function toast(message, error = false) {
   const el = document.querySelector('#toast');
   el.textContent = message;
@@ -48,6 +51,7 @@ function updateRoom(room) {
   // Rejoining an active timed round should return straight to the answers.
   const answering = room?.mode === 'hidden' && room.phase === 'playing' && Date.now() + state.offset >= room.answerStartsAt;
   cardIntro.update(answering ? null : room);
+  roundResults.update(room);
 }
 async function mutate(path, body) {
   if (state.busy) return;
@@ -163,7 +167,7 @@ function turnBar() {
   const room = state.room;
   const player = room.players.find(p => p.id === room.currentPlayerId);
   if (room.phase === 'reveal') return `<div class="turn-bar revealed"><span class="turn-icon">${icon('check')}</span><div><strong>Karty na stół!</strong><span>Odpowiedzi odkryte. Zobacz, dokąd zaprowadziła was intuicja.</span></div></div>`;
-  if (hiddenMode()) return `<div class="turn-bar your-turn hidden-turn"><span class="turn-icon">${icon(mine()?.ready ? 'check' : 'time')}</span><div><strong>${mine()?.ready ? 'Odpowiedzi zamknięte. Czekamy na odkrycie.' : 'Trzy odpowiedzi. Tylko dla twoich oczu.'}</strong><span>5 s na kartę, potem 30 s wspólnego czasu. Wyniki po odliczaniu.</span></div><span class="countdown" aria-label="Pozostały czas rundy">30 s</span></div>`;
+  if (hiddenMode()) return `<div class="turn-bar your-turn hidden-turn"><span class="turn-icon">${icon(mine()?.ready ? 'check' : 'time')}</span><div><strong>${mine()?.ready ? 'Odpowiedzi zamknięte. Czekamy na odkrycie.' : 'Trzy odpowiedzi. Tylko dla twoich oczu.'}</strong><span>Do 30 s na typy. Wszyscy gotowi? Od razu odkrywamy wyniki.</span></div><span class="countdown" aria-label="Pozostały czas rundy">30 s</span></div>`;
   return `<div class="turn-bar ${player?.id === state.id ? 'your-turn' : ''}"><span class="turn-avatar" style="--player:${player?.color}">${esc(player?.name[0].toUpperCase())}</span><div><strong>${player?.id === state.id ? 'Twoja kolej. Zaufaj intuicji.' : `${esc(player?.name)} szuka dobrego tropu…`}</strong><span>${player?.id === state.id ? 'Jeden znacznik, jedna decyzja. Mapa czy skala?' : 'Za chwilę kolejna decyzja. Rozejrzyj się po planszy.'}</span></div><span class="countdown" aria-label="Pozostały czas na ruch">45 s</span></div>`;
 }
 function questionCard() {
@@ -173,6 +177,10 @@ function questionCard() {
 function introCard(room) {
   const q = room.question;
   return `<section class="card-reveal-card"><div class="question-top"><span class="eyebrow">Nowe odkrycie</span><span>${String(room.round).padStart(2, '0')} / ${String(room.rounds).padStart(2, '0')}</span></div><div class="card-reveal-art">${illustration(q.art)}</div><span class="eyebrow">${esc(q.category)}</span><h2 id="card-intro-title">${esc(q.title)}</h2><p class="card-reveal-story">${esc(q.intro)}</p><button type="button" class="button primary card-reveal-continue" autofocus>Przejdź do planszy ${icon('arrow')}</button><p id="card-intro-instruction">Kliknij kartę lub poczekaj 5 sekund.</p><span class="card-reveal-progress" aria-hidden="true"></span></section>`;
+}
+function roundResultsCard(room) {
+  const players = [...room.players].sort((a, b) => b.score - a.score);
+  return `<section class="card-reveal-card round-results-card"><div class="question-top"><span class="eyebrow">Karty na stół!</span><span>Runda ${room.round} / ${room.rounds}</span></div><div class="results-round-emblem">${icon('trophy')}</div><h2 id="round-results-title">Wyniki rundy</h2><p class="results-round-place">${esc(room.question.title)}</p><div class="results-score-labels"><span>Odkrywca</span><span>W rundzie</span><span>Łącznie</span></div><ol class="round-ranking">${players.map(p => `<li style="--player:${p.color}"><span class="round-ranking-position">${players.filter(other => other.score > p.score).length + 1}</span><span class="avatar">${esc(p.name[0].toUpperCase())}</span><strong class="round-ranking-name">${esc(p.name)}${p.id === state.id ? '<small>To ty</small>' : ''}</strong><span class="round-ranking-gain">+${room.result[p.id]?.gained ?? 0}</span><span class="round-ranking-total"><b>${p.score}</b><small>pkt</small></span></li>`).join('')}</ol><button type="button" class="button primary card-reveal-continue" autofocus>Wróć do planszy ${icon('arrow')}</button><p id="round-results-instruction">Kliknij lub poczekaj 5 sekund.</p><span class="card-reveal-progress" aria-hidden="true"></span></section>`;
 }
 function regionOptions(selectedRegion) {
   return [['Lądy', LAND_REGIONS], ['Oceany', WATER_REGIONS]].map(([label, regions]) =>
@@ -186,7 +194,7 @@ function moveControls() {
   }
   if (hiddenMode()) {
     const count = usedCategories(room, state.id).length;
-    return `<section class="move-controls hidden-controls" aria-label="Twoje tajne odpowiedzi"><div class="hidden-controls-heading"><span class="eyebrow">Twój tajny zestaw</span><span>${count}/3</span></div><ul class="private-picks">${CATEGORIES.map(axis => `<li class="${ownPick(axis) ? 'picked' : ''}"><span>${axis === 'map' ? 'Region' : axis === 'year' ? 'Rok' : 'Wielkość'}</span><strong>${ownPick(axis) ? esc(pickLabel(axis, ownPick(axis).slot)) : 'Wybierz na planszy'}</strong></li>`).join('')}</ul><div class="move-buttons"><button class="button primary full" data-action="submit-answers" ${!myTurn() || count !== 3 ? 'disabled' : ''}>${mine()?.ready ? 'Zestaw zatwierdzony' : 'Zatwierdź 3 odpowiedzi'} ${icon('check')}</button></div><p class="private-hint">${mine()?.ready ? 'Twoje typy są ukryte aż do końca odliczania.' : 'Wybory zapisują się od razu. Możesz je zmieniać do zatwierdzenia lub końca czasu. Brak odpowiedzi: 0 pkt.'}</p></section>`;
+    return `<section class="move-controls hidden-controls" aria-label="Twoje tajne odpowiedzi"><div class="hidden-controls-heading"><span class="eyebrow">Twój tajny zestaw</span><span>${count}/3</span></div><ul class="private-picks">${CATEGORIES.map(axis => `<li class="${ownPick(axis) ? 'picked' : ''}"><span>${axis === 'map' ? 'Region' : axis === 'year' ? 'Rok' : 'Wielkość'}</span><strong>${ownPick(axis) ? esc(pickLabel(axis, ownPick(axis).slot)) : 'Wybierz na planszy'}</strong></li>`).join('')}</ul><div class="move-buttons"><button class="button primary full" data-action="submit-answers" ${!myTurn() || count !== 3 ? 'disabled' : ''}>${mine()?.ready ? 'Zestaw zatwierdzony' : 'Zatwierdź 3 odpowiedzi'} ${icon('check')}</button></div><p class="private-hint">${mine()?.ready ? 'Czekamy na pozostałych. Gdy wszyscy zatwierdzą, odkrywamy typy.' : 'Wybory zapisują się od razu. Możesz je zmieniać do zatwierdzenia lub końca czasu. Brak odpowiedzi: 0 pkt.'}</p></section>`;
   }
   return `<section class="move-controls" aria-label="Twój ruch"><div class="move-selection"><span class="eyebrow">${myTurn() ? 'Twój wybór' : 'Wspólna plansza'}</span><strong aria-live="polite">${myTurn() ? esc(selectionLabel()) : 'Obserwuj typy pozostałych graczy.'}</strong></div><div class="move-buttons"><button class="button primary full" data-action="confirm" ${!myTurn() || !state.selection ? 'disabled' : ''}>Zatwierdź wybór ${icon('arrow')}</button><button class="button quiet full" data-action="pass" ${!myTurn() ? 'disabled' : ''}>Pasuję</button></div></section>`;
 }

@@ -155,3 +155,24 @@ body.card-is-docking .game-sidebar>.question-card{opacity:1;transition:opacity .
 .hidden-results .round-total{font-size:17px;font-weight:700;color:var(--green);text-align:right}
 .missing-answer{color:#959b8a;font-size:10px}
 @media(max-width:760px){.hidden-turn>div>span{font-size:9px}.hidden-turn .countdown{font-size:12px}.hidden-results{padding:16px 13px}.hidden-results .section-label>span{font-size:8px}}
+/* Round scores use the same centered presentation as discovery cards. */
+.card-reveal-card.round-results-card{width:min(520px,100%);padding-bottom:25px}
+.round-results-card .question-top{display:flex;justify-content:space-between;align-items:center;font-size:10px}
+.results-round-emblem{display:grid;place-items:center;width:46px;height:46px;margin:15px auto 0;border:1px solid #d2ddc5;border-radius:50%;color:#6f8b52;background:#e7eddb}
+.results-round-emblem>.icon{width:24px;height:24px}
+.round-results-card h2{font-size:39px;margin:10px 0 0}
+.results-round-place{font-size:12px;color:#7a8670;margin:7px 0 20px}
+.results-score-labels{display:grid;grid-template-columns:minmax(0,1fr) 65px 65px;gap:10px;text-align:center;font-size:8px;color:#849077;padding:0 0 7px;border-bottom:1px solid #dce3d0}
+.results-score-labels>span:first-child{text-align:left;padding-left:30px}
+.round-ranking{list-style:none;padding:0;margin:0 0 21px;text-align:left}
+.round-ranking>li{display:grid;grid-template-columns:18px 34px minmax(0,1fr) 65px 65px;align-items:center;gap:10px;min-height:65px;padding:10px 0;border-bottom:1px solid #e0e5d5}
+.round-ranking-position{color:#8a957d;font-family:Georgia,serif;font-size:17px;text-align:center}
+.round-ranking .avatar{width:34px;height:34px;font-size:19px}
+.round-ranking-name{font-size:12px;font-weight:600;color:var(--green);overflow-wrap:anywhere}
+.round-ranking-name>small{display:block;color:#929a87;font-size:8px;font-weight:400;margin-top:2px}
+.round-ranking-gain{text-align:center;font-size:12px;font-weight:600;color:#779153}
+.round-ranking-total{text-align:center;display:flex;align-items:baseline;justify-content:center;gap:3px;color:var(--green)}
+.round-ranking-total>b{font-family:Georgia,serif;font-size:27px;font-weight:400;line-height:1.2}
+.round-ranking-total>small{font-size:8px;color:#8a967b}
+.round-results-card #round-results-instruction{font-size:9px;color:#87917a;margin:12px 0 0}
+@media(max-width:520px){.round-results-card h2{font-size:32px}.results-score-labels{grid-template-columns:minmax(0,1fr) 49px 49px;gap:5px}.round-ranking>li{grid-template-columns:14px 28px minmax(0,1fr) 49px 49px;gap:5px;min-height:59px}.round-ranking .avatar{width:28px;height:28px;font-size:16px}.round-ranking-name{font-size:11px}.round-ranking-total>b{font-size:24px}.results-round-place{font-size:10px}}

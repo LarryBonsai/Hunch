@@ -1,5 +1,6 @@
 export function createCardIntroController({ onShow, onDismiss, onCancel,
-  setTimer = setTimeout, clearTimer = clearTimeout }) {
+  setTimer = setTimeout, clearTimer = clearTimeout,
+  shouldShow = room => room.phase === 'playing' && room.question }) {
   let seen = null, active = null, timer = null;
   function cancel() {
     if (timer !== null) clearTimer(timer);
@@ -16,7 +17,7 @@ export function createCardIntroController({ onShow, onDismiss, onCancel,
   return {
     update(room) {
       if (!room || room.phase === 'lobby') { cancel(); seen = null; return; }
-      if (room.phase !== 'playing' || !room.question) { cancel(); return; }
+      if (!shouldShow(room)) { cancel(); return; }
       const key = `${room.code}:${room.round}:${room.question.title}`;
       if (key === seen) return;
       cancel();
