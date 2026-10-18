@@ -7,12 +7,16 @@ const rules = document.querySelector('#rules');
 const invite = new URLSearchParams(location.search).get('room')?.toUpperCase() ?? '';
 const saved = key => { try { return sessionStorage.getItem(key) ?? ''; } catch { return ''; } };
 const state = { id: null, room: null, tab: invite ? 'join' : 'create', name: saved('hunch:name'), code: invite,
-  rounds: 6, busy: false, connected: false, loaded: false, selection: null, offset: 0 };
+  rounds: 6, mode: 'classic', busy: false, connected: false, loaded: false, selection: null, offset: 0 };
 const esc = value => String(value ?? '').replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
 const mine = () => state.room?.players.find(p => p.id === state.id);
-const myTurn = () => state.connected && !state.busy && state.room?.phase === 'playing' && state.room?.currentPlayerId === state.id;
+const hiddenMode = () => state.room?.mode === 'hidden';
+const myTurn = () => state.connected && !state.busy && state.room?.phase === 'playing' && (hiddenMode()
+  ? !mine()?.ready && Date.now() + state.offset < state.room.deadline : state.room?.currentPlayerId === state.id);
 const categoryUsed = axis => usedCategories(state.room, state.id).includes(axis);
-const canSelectCategory = axis => myTurn() && !categoryUsed(axis);
+const canSelectCategory = axis => myTurn() && (hiddenMode() || !categoryUsed(axis));
+const ownPick = axis => state.room?.placements.find(p => p.playerId === state.id && p.axis === axis);
+const selectedSlot = axis => hiddenMode() ? ownPick(axis)?.slot : state.selection?.axis === axis ? state.selection.slot : null;
 const categoryLimit = axis => `<span class="category-limit ${categoryUsed(axis) ? 'used' : ''}">${categoryUsed(axis) ? icon('check') : ''}Twój typ: ${categoryUsed(axis) ? '1' : '0'}/1</span>`;
 const isHost = () => state.room?.hostId === state.id;
 let toastTimer;
@@ -41,7 +45,9 @@ function updateRoom(room) {
   if (room && !room.practice) history.replaceState(null, '', `?room=${room.code}`);
   if (!room && previous) history.replaceState(null, '', location.pathname);
   render();
-  cardIntro.update(room);
+  // Rejoining an active timed round should return straight to the answers.
+  const answering = room?.mode === 'hidden' && room.phase === 'playing' && Date.now() + state.offset >= room.answerStartsAt;
+  cardIntro.update(answering ? null : room);
 }
 async function mutate(path, body) {
   if (state.busy) return;
@@ -63,17 +69,25 @@ function footer() {
 }
 function worldMap(preview = false) {
   const room = state.room;
-  const selected = state.selection?.axis === 'map' ? state.selection.slot : null;
+  const selected = selectedSlot('map');
   return `<svg class="world-map ${preview ? 'preview' : ''}" viewBox="25 15 920 445" ${preview ? 'aria-hidden="true"' : 'role="group" aria-label="Mapa świata — wybierz region"'}>
     <defs><pattern id="map-grid" width="46" height="44" patternUnits="userSpaceOnUse"><path d="M46 0H0V44" fill="none" stroke="currentColor" stroke-opacity=".1" stroke-width=".6"/></pattern></defs>
     <rect x="25" y="15" width="920" height="445" fill="url(#map-grid)"/>
     <path d="M25 242.22H945" stroke="currentColor" stroke-opacity=".15" stroke-dasharray="4 6"/>
     <text x="43" y="236" class="map-coordinate">0°</text><text x="43" y="89" class="map-coordinate">60° N</text><text x="43" y="396" class="map-coordinate">60° S</text>
     ${[...(preview ? [] : WATER_REGIONS), ...LAND_REGIONS].map(r => {
-      const placed = !preview && room?.placements.find(p => p.axis === 'map' && p.slot === r.id);
+      const placements = preview ? [] : room?.placements.filter(p => p.axis === 'map' && p.slot === r.id) ?? [];
+      const placed = placements[0];
       const player = placed && room.players.find(p => p.id === placed.playerId);
       const correct = !preview && room?.answer?.region === r.id;
-      return `<path d="${r.path}" fill-rule="evenodd" class="region ${r.kind === 'land' ? 'land' : 'water'} ${selected === r.id ? 'selected' : ''} ${correct ? 'correct' : ''} ${placed ? 'occupied' : ''} ${preview ? '' : canSelectCategory('map') && !placed ? 'available' : ''}" ${preview ? '' : `data-region="${r.id}" tabindex="${canSelectCategory('map') && !placed ? 0 : -1}" role="button" aria-label="${esc(r.name)}${placed ? ` — zajęte: ${esc(player.name)}` : ''}${correct ? ' — poprawna odpowiedź' : ''}" aria-disabled="${!canSelectCategory('map') || Boolean(placed)}" aria-pressed="${selected === r.id}"`}><title>${esc(r.name)}${player ? ` — ${esc(player.name)}` : ''}</title></path>${player ? `<g class="map-token" style="--player:${player.color}" aria-hidden="true"><rect x="${r.x - 9}" y="${r.y - 9}" width="18" height="18" rx="4"/><text x="${r.x}" y="${r.y + 4}">${esc(player.name[0].toUpperCase())}</text></g>` : ''}`;
+      const available = !preview && canSelectCategory('map') && (hiddenMode() || !placed);
+      const tokens = placements.map((p, i) => {
+        const owner = room.players.find(player => player.id === p.playerId);
+        const x = r.x + (i - (placements.length - 1) / 2) * 19;
+        return `<g class="map-token" style="--player:${owner.color}" aria-hidden="true"><rect x="${x - 9}" y="${r.y - 9}" width="18" height="18" rx="4"/><text x="${x}" y="${r.y + 4}">${esc(owner.name[0].toUpperCase())}</text></g>`;
+      }).join('');
+      const names = placements.map(p => room.players.find(player => player.id === p.playerId).name).join(', ');
+      return `<path d="${r.path}" fill-rule="evenodd" class="region ${r.kind === 'land' ? 'land' : 'water'} ${selected === r.id ? 'selected' : ''} ${correct ? 'correct' : ''} ${placed ? 'occupied' : ''} ${available ? 'available' : ''}" ${preview ? '' : `data-region="${r.id}" tabindex="${available ? 0 : -1}" role="button" aria-label="${esc(r.name)}${placed ? ` — ${hiddenMode() ? 'typy' : 'zajęte'}: ${esc(names)}` : ''}${correct ? ' — poprawna odpowiedź' : ''}" aria-disabled="${!available}" aria-pressed="${selected === r.id}"`}><title>${esc(r.name)}${player ? ` — ${esc(names)}` : ''}</title></path>${tokens}`;
     }).join('')}
     ${preview ? '' : `<path d="${OCEAN_BORDERS}" class="ocean-boundary" aria-hidden="true"/>`}
     <path d="${COASTLINE}" class="coastline" aria-hidden="true"/>
@@ -87,8 +101,9 @@ function home() {
     <div class="entry-card"><div class="tabs" role="tablist" aria-label="Wybierz sposób gry"><button class="tab ${state.tab === 'create' ? 'active' : ''}" role="tab" aria-selected="${state.tab === 'create'}" data-tab="create">Stwórz pokój</button><button class="tab ${state.tab === 'join' ? 'active' : ''}" role="tab" aria-selected="${state.tab === 'join'}" data-tab="join">Dołącz do znajomych</button></div>
     <form id="room-form"><label for="player-name">Twój pseudonim</label><input id="player-name" name="name" autocomplete="nickname" placeholder="Jak mamy cię nazywać?" required minlength="2" maxlength="20" value="${esc(state.name)}">
       ${state.tab === 'create' ? `<div class="round-choice"><label for="rounds">Długość wyprawy</label><select id="rounds" name="rounds"><option value="3" ${state.rounds === 3 ? 'selected' : ''}>3 rundy · szybki wypad</option><option value="6" ${state.rounds === 6 ? 'selected' : ''}>6 rund · mała wyprawa</option><option value="9" ${state.rounds === 9 ? 'selected' : ''}>9 rund · dookoła świata</option></select></div>` : `<label for="room-code">Kod pokoju</label><input id="room-code" name="code" class="code-input" placeholder="NP. K7X9PQ" minlength="6" maxlength="6" pattern="[a-zA-Z2-9]{6}" required autocapitalize="characters" spellcheck="false" value="${esc(state.code)}">`}
+      ${state.tab === 'create' ? `<div class="mode-choice"><label for="game-mode">Tryb rozgrywki</label><select id="game-mode" name="mode" aria-describedby="mode-description"><option value="classic" ${state.mode === 'classic' ? 'selected' : ''}>Klasyczny · ruchy na zmianę</option><option value="hidden" ${state.mode === 'hidden' ? 'selected' : ''}>Ukryte odpowiedzi · 30 sekund</option></select><p id="mode-description">${state.mode === 'hidden' ? 'Wszyscy typują jednocześnie. Trzy tajne odpowiedzi, wspólny czas i odkrycie wyników po rundzie.' : 'Wspólna plansza, widoczne typy i 45 sekund na każdy ruch.'}</p></div>` : ''}
       <button class="button primary full" type="submit" ${state.busy || !state.loaded ? 'disabled' : ''}>${state.busy ? 'Chwileczkę…' : state.tab === 'create' ? 'Zaczynamy przygodę' : 'Dołącz do wyprawy'} ${icon('arrow')}</button></form>
-      <button class="practice-link" data-action="practice" ${state.busy || !state.loaded ? 'disabled' : ''}>${icon('spark')} Najpierw spróbuj treningu z Atlasem ${icon('arrow')}</button>
+      <button class="practice-link" data-action="practice" ${state.busy || !state.loaded ? 'disabled' : ''}>${icon('spark')} Najpierw spróbuj treningu z Atlasem ${icon('arrow')}</button>${state.tab === 'create' && state.mode === 'hidden' ? '<p class="practice-mode-note">Test nowego trybu: ukryte odpowiedzi z Atlasem.</p>' : ''}
     </div></section>
     <section class="hero-visual" aria-label="Odkrywaj świat na mapie"><div class="visual-note"><span class="mini-line"></span> WIELKI ŚWIAT, DOBRE TOWARZYSTWO</div><div class="hero-map">${worldMap(true)}</div><div class="sample-card"><span class="sample-stamp">KARTA ODKRYWCY <span>01 / 10</span></span>${illustration('eiffel')}<span class="eyebrow">Wielkie konstrukcje</span><h2>Wieża Eiffla</h2><div class="sample-questions"><span>${icon('pin')} Gdzie?</span><span>${icon('time')} Kiedy?</span><span>${icon('chart')} Jak wysoko?</span></div><div class="sample-bottom"><span class="sample-dots"><i></i><i></i><i></i></span>Nie musisz znać odpowiedzi.</div></div><div class="floating-note">${icon('spark')} Blisko też się liczy.<span>+3 pkt za dobry trop</span></div><span class="map-caption">CAŁY ŚWIAT JEST TWOJĄ PLANSZĄ ↗</span></section>
     <section class="how-strip"><div><span class="step-number">01</span><p><strong>Zbierz swoją ekipę</strong><span>Jeden kod. Wspólny stół.</span></p></div><div><span class="step-number">02</span><p><strong>Postaw na intuicję</strong><span>Mapa, daty i wielkie liczby.</span></p></div><div><span class="step-number">03</span><p><strong>Odkryj coś nowego</strong><span>Każda runda to małe „aha!”.</span></p></div></section>
@@ -100,31 +115,38 @@ function playerList(final = false) {
   return `<ol class="player-list ${final ? 'final-players' : ''}">${players.map((p, i) => {
     const current = room.currentPlayerId === p.id;
     const result = room.result?.[p.id];
-    return `<li class="player-row ${current ? 'current' : ''} ${p.left ? 'left' : ''}" style="--player:${p.color}">${final ? `<span class="rank">${players.filter(other => other.score > p.score).length + 1}</span>` : ''}<span class="avatar">${esc(p.name[0].toUpperCase())}<i class="presence ${p.connected && !p.left ? 'on' : ''}"></i></span><div class="player-info"><strong>${esc(p.name)}${p.id === state.id ? ' <span>(ty)</span>' : ''}</strong><span>${p.left ? 'Opuścił pokój' : p.bot ? 'Towarzysz treningu' : room.phase === 'lobby' ? (p.id === room.hostId ? 'Gospodarz wyprawy' : 'Gotowy na przygodę') : final ? `${room.history.length} rozegranych rund` : current ? 'Teraz obstawia' : p.passed || p.cubes === 0 || usedCategories(room, p.id).length === CATEGORIES.length ? 'Koniec ruchów' : `${p.cubes} znaczników`}</span></div><div class="player-score"><strong>${p.score}</strong><span>${['reveal', 'finished'].includes(room.phase) && result && !final ? `+${result.gained} w rundzie` : 'pkt'}</span></div></li>`;
+    const hiddenStatus = hiddenMode() && room.phase === 'playing' ? p.ready ? 'Zestaw zatwierdzony' : 'Odpowiada w tajemnicy' : null;
+    return `<li class="player-row ${current ? 'current' : ''} ${p.left ? 'left' : ''}" style="--player:${p.color}">${final ? `<span class="rank">${players.filter(other => other.score > p.score).length + 1}</span>` : ''}<span class="avatar">${esc(p.name[0].toUpperCase())}<i class="presence ${p.connected && !p.left ? 'on' : ''}"></i></span><div class="player-info"><strong>${esc(p.name)}${p.id === state.id ? ' <span>(ty)</span>' : ''}</strong><span>${p.left ? 'Opuścił pokój' : hiddenStatus ?? (p.bot ? 'Towarzysz treningu' : room.phase === 'lobby' ? (p.id === room.hostId ? 'Gospodarz wyprawy' : 'Gotowy na przygodę') : final ? `${room.history.length} rozegranych rund` : current ? 'Teraz obstawia' : p.passed || p.cubes === 0 || usedCategories(room, p.id).length === CATEGORIES.length ? 'Koniec ruchów' : `${p.cubes} znaczników`)}</span></div><div class="player-score"><strong>${p.score}</strong><span>${['reveal', 'finished'].includes(room.phase) && result && !final ? `+${result.gained} w rundzie` : 'pkt'}</span></div></li>`;
   }).join('')}</ol>`;
 }
 function roomTop() {
   const room = state.room;
-  return `<div class="room-top"><div><span class="eyebrow">${room.practice ? 'Spokojnie, to tylko trening' : 'Wspólny stół'}</span><h1>${room.practice ? 'Ty, Atlas i cały świat.' : room.phase === 'lobby' ? 'Przygoda zaczyna się tutaj.' : 'Kierunek: dobre przeczucie.'}</h1></div><div class="room-code-block"><span>${room.practice ? 'Tryb' : 'Kod pokoju'}</span>${room.practice ? '<strong>Trening</strong>' : `<button class="code-copy" data-action="copy-code" title="Kopiuj kod pokoju">${room.code} ${icon('copy')}</button>`}</div></div>`;
+  return `<div class="room-top"><div><span class="eyebrow">${room.practice ? 'Spokojnie, to tylko trening' : 'Wspólny stół'}${hiddenMode() ? ' · Ukryte odpowiedzi · 30 s' : ''}</span><h1>${room.practice ? 'Ty, Atlas i cały świat.' : room.phase === 'lobby' ? 'Przygoda zaczyna się tutaj.' : 'Kierunek: dobre przeczucie.'}</h1></div><div class="room-code-block"><span>${room.practice ? 'Tryb' : 'Kod pokoju'}</span>${room.practice ? '<strong>Trening</strong>' : `<button class="code-copy" data-action="copy-code" title="Kopiuj kod pokoju">${room.code} ${icon('copy')}</button>`}</div></div>`;
 }
 function lobby() {
   const room = state.room;
   const count = room.players.length;
-  return `<main class="room-page">${roomTop()}<div class="lobby-layout"><section class="lobby-card paper"><div class="section-label">${icon('users')} Ekipa odkrywców <span>${count} / 6</span></div>${playerList()}${Array.from({ length: Math.max(0, 3 - count) }, () => '<div class="empty-seat"><span>+</span> Miejsce dla kolejnego przeczucia</div>').join('')}<div class="invite-panel"><span class="eyebrow">Dobre rzeczy warto dzielić</span><p>Wyślij znajomym zaproszenie.<br>Dołączą bez zakładania konta.</p><button class="button secondary full" data-action="invite">${icon('copy')} Kopiuj zaproszenie</button></div><div class="lobby-start"><span>${room.rounds} rund · 45 sekund na ruch</span>${isHost() ? `<button class="button primary full" data-action="start" ${count < 2 || state.busy || !state.connected ? 'disabled' : ''}>${count < 2 ? 'Czekamy na drugiego gracza' : 'Wyruszamy!'} ${icon('arrow')}</button>` : '<div class="waiting-text"><i class="status-dot on"></i> Gospodarz za chwilę rozpocznie grę</div>'}</div></section><section class="lobby-map"><div class="eyebrow">Zanim ruszycie w świat</div><h2>Wiedza pomaga.<br><em>Intuicja wygrywa.</em></h2>${worldMap(true)}<div class="score-explainer"><span><b>7</b>Trafienie w punkt</span><span><b>3</b>Bliski strzał</span><span><b>∞</b>Nowe odkrycia</span></div></section></div></main>`;
+  return `<main class="room-page">${roomTop()}<div class="lobby-layout"><section class="lobby-card paper"><div class="section-label">${icon('users')} Ekipa odkrywców <span>${count} / 6</span></div>${playerList()}${Array.from({ length: Math.max(0, 3 - count) }, () => '<div class="empty-seat"><span>+</span> Miejsce dla kolejnego przeczucia</div>').join('')}<div class="invite-panel"><span class="eyebrow">Dobre rzeczy warto dzielić</span><p>Wyślij znajomym zaproszenie.<br>Dołączą bez zakładania konta.</p><button class="button secondary full" data-action="invite">${icon('copy')} Kopiuj zaproszenie</button></div><div class="lobby-start"><span>${room.rounds} rund · ${hiddenMode() ? 'ukryte odpowiedzi · 30 sekund na rundę' : '45 sekund na ruch'}</span>${isHost() ? `<button class="button primary full" data-action="start" ${count < 2 || state.busy || !state.connected ? 'disabled' : ''}>${count < 2 ? 'Czekamy na drugiego gracza' : 'Wyruszamy!'} ${icon('arrow')}</button>` : '<div class="waiting-text"><i class="status-dot on"></i> Gospodarz za chwilę rozpocznie grę</div>'}</div></section><section class="lobby-map"><div class="eyebrow">Zanim ruszycie w świat</div><h2>Wiedza pomaga.<br><em>Intuicja wygrywa.</em></h2>${worldMap(true)}<div class="score-explainer"><span><b>7</b>Trafienie w punkt</span><span><b>3</b>Bliski strzał</span><span><b>∞</b>Nowe odkrycia</span></div></section></div></main>`;
 }
 function scale(axis, title, label, unit, values) {
   const room = state.room;
   const answerSlot = room.answer?.[axis === 'year' ? 'yearSlot' : 'numberSlot'];
-  const status = room.answer ? 'Odpowiedź odkryta' : categoryUsed(axis) ? 'Twój typ zapisany'
+  const status = room.answer ? 'Odpowiedź odkryta' : hiddenMode() ? mine()?.ready ? 'Zestaw zatwierdzony' : categoryUsed(axis) ? 'Zapisano · możesz zmienić' : 'Wybierz swój tajny typ' : categoryUsed(axis) ? 'Twój typ zapisany'
     : state.selection?.axis === axis ? 'Gotowe do zatwierdzenia' : canSelectCategory(axis) ? 'Wybierz przedział' : 'Czekaj na swoją turę';
   return `<section class="scale-panel paper scale-${axis} ${categoryUsed(axis) ? 'category-used' : ''}"><div class="scale-heading"><div class="scale-title"><span class="section-label">${icon(axis === 'year' ? 'time' : 'chart')}${title}</span><span class="scale-question">${esc(label)}${unit ? ` <b>(${esc(unit)})</b>` : ''}</span></div><div class="scale-meta">${categoryLimit(axis)}<span class="scale-status" aria-live="polite">${status}</span></div></div><div class="scale-ruler" data-scale-scroll="${axis}"><div class="scale-track" role="group" aria-label="${esc(label)}">${values.map((value, slot) => {
-    const placed = room.placements.find(p => p.axis === axis && p.slot === slot);
+    const placements = room.placements.filter(p => p.axis === axis && p.slot === slot);
+    const placed = placements[0];
     const player = placed && room.players.find(p => p.id === placed.playerId);
-    const selected = state.selection?.axis === axis && state.selection.slot === slot;
+    const selected = selectedSlot(axis) === slot;
     const correct = answerSlot === slot;
+    const names = placements.map(p => room.players.find(player => player.id === p.playerId).name).join(', ');
+    const markers = placements.map(p => {
+      const owner = room.players.find(player => player.id === p.playerId);
+      return `<i style="--player:${owner.color}">${esc(owner.name[0].toUpperCase())}</i>`;
+    }).join('');
     const range = `${intervalLabel(values, slot)}${unit ? ` ${esc(unit)}` : ''}`;
     const bounds = `<span>${fmt(value)}</span>${slot === values.length - 1 ? '<span>+</span>' : `<span>–${fmt(values[slot + 1])}</span>`}`;
-    return `<button class="scale-slot ${selected ? 'selected' : ''} ${correct ? 'correct' : ''} ${player ? 'occupied' : ''}" ${!canSelectCategory(axis) || placed ? 'disabled' : ''} data-axis="${axis}" data-slot="${slot}" aria-pressed="${selected}" aria-label="${range}${player ? ` — ${esc(player.name)}` : ''}${correct ? ' — poprawna odpowiedź' : ''}" title="${range}${player ? ` — ${esc(player.name)}` : ''}" ${player ? `style="--player:${player.color}"` : ''}><span class="slot-marker" aria-hidden="true">${player ? esc(player.name[0].toUpperCase()) : correct || selected ? icon('check') : ''}</span><span class="slot-copy"><span class="slot-label">${bounds}</span><span class="slot-unit">${unit ? esc(unit) : 'r.'}</span></span></button>`;
+    return `<button class="scale-slot ${selected ? 'selected' : ''} ${correct ? 'correct' : ''} ${player ? 'occupied' : ''}" ${!canSelectCategory(axis) || (!hiddenMode() && placed) ? 'disabled' : ''} data-axis="${axis}" data-slot="${slot}" aria-pressed="${selected}" aria-label="${range}${player ? ` — ${esc(names)}` : ''}${correct ? ' — poprawna odpowiedź' : ''}" title="${range}${player ? ` — ${esc(names)}` : ''}" ${player ? `style="--player:${player.color}"` : ''}><span class="slot-marker ${placements.length > 1 ? 'multiple-markers' : ''}" aria-hidden="true">${player ? markers : correct || selected ? icon('check') : ''}</span><span class="slot-copy"><span class="slot-label">${bounds}</span><span class="slot-unit">${unit ? esc(unit) : 'r.'}</span></span></button>`;
   }).join('')}</div></div><div class="scale-foot"><span>Górna granica otwiera kolejny przedział.</span><span class="scale-scroll-hint">Przesuń skalę ↔</span>${room.answer ? `<strong>${axis === 'year' ? fmt(room.answer.year) : `${fmt(room.answer.number)} ${esc(unit)}`}</strong>` : '<span>7 pkt celnie · 3 pkt obok</span>'}</div></section>`;
 }
 function selectionLabel() {
@@ -133,10 +155,15 @@ function selectionLabel() {
   if (s.axis === 'map') return REGIONS.find(r => r.id === s.slot).name;
   return `${s.axis === 'year' ? 'Rok' : state.room.question.numberLabel}: ${intervalLabel(s.axis === 'year' ? YEAR_SCALE : NUMBER_SCALE, s.slot)}${s.axis === 'number' ? ` ${state.room.question.unit}` : ''}`;
 }
+function pickLabel(axis, slot) {
+  if (axis === 'map') return REGIONS.find(r => r.id === slot)?.name ?? '—';
+  return `${intervalLabel(axis === 'year' ? YEAR_SCALE : NUMBER_SCALE, slot)}${axis === 'number' ? ` ${state.room.question.unit}` : ''}`;
+}
 function turnBar() {
   const room = state.room;
   const player = room.players.find(p => p.id === room.currentPlayerId);
   if (room.phase === 'reveal') return `<div class="turn-bar revealed"><span class="turn-icon">${icon('check')}</span><div><strong>Karty na stół!</strong><span>Odpowiedzi odkryte. Zobacz, dokąd zaprowadziła was intuicja.</span></div></div>`;
+  if (hiddenMode()) return `<div class="turn-bar your-turn hidden-turn"><span class="turn-icon">${icon(mine()?.ready ? 'check' : 'time')}</span><div><strong>${mine()?.ready ? 'Odpowiedzi zamknięte. Czekamy na odkrycie.' : 'Trzy odpowiedzi. Tylko dla twoich oczu.'}</strong><span>5 s na kartę, potem 30 s wspólnego czasu. Wyniki po odliczaniu.</span></div><span class="countdown" aria-label="Pozostały czas rundy">30 s</span></div>`;
   return `<div class="turn-bar ${player?.id === state.id ? 'your-turn' : ''}"><span class="turn-avatar" style="--player:${player?.color}">${esc(player?.name[0].toUpperCase())}</span><div><strong>${player?.id === state.id ? 'Twoja kolej. Zaufaj intuicji.' : `${esc(player?.name)} szuka dobrego tropu…`}</strong><span>${player?.id === state.id ? 'Jeden znacznik, jedna decyzja. Mapa czy skala?' : 'Za chwilę kolejna decyzja. Rozejrzyj się po planszy.'}</span></div><span class="countdown" aria-label="Pozostały czas na ruch">45 s</span></div>`;
 }
 function questionCard() {
@@ -149,7 +176,7 @@ function introCard(room) {
 }
 function regionOptions(selectedRegion) {
   return [['Lądy', LAND_REGIONS], ['Oceany', WATER_REGIONS]].map(([label, regions]) =>
-    `<optgroup label="${label}">${regions.map(r => `<option value="${r.id}" ${selectedRegion?.id === r.id ? 'selected' : ''} ${state.room.placements.some(p => p.axis === 'map' && p.slot === r.id) ? 'disabled' : ''}>${esc(r.name)}</option>`).join('')}</optgroup>`).join('');
+    `<optgroup label="${label}">${regions.map(r => `<option value="${r.id}" ${selectedRegion?.id === r.id ? 'selected' : ''} ${!hiddenMode() && state.room.placements.some(p => p.axis === 'map' && p.slot === r.id) ? 'disabled' : ''}>${esc(r.name)}</option>`).join('')}</optgroup>`).join('');
 }
 function moveControls() {
   const room = state.room;
@@ -157,13 +184,25 @@ function moveControls() {
     const nextLabel = room.round === room.rounds ? 'Zobacz wyniki wyprawy' : 'Kolejne odkrycie';
     return `<section class="next-controls" aria-label="Następna runda"><span>${isHost() ? 'Gotowi na kolejną podróż?' : 'Gospodarz za chwilę poprowadzi was dalej.'}</span><button class="button primary full" data-action="next" ${!isHost() || state.busy || !state.connected ? 'disabled' : ''}>${nextLabel} ${icon('arrow')}</button></section>`;
   }
+  if (hiddenMode()) {
+    const count = usedCategories(room, state.id).length;
+    return `<section class="move-controls hidden-controls" aria-label="Twoje tajne odpowiedzi"><div class="hidden-controls-heading"><span class="eyebrow">Twój tajny zestaw</span><span>${count}/3</span></div><ul class="private-picks">${CATEGORIES.map(axis => `<li class="${ownPick(axis) ? 'picked' : ''}"><span>${axis === 'map' ? 'Region' : axis === 'year' ? 'Rok' : 'Wielkość'}</span><strong>${ownPick(axis) ? esc(pickLabel(axis, ownPick(axis).slot)) : 'Wybierz na planszy'}</strong></li>`).join('')}</ul><div class="move-buttons"><button class="button primary full" data-action="submit-answers" ${!myTurn() || count !== 3 ? 'disabled' : ''}>${mine()?.ready ? 'Zestaw zatwierdzony' : 'Zatwierdź 3 odpowiedzi'} ${icon('check')}</button></div><p class="private-hint">${mine()?.ready ? 'Twoje typy są ukryte aż do końca odliczania.' : 'Wybory zapisują się od razu. Możesz je zmieniać do zatwierdzenia lub końca czasu. Brak odpowiedzi: 0 pkt.'}</p></section>`;
+  }
   return `<section class="move-controls" aria-label="Twój ruch"><div class="move-selection"><span class="eyebrow">${myTurn() ? 'Twój wybór' : 'Wspólna plansza'}</span><strong aria-live="polite">${myTurn() ? esc(selectionLabel()) : 'Obserwuj typy pozostałych graczy.'}</strong></div><div class="move-buttons"><button class="button primary full" data-action="confirm" ${!myTurn() || !state.selection ? 'disabled' : ''}>Zatwierdź wybór ${icon('arrow')}</button><button class="button quiet full" data-action="pass" ${!myTurn() ? 'disabled' : ''}>Pasuję</button></div></section>`;
+}
+function hiddenResults() {
+  const room = state.room;
+  if (!hiddenMode() || !room.answer) return '';
+  return `<section class="hidden-results paper"><div class="section-label">${icon('check')} Odkryte odpowiedzi <span>Wyniki rundy ${room.round}</span></div><div class="answers-scroll"><table><caption class="sr-only">Odpowiedzi i punkty wszystkich graczy w tej rundzie</caption><thead><tr><th scope="col">Gracz</th><th scope="col">Region</th><th scope="col">Rok</th><th scope="col">Wielkość</th><th scope="col">Punkty</th></tr></thead><tbody>${room.players.map(player => `<tr><th scope="row"><span class="result-player" style="--player:${player.color}">${esc(player.name)}</span></th>${CATEGORIES.map(axis => {
+    const pick = room.placements.find(p => p.playerId === player.id && p.axis === axis);
+    return `<td>${pick ? `${esc(pickLabel(axis, pick.slot))}<small class="points-${pick.points}">+${pick.points} pkt</small>` : '<span class="missing-answer">Brak typu<small>0 pkt</small></span>'}</td>`;
+  }).join('')}<td class="round-total">+${room.result?.[player.id]?.gained ?? 0}</td></tr>`).join('')}</tbody></table></div></section>`;
 }
 function game() {
   const room = state.room;
-  const selectedRegion = state.selection?.axis === 'map' && REGIONS.find(r => r.id === state.selection.slot);
+  const selectedRegion = REGIONS.find(r => r.id === selectedSlot('map'));
   return `<main class="room-page game-page">${roomTop()}<div class="game-layout"><div class="board-column">${turnBar()}<section class="map-panel paper"><div class="map-heading"><div><span class="eyebrow">01 · Gdzie na świecie?</span><h2>Postaw na dobry kierunek.</h2></div>${categoryLimit('map')}</div>${worldMap()}<div class="map-bottom"><div class="map-legend"><span><i></i> ${room.answer ? 'Poprawny region zaznaczony na zielono' : 'Jeden znacznik na mapie w tej rundzie'}</span><span>17 lądów · 7 obszarów oceanicznych</span></div><label class="sr-only" for="region-picker">Wybierz region z listy</label><select id="region-picker" ${!canSelectCategory('map') ? 'disabled' : ''}><option value="">Wybierz ląd lub akwen…</option>${regionOptions(selectedRegion)}</select>${selectedRegion ? `<p class="neighbors">Sąsiedzi za 3 pkt: ${NEIGHBORS[selectedRegion.id].map(id => esc(REGIONS.find(r => r.id === id).name)).join(', ')}.</p>` : ''}</div></section>
-      ${scale('year', '02 · Kiedy?', room.question.yearLabel, '', YEAR_SCALE)}${scale('number', '03 · Ile?', room.question.numberLabel, room.question.unit, NUMBER_SCALE)}
+      ${scale('year', '02 · Kiedy?', room.question.yearLabel, '', YEAR_SCALE)}${scale('number', '03 · Ile?', room.question.numberLabel, room.question.unit, NUMBER_SCALE)}${hiddenResults()}
     </div><aside class="game-sidebar">${questionCard()}<section class="roster paper"><div class="section-label">${icon('users')} Twoja ekipa <span>${room.players.filter(p => !p.left).length} graczy</span></div>${playerList()}<div class="cube-supply"><span>Twoje znaczniki</span><div>${Array.from({ length: 5 }, (_, i) => `<i class="cube ${i < (mine()?.cubes ?? 0) ? 'filled' : ''}" style="--player:${mine()?.color}"></i>`).join('')}</div></div>${moveControls()}</section>${room.phase === 'reveal' && room.result?.[state.id] ? `<div class="round-recap"><span class="eyebrow">Twój bilans rundy</span><strong>+${room.result[state.id].gained}<span>punktów</span></strong><p>${room.result[state.id].hits} celnych · ${room.result[state.id].close} bliskich · ${room.result[state.id].lost} nietrafionych</p></div>` : '<p class="sidebar-note">'+icon('compass')+'Za trafienie 7 pkt. Za dobry trop 3 pkt.<br>Każde przeczucie ma znaczenie.</p>'}</aside></div></main>`;
 }
 function finished() {
@@ -187,13 +226,16 @@ function render() {
 function updateClock() {
   const countdown = document.querySelector('.countdown');
   if (countdown && state.room?.deadline) {
-    const seconds = Math.min(45, Math.max(0, Math.ceil((state.room.deadline - Date.now() - state.offset) / 1000)));
-    countdown.textContent = `${seconds} s`;
-    countdown.classList.toggle('urgent', seconds <= 10);
+    const now = Date.now() + state.offset;
+    const preview = hiddenMode() && now < state.room.answerStartsAt;
+    const seconds = Math.min(hiddenMode() ? 30 : 45, Math.max(0, Math.ceil(((preview ? state.room.answerStartsAt : state.room.deadline) - now) / 1000)));
+    countdown.textContent = preview ? `Start za ${seconds} s` : `${seconds} s`;
+    countdown.classList.toggle('urgent', !preview && seconds <= 10);
   }
 }
 function select(axis, slot) {
   if (!canSelectCategory(axis)) return;
+  if (hiddenMode()) { action('place', { axis, slot }); return; }
   if (state.room.placements.some(p => p.axis === axis && p.slot === slot)) return;
   state.selection = { axis, slot };
   render();
@@ -220,11 +262,12 @@ document.addEventListener('click', event => {
     case 'practice': {
       const name = state.name.trim() || 'Odkrywca';
       if (name.length < 2) { toast('Podaj pseudonim o długości 2–20 znaków.', true); return; }
-      mutate('/api/rooms', { name, rounds: state.rounds, practice: true }); break;
+      mutate('/api/rooms', { name, rounds: state.rounds, practice: true, mode: state.tab === 'create' ? state.mode : 'classic' }); break;
     }
     case 'copy-code': copy(state.room.code, 'Kod pokoju skopiowany.'); break;
     case 'invite': copy(`${location.origin}${location.pathname}?room=${state.room.code}`, 'Zaproszenie skopiowane. Wyślij je znajomym!'); break;
     case 'confirm': if (state.selection) action('place', state.selection); break;
+    case 'submit-answers': action('submit'); break;
     case 'pass': action('pass'); break;
     case 'start': action('start'); break;
     case 'next': action('next'); break;
@@ -242,12 +285,13 @@ document.addEventListener('input', event => {
 });
 document.addEventListener('change', event => {
   if (event.target.id === 'rounds') state.rounds = Number(event.target.value);
+  if (event.target.id === 'game-mode') { state.mode = event.target.value; render(); }
   if (event.target.id === 'region-picker' && event.target.value) select('map', event.target.value);
 });
 document.addEventListener('submit', event => {
   if (event.target.id !== 'room-form') return;
   event.preventDefault();
-  mutate(state.tab === 'create' ? '/api/rooms' : '/api/rooms/join', { name: state.name, rounds: state.rounds, code: state.code });
+  mutate(state.tab === 'create' ? '/api/rooms' : '/api/rooms/join', { name: state.name, rounds: state.rounds, code: state.code, ...(state.tab === 'create' ? { mode: state.mode } : {}) });
 });
 rules.addEventListener('click', event => { if (event.target === rules) { const r = rules.getBoundingClientRect(); if (event.clientX < r.left || event.clientX > r.right || event.clientY < r.top || event.clientY > r.bottom) rules.close(); } });
 
