@@ -1,6 +1,6 @@
 export function createCardIntroController({ onShow, onDismiss, onCancel,
   setTimer = setTimeout, clearTimer = clearTimeout,
-  shouldShow = room => room.phase === 'playing' && room.question }) {
+  shouldShow = room => room.phase === 'playing' && room.question, autoDismissMs = 5000 }) {
   let seen = null, active = null, timer = null;
   function cancel() {
     if (timer !== null) clearTimer(timer);
@@ -23,7 +23,7 @@ export function createCardIntroController({ onShow, onDismiss, onCancel,
       cancel();
       seen = active = key;
       onShow(room);
-      timer = setTimer(() => { if (active === key) dismiss('timeout'); }, 5000);
+      if (autoDismissMs !== null) timer = setTimer(() => { if (active === key) dismiss('timeout'); }, autoDismissMs);
     },
     dismiss,
     destroy() { cancel(); seen = null; }
