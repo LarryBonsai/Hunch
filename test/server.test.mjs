@@ -22,7 +22,7 @@ async function fixture(t) {
 }
 test('serves the app, exposes health and never serves private source or traversal paths', async t => {
   const { base } = await fixture(t);
-  for (const route of ['/', '/style.css', '/app.js', '/board.mjs', '/art.mjs', '/card-intro.mjs', '/favicon.svg']) {
+  for (const route of ['/', '/style.css', '/app.js', '/board.mjs', '/art.mjs', '/card-intro.mjs', '/round-results.mjs', '/favicon.svg']) {
     const response = await fetch(base + route);
     assert.equal(response.status, 200, route);
     assert.ok(response.headers.get('content-security-policy'));
@@ -189,4 +189,53 @@ test('late hidden HTTP mutations cannot race the timer and practice supports bot
   room = (await alice.request('/api/rooms', { name: 'Alicja', practice: true })).body.room;
   assert.equal(room.mode, 'classic');
   assert.equal(room.currentPlayerId, alice.playerId);
+});
+test('the last confirmation reveals immediately over HTTP and SSE without waiting for the deadline', async t => {
+  const { app, base, client } = await fixture(t);
+  const alice = await client(), bob = await client(), celina = await client();
+  const created = (await alice.request('/api/rooms', { name: 'Alicja', mode: 'hidden' })).body.room;
+  for (const [player, name] of [[bob, 'Bartosz'], [celina, 'Celina']])
+    await player.request('/api/rooms/join', { code: created.code, name });
+  let room = (await alice.request('/api/room/action', { action: 'start' })).body.room;
+  const turnId = room.turnId, deadline = room.deadline;
+  for (const player of [alice, bob, celina]) {
+    for (const [axis, slot] of [['map', 'eu-west'], ['year', 5], ['number', 5]]) {
+      const response = await player.request('/api/room/action', { action: 'place', axis, slot, turnId });
+      assert.equal(response.status, 200);
+    }
+    if (player !== celina) {
+      room = (await player.request('/api/room/action', { action: 'submit', turnId })).body.room;
+      assert.equal(room.phase, 'playing');
+      assert.equal(room.placements.length, 3);
+      assert.equal(room.answer, null);
+    }
+  }
+  const controller = new AbortController(); t.after(() => controller.abort());
+  const response = await fetch(base + '/api/events', { headers: { Cookie: alice.cookie }, signal: controller.signal });
+  const reader = response.body.getReader();
+  const confirmed = await celina.request('/api/room/action', { action: 'submit', turnId });
+  assert.equal(confirmed.status, 200);
+  assert.ok(Date.now() < deadline);
+  assert.equal(confirmed.body.room.phase, 'reveal');
+  assert.equal(confirmed.body.room.placements.length, 9);
+  let buffered = '', revealed = false;
+  const timeout = setTimeout(() => controller.abort(), 3000);
+  try {
+    while (!revealed) {
+      const { value, done } = await reader.read(); assert.equal(done, false);
+      buffered += new TextDecoder().decode(value);
+      const frames = buffered.split('\n\n'); buffered = frames.pop();
+      for (const frame of frames.filter(frame => frame.startsWith('data: '))) {
+        const snapshot = JSON.parse(frame.slice(6)).room;
+        if (snapshot.phase === 'playing') { assert.equal(snapshot.placements.length, 3); assert.equal(snapshot.answer, null); }
+        else {
+          assert.equal(snapshot.phase, 'reveal'); assert.equal(snapshot.placements.length, 9);
+          assert.equal(snapshot.deadline, null); assert.equal(snapshot.history.length, 1);
+          assert.ok(snapshot.answer); revealed = true;
+        }
+      }
+    }
+  } finally { clearTimeout(timeout); controller.abort(); }
+  assert.equal((await celina.request('/api/room/action', { action: 'submit', turnId })).status, 409);
+  assert.equal(app.rooms.get(created.code).history.length, 1);
 });

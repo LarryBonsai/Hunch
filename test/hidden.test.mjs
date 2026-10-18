@@ -4,9 +4,10 @@ import { createRoom, addPlayer, startGame, place, pass, submitAnswers, expireRou
 import { QUESTIONS } from '../src/questions.mjs';
 import { YEAR_SCALE, NUMBER_SCALE, bucket } from '../public/board.mjs';
 
-function game() {
+function game(extraPlayer = false) {
   const room = createRoom('SECRET', 'alice', 'Alicja', 3, false, 'hidden');
   addPlayer(room, 'bob', 'Bartosz');
+  if (extraPlayer) addPlayer(room, 'c', 'Celina');
   startGame(room, 'alice');
   room.deck = QUESTIONS.slice(0, 3);
   return room;
@@ -46,12 +47,13 @@ test('all players can edit one pick per category and share the same fields witho
     assert.equal(view.question.year, undefined);
   }
   submitAnswers(room, 'alice', roundId);
-  submitAnswers(room, 'bob', roundId);
-  assert.equal(room.phase, 'playing', 'even ready players wait for the shared deadline');
+  assert.equal(room.phase, 'playing', 'one unconfirmed player keeps the answers private');
   assert.throws(() => place(room, 'alice', 'map', 'oceania', roundId), /zatwierdzony/);
   assert.ok(publicRoom(room, 'alice').placements.every(p => p.playerId === 'alice'));
-  assert.equal(expireRound(room, room.deadline), true);
+  submitAnswers(room, 'bob', roundId);
   assert.equal(room.phase, 'reveal');
+  assert.equal(room.deadline, null);
+  assert.throws(() => submitAnswers(room, 'bob', roundId));
   assert.equal(publicRoom(room, 'alice').placements.length, 6);
   assert.ok(room.players.every(p => p.score === 21 && p.cubes === 5));
   assert.equal(room.history.length, 1);
@@ -107,7 +109,7 @@ test('next rounds and rematches keep the chosen mode, reset readiness and reject
   assert.equal(room.history.length, 0);
   assert.ok(room.players.every(p => !p.ready && p.score === 0 && p.cubes === 5));
 });
-test('Atlas answers all three categories privately and waits for the deadline', () => {
+test('Atlas answers privately and reveals as soon as the human also confirms', () => {
   const room = createRoom('ABC234', 'a', 'Ania', 3, true, 'hidden');
   botMove(room);
   assert.equal(room.placements.length, 3);
@@ -117,8 +119,32 @@ test('Atlas answers all three categories privately and waits for the deadline', 
   assert.equal(room.phase, 'playing');
   botMove(room);
   assert.equal(room.placements.length, 3);
-  expireRound(room, room.deadline);
-  assert.equal(publicRoom(room, 'a').placements.length, 3);
+  correctPicks(room, 'a');
+  submitAnswers(room, 'a', room.turnId);
+  assert.equal(room.phase, 'reveal');
+  assert.equal(publicRoom(room, 'a').placements.length, 6);
+  assert.equal(room.history.length, 1);
+});
+test('Atlas can be the last to confirm and resolves the round exactly once', () => {
+  const room = createRoom('ABC234', 'a', 'Ania', 3, true, 'hidden');
+  correctPicks(room, 'a');
+  submitAnswers(room, 'a', room.turnId);
+  assert.equal(room.phase, 'playing');
+  botMove(room);
+  assert.equal(room.phase, 'reveal');
+  const scored = JSON.stringify(room);
+  botMove(room);
+  assert.equal(JSON.stringify(room), scored);
+  assert.equal(room.history.length, 1);
+});
+test('an unconfirmed player leaving reveals once all remaining players have confirmed', () => {
+  const room = game(true);
+  for (const id of ['alice', 'bob']) { correctPicks(room, id); submitAnswers(room, id, room.turnId); }
+  assert.equal(room.phase, 'playing');
+  leave(room, 'c');
+  assert.equal(room.phase, 'reveal');
+  assert.equal(room.placements.length, 6);
+  assert.equal(room.history.length, 1);
 });
 test('departures preserve the shared deadline and end the match when fewer than two remain', () => {
   const room = createRoom('SECRET', 'a', 'Ania', 3, false, 'hidden');
