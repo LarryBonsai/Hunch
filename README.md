@@ -36,6 +36,7 @@ Przy tworzeniu pokoju wybierz **Klasyczny** albo **Ukryte odpowiedzi · 30 sekun
 - Synchronizacja na żywo przez Server-Sent Events; ruchy przez HTTP.
 - Powrót po odświeżeniu w tej samej przeglądarce, wskaźniki obecności i przejęcie gospodarza po 30 s rozłączenia.
 - Polski interfejs, układ mobilny, obsługa klawiaturą i alternatywny wybór regionu z listy.
+- Dwustronna karta na stronie głównej: ruch myszy w poprzek obraca ją w 3D wokół pionowej krawędzi, zgodnie z kierunkiem ruchu. Na awersie jest Wieża Eiffla, na rewersie piramidy w Gizie. Działa też kliknięcie, dotyk, Enter, spacja i strzałki; ograniczenie ruchu w systemie wyłącza animację.
 - Jednoliniowe skale przedziałów z pionowymi separatorami w palecie planszy. Wybór i zatwierdzanie są zebrane w prawym panelu pod punktami; na węższym ekranie skale można przewijać w poziomie bez utraty wybranego miejsca. Lekko powiększony obszar gry.
 - Nowa karta pojawia się duża na środku ekranu, a po kliknięciu, naciśnięciu Escape lub po 5 sekundach wraca animacją na planszę. Aktualizacje tur nie powtarzają prezentacji; przy ograniczeniu ruchu w systemie powrót jest natychmiastowy.
 - Dziesięć autorskich kart opartych na źródłach instytucji opiekujących się obiektami, UNESCO i NPS.
@@ -57,6 +58,7 @@ src/questions.mjs        Karty z odpowiedziami i źródłami (tylko serwer)
 public/app.js            Interfejs, wybór pól i komunikacja
 public/card-intro.mjs     Prezentacja nowej karty, timer i powrót do panelu
 public/round-results.mjs  Centralne okno rankingu po rundzie ukrytych odpowiedzi
+public/hero-card.mjs      Obrót dwustronnej karty na stronie głównej
 public/board.mjs          Mapa, sąsiedztwo, skale
 public/map-paths.mjs      Wygenerowane kontury lądów i regionów Natural Earth
 public/water-regions.mjs  Wygenerowane pola akwenów i ich sąsiedztwo
