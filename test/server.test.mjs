@@ -238,4 +238,10 @@ test('the last confirmation reveals immediately over HTTP and SSE without waitin
   } finally { clearTimeout(timeout); controller.abort(); }
   assert.equal((await celina.request('/api/room/action', { action: 'submit', turnId })).status, 409);
   assert.equal(app.rooms.get(created.code).history.length, 1);
+  assert.equal((await bob.request('/api/room/action', { action: 'next' })).status, 403);
+  const next = (await alice.request('/api/room/action', { action: 'next' })).body.room;
+  assert.equal(next.phase, 'playing');
+  assert.equal(next.round, 2);
+  assert.equal(next.mode, 'hidden');
+  assert.deepEqual(next.placements, []);
 });

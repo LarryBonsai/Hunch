@@ -19,17 +19,18 @@ function fixture() {
     for (const [id, timer] of [...timers]) if (timer.at <= now) { timers.delete(id); timer.callback(); }
   } };
 }
-test('round scores appear only after hidden-mode reveal and stay five seconds across live updates', () => {
+test('round scores appear only after hidden-mode reveal and wait for a decision across live updates', () => {
   const f = fixture();
   for (const value of [{ ...room(), mode: 'classic' }, { ...room(), phase: 'playing' }, { ...room(), result: null }]) f.controller.update(value);
   assert.deepEqual(f.events, []);
   f.controller.update(room()); f.advance(3000);
   f.controller.update({ ...room(), version: 5 }); f.advance(1999);
   assert.deepEqual(f.events, [['show', 1]]);
-  f.advance(1);
-  assert.deepEqual(f.events, [['show', 1], ['dismiss', 'timeout']]);
+  f.advance(30_000);
+  assert.deepEqual(f.events, [['show', 1]]);
+  assert.equal(f.timers.size, 0, 'the next-card button must not disappear on a timer');
   f.controller.update({ ...room(), version: 6 });
-  assert.equal(f.events.length, 2, 'the same result must not reopen');
+  assert.equal(f.events.length, 1, 'the same result must not reopen');
 });
 test('click or Escape dismisses scores once; later round scores get a new presentation', () => {
   for (const reason of ['click', 'escape']) {
@@ -42,16 +43,14 @@ test('click or Escape dismisses scores once; later round scores get a new presen
     assert.deepEqual(f.events.at(-1), ['show', 2]);
   }
 });
-test('starting another round or leaving cancels the old score popup and stale timer', () => {
+test('starting another round or leaving removes the old score popup before the next presentation', () => {
   for (const next of [null, { ...room(2), phase: 'playing' }, { ...room(), phase: 'finished' }]) {
     const f = fixture(); f.controller.update(room());
-    const staleTimeout = [...f.timers.values()][0].callback;
     f.controller.update(next);
     assert.equal(f.timers.size, 0);
     f.controller.update(room(2));
-    staleTimeout();
     assert.deepEqual(f.events, [['show', 1], ['cancel'], ['show', 2]]);
     f.advance(5000);
-    assert.deepEqual(f.events.at(-1), ['dismiss', 'timeout']);
+    assert.deepEqual(f.events.at(-1), ['show', 2]);
   }
 });
