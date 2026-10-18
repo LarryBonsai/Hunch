@@ -32,6 +32,8 @@ Otwórz **http://localhost:3000**. Przycisk treningu uruchamia partię z botem A
 - Synchronizacja na żywo przez Server-Sent Events; ruchy przez HTTP.
 - Powrót po odświeżeniu w tej samej przeglądarce, wskaźniki obecności i przejęcie gospodarza po 30 s rozłączenia.
 - Polski interfejs, układ mobilny, obsługa klawiaturą i alternatywny wybór regionu z listy.
+- Kompaktowe pola przedziałów w palecie planszy i lekko powiększony obszar gry.
+- Nowa karta pojawia się duża na środku ekranu, a po kliknięciu, naciśnięciu Escape lub po 5 sekundach wraca animacją na planszę. Aktualizacje tur nie powtarzają prezentacji; przy ograniczeniu ruchu w systemie powrót jest natychmiastowy.
 - Dziesięć autorskich kart opartych na źródłach instytucji opiekujących się obiektami, UNESCO i NPS.
 
 ### Interpretacja mapy i skal
@@ -49,6 +51,7 @@ server.mjs               HTTP, ciasteczka sesji, pokoje i strumienie SSE
 src/game.mjs             Autorytatywny silnik rozgrywki i punktacja
 src/questions.mjs        Karty z odpowiedziami i źródłami (tylko serwer)
 public/app.js            Interfejs, wybór pól i komunikacja
+public/card-intro.mjs     Prezentacja nowej karty, timer i powrót do panelu
 public/board.mjs          Mapa, sąsiedztwo, skale
 public/map-paths.mjs      Wygenerowane kontury lądów i regionów Natural Earth
 public/water-regions.mjs  Wygenerowane pola akwenów i ich sąsiedztwo
