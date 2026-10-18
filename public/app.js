@@ -2,6 +2,7 @@ import { REGIONS, LAND_REGIONS, WATER_REGIONS, COASTLINE, OCEAN_BORDERS, NEIGHBO
 import { icon, illustration } from './art.mjs';
 import { mountCardIntro } from './card-intro.mjs';
 import { mountRoundResults } from './round-results.mjs';
+import { mountHeroCard } from './hero-card.mjs';
 
 const app = document.querySelector('#app');
 const rules = document.querySelector('#rules');
@@ -25,6 +26,7 @@ const cardIntro = mountCardIntro({ renderCard: introCard, getTarget: () => docum
 const roundResults = mountRoundResults({ renderResults: roundResultsCard,
   getTarget: () => document.querySelector('.next-controls button:not(:disabled)') ?? document.querySelector('.game-sidebar .question-card'),
   getControls: roundAdvanceState, onAdvance: () => action('next') });
+const heroCard = mountHeroCard(app);
 function toast(message, error = false) {
   const el = document.querySelector('#toast');
   el.textContent = message;
@@ -119,9 +121,16 @@ function home() {
       <button class="button primary full" type="submit" ${state.busy || !state.loaded ? 'disabled' : ''}>${state.busy ? 'Chwileczkę…' : state.tab === 'create' ? 'Zaczynamy przygodę' : 'Dołącz do wyprawy'} ${icon('arrow')}</button></form>
       <button class="practice-link" data-action="practice" ${state.busy || !state.loaded ? 'disabled' : ''}>${icon('spark')} Najpierw spróbuj treningu z Atlasem ${icon('arrow')}</button>${state.tab === 'create' && state.mode === 'hidden' ? '<p class="practice-mode-note">Test nowego trybu: ukryte odpowiedzi z Atlasem.</p>' : ''}
     </div></section>
-    <section class="hero-visual" aria-label="Odkrywaj świat na mapie"><div class="visual-note"><span class="mini-line"></span> WIELKI ŚWIAT, DOBRE TOWARZYSTWO</div><div class="hero-map">${worldMap(true)}</div><div class="sample-card"><span class="sample-stamp">KARTA ODKRYWCY <span>01 / 10</span></span>${illustration('eiffel')}<span class="eyebrow">Wielkie konstrukcje</span><h2>Wieża Eiffla</h2><div class="sample-questions"><span>${icon('pin')} Gdzie?</span><span>${icon('time')} Kiedy?</span><span>${icon('chart')} Jak wysoko?</span></div><div class="sample-bottom"><span class="sample-dots"><i></i><i></i><i></i></span>Nie musisz znać odpowiedzi.</div></div><div class="floating-note">${icon('spark')} Blisko też się liczy.<span>+3 pkt za dobry trop</span></div><span class="map-caption">CAŁY ŚWIAT JEST TWOJĄ PLANSZĄ ↗</span></section>
+    <section class="hero-visual" aria-label="Odkrywaj świat na mapie"><div class="visual-note"><span class="mini-line"></span> WIELKI ŚWIAT, DOBRE TOWARZYSTWO</div><div class="hero-map">${worldMap(true)}</div>${homeDiscoveryCard()}<div class="floating-note">${icon('spark')} Blisko też się liczy.<span>+3 pkt za dobry trop</span></div><span class="map-caption">CAŁY ŚWIAT JEST TWOJĄ PLANSZĄ ↗</span></section>
     <section class="how-strip"><div><span class="step-number">01</span><p><strong>Zbierz swoją ekipę</strong><span>Jeden kod. Wspólny stół.</span></p></div><div><span class="step-number">02</span><p><strong>Postaw na intuicję</strong><span>Mapa, daty i wielkie liczby.</span></p></div><div><span class="step-number">03</span><p><strong>Odkryj coś nowego</strong><span>Każda runda to małe „aha!”.</span></p></div></section>
   </main>`;
+}
+function homeDiscoveryCard() {
+  const faces = [
+    { side: 'front', art: 'eiffel', index: '01', category: 'Wielkie konstrukcje', title: 'Wieża Eiffla', note: 'Nie musisz znać odpowiedzi.' },
+    { side: 'back', art: 'pyramids', index: '02', category: 'Cuda dawnego świata', title: 'Piramidy w Gizie', note: 'Świat ma wiele do odkrycia.' }
+  ];
+  return `<div class="sample-flip" data-home-card data-side="front" role="button" tabindex="0" aria-pressed="false" aria-describedby="home-card-hint"><div class="sample-card-turner">${faces.map(face => `<div class="sample-card sample-card-${face.side}" data-card-face="${face.side}" aria-hidden="${face.side === 'back'}"><span class="sample-stamp">KARTA ODKRYWCY <span>${face.index} / 10</span></span>${illustration(face.art)}<span class="eyebrow">${face.category}</span><h2>${face.title}</h2><div class="sample-questions"><span>${icon('pin')} Gdzie?</span><span>${icon('time')} Kiedy?</span><span>${icon('chart')} Jak wysoko?</span></div><div class="sample-bottom"><span class="sample-dots"><i></i><i></i><i></i></span>${face.note}</div></div>`).join('')}</div><span class="home-card-hint" id="home-card-hint">Przesuń mysz w poprzek karty ↔</span></div>`;
 }
 function setupPicker(key, label, symbol, value, options) {
   const selected = options.find(option => option.value === value);
@@ -256,6 +265,7 @@ function render() {
   if (replacement && !replacement.disabled && replacement.getAttribute('aria-disabled') !== 'true') replacement.focus({ preventScroll: true });
   updateClock();
   roundResults.refresh();
+  heroCard.refresh();
 }
 function updateClock() {
   const countdown = document.querySelector('.countdown');
