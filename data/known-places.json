@@ -1,0 +1,2945 @@
+{
+  "version": 1,
+  "collection": {
+    "id": "known-places",
+    "name": "Znane miejsca świata"
+  },
+  "topics": [
+    {
+      "id": "icons",
+      "name": "Wieże i pomniki"
+    },
+    {
+      "id": "sacred",
+      "name": "Świątynie i sanktuaria"
+    },
+    {
+      "id": "palaces",
+      "name": "Pałace, zamki i muzea"
+    },
+    {
+      "id": "ancient",
+      "name": "Ślady dawnych cywilizacji"
+    },
+    {
+      "id": "engineering",
+      "name": "Mosty i kanały"
+    },
+    {
+      "id": "mountains",
+      "name": "Góry i formacje skalne"
+    },
+    {
+      "id": "water",
+      "name": "Wodospady, wybrzeża i lodowce"
+    },
+    {
+      "id": "nature",
+      "name": "Parki, wyspy i ogrody"
+    }
+  ],
+  "places": [
+    {
+      "id": "eiffel",
+      "title": "Wieża Eiffla",
+      "rank": 1,
+      "topic": "icons",
+      "regions": [
+        "eu-west"
+      ],
+      "art": "eiffel",
+      "intro": "Rozpoznawalny symbol i opowieść zapisana w jego wymiarach.",
+      "note": "Wysokość obejmuje antenę; sam pierwotny obiekt był niższy.",
+      "checkedOn": "2026-10-19",
+      "year": {
+        "value": 1889,
+        "label": "Rok ukończenia budowy",
+        "kind": "completed",
+        "unit": "r.",
+        "source": "https://en.wikipedia.org/wiki/Eiffel_Tower",
+        "approximate": false
+      },
+      "measure": {
+        "value": 330,
+        "label": "Wysokość wraz z anteną od 2022 r.",
+        "kind": "height",
+        "unit": "m",
+        "source": "https://en.wikipedia.org/wiki/Eiffel_Tower",
+        "approximate": false
+      }
+    },
+    {
+      "id": "giza",
+      "title": "Piramidy w Gizie",
+      "rank": 2,
+      "topic": "ancient",
+      "regions": [
+        "af-north"
+      ],
+      "art": "pyramids",
+      "intro": "Ślad dawnych cywilizacji, który przetrwał do naszych czasów.",
+      "note": "Pytanie o wysokość dotyczy największej piramidy i jej pierwotnych rozmiarów.",
+      "checkedOn": "2026-10-19",
+      "year": {
+        "value": 1979,
+        "label": "Rok wpisania kompleksu na listę UNESCO",
+        "kind": "unesco",
+        "unit": "r.",
+        "source": "https://whc.unesco.org/en/list/86/",
+        "approximate": false
+      },
+      "measure": {
+        "value": 146.6,
+        "label": "Pierwotna wysokość piramidy Cheopsa",
+        "kind": "height",
+        "unit": "m",
+        "source": "https://en.wikipedia.org/wiki/Great_Pyramid_of_Giza",
+        "approximate": false
+      }
+    },
+    {
+      "id": "liberty",
+      "title": "Statua Wolności",
+      "rank": 3,
+      "topic": "icons",
+      "regions": [
+        "na-east"
+      ],
+      "art": "statue",
+      "intro": "Rozpoznawalny symbol i opowieść zapisana w jego wymiarach.",
+      "note": "Wysokość mierzymy od ziemi do końca pochodni, z piedestałem.",
+      "checkedOn": "2026-10-19",
+      "year": {
+        "value": 1886,
+        "label": "Rok oficjalnego odsłonięcia",
+        "kind": "opened",
+        "unit": "r.",
+        "source": "https://en.wikipedia.org/wiki/Statue_of_Liberty",
+        "approximate": false
+      },
+      "measure": {
+        "value": 93,
+        "label": "Wysokość wraz z piedestałem",
+        "kind": "height",
+        "unit": "m",
+        "source": "https://en.wikipedia.org/wiki/Statue_of_Liberty",
+        "approximate": false
+      }
+    },
+    {
+      "id": "great-wall",
+      "title": "Wielki Mur Chiński",
+      "rank": 4,
+      "topic": "ancient",
+      "regions": [
+        "asia-east"
+      ],
+      "art": "wall",
+      "intro": "Ślad dawnych cywilizacji, który przetrwał do naszych czasów.",
+      "note": "To długość całego historycznego systemu, a nie wyłącznie zachowanych murów dynastii Ming.",
+      "checkedOn": "2026-10-19",
+      "year": {
+        "value": 1987,
+        "label": "Rok wpisania Wielkiego Muru na listę UNESCO",
+        "kind": "unesco",
+        "unit": "r.",
+        "source": "https://whc.unesco.org/en/list/438/",
+        "approximate": false
+      },
+      "measure": {
+        "value": 21196,
+        "label": "Łączna długość wszystkich zinwentaryzowanych odcinków (około)",
+        "kind": "length",
+        "unit": "km",
+        "source": "https://en.wikipedia.org/wiki/Great_Wall_of_China",
+        "approximate": true
+      }
+    },
+    {
+      "id": "colosseum",
+      "title": "Koloseum",
+      "rank": 5,
+      "topic": "ancient",
+      "regions": [
+        "eu-west"
+      ],
+      "art": "arena",
+      "intro": "Ślad dawnych cywilizacji, który przetrwał do naszych czasów.",
+      "note": "Amfiteatr otwarto za panowania cesarza Tytusa.",
+      "checkedOn": "2026-10-19",
+      "year": {
+        "value": 80,
+        "label": "Rok inauguracji amfiteatru",
+        "kind": "opened",
+        "unit": "r.",
+        "source": "https://en.wikipedia.org/wiki/Colosseum",
+        "approximate": false
+      },
+      "measure": {
+        "value": 189,
+        "label": "Długość zewnętrznej osi amfiteatru",
+        "kind": "length",
+        "unit": "m",
+        "source": "https://en.wikipedia.org/wiki/Colosseum",
+        "approximate": false
+      }
+    },
+    {
+      "id": "taj-mahal",
+      "title": "Tadź Mahal",
+      "rank": 6,
+      "topic": "sacred",
+      "regions": [
+        "asia-south"
+      ],
+      "art": "temple",
+      "intro": "Miejsce tradycji, architektury i spotkań wielu pokoleń.",
+      "note": "Rok dotyczy całego kompleksu; samo mauzoleum ukończono wcześniej.",
+      "checkedOn": "2026-10-19",
+      "year": {
+        "value": 1653,
+        "label": "Rok ukończenia całego zespołu",
+        "kind": "completed",
+        "unit": "r.",
+        "source": "https://en.wikipedia.org/wiki/Taj_Mahal",
+        "approximate": false
+      },
+      "measure": {
+        "value": 73,
+        "label": "Wysokość mauzoleum",
+        "kind": "height",
+        "unit": "m",
+        "source": "https://en.wikipedia.org/wiki/Taj_Mahal",
+        "approximate": false
+      }
+    },
+    {
+      "id": "big-ben",
+      "title": "Big Ben i wieża Elżbiety",
+      "rank": 7,
+      "topic": "icons",
+      "regions": [
+        "eu-west"
+      ],
+      "art": "tower",
+      "intro": "Rozpoznawalny symbol i opowieść zapisana w jego wymiarach.",
+      "note": "Big Ben to nazwa wielkiego dzwonu; wielkość dotyczy całej wieży.",
+      "checkedOn": "2026-10-19",
+      "year": {
+        "value": 1859,
+        "label": "Rok uruchomienia wielkiego zegara",
+        "kind": "opened",
+        "unit": "r.",
+        "source": "https://en.wikipedia.org/wiki/Big_Ben",
+        "approximate": false
+      },
+      "measure": {
+        "value": 96,
+        "label": "Wysokość wieży zegarowej",
+        "kind": "height",
+        "unit": "m",
+        "source": "https://en.wikipedia.org/wiki/Big_Ben",
+        "approximate": false
+      }
+    },
+    {
+      "id": "christ",
+      "title": "Chrystus Odkupiciel",
+      "rank": 8,
+      "topic": "icons",
+      "regions": [
+        "sa-south"
+      ],
+      "art": "christ",
+      "intro": "Rozpoznawalny symbol i opowieść zapisana w jego wymiarach.",
+      "note": "Sam posąg ma 30 m, a cokół dodaje kolejne 8 m.",
+      "checkedOn": "2026-10-19",
+      "year": {
+        "value": 1931,
+        "label": "Rok odsłonięcia pomnika",
+        "kind": "opened",
+        "unit": "r.",
+        "source": "https://en.wikipedia.org/wiki/Christ_the_Redeemer_(statue)",
+        "approximate": false
+      },
+      "measure": {
+        "value": 38,
+        "label": "Wysokość wraz z cokołem",
+        "kind": "height",
+        "unit": "m",
+        "source": "https://en.wikipedia.org/wiki/Christ_the_Redeemer_(statue)",
+        "approximate": false
+      }
+    },
+    {
+      "id": "opera",
+      "title": "Opera w Sydney",
+      "rank": 9,
+      "topic": "icons",
+      "regions": [
+        "oceania"
+      ],
+      "art": "opera",
+      "intro": "Rozpoznawalny symbol i opowieść zapisana w jego wymiarach.",
+      "note": "Pytanie dotyczy długości budynku, a nie wysokości jego żagli.",
+      "checkedOn": "2026-10-19",
+      "year": {
+        "value": 1973,
+        "label": "Rok oficjalnego otwarcia",
+        "kind": "opened",
+        "unit": "r.",
+        "source": "https://en.wikipedia.org/wiki/Sydney_Opera_House",
+        "approximate": false
+      },
+      "measure": {
+        "value": 183,
+        "label": "Długość budynku",
+        "kind": "length",
+        "unit": "m",
+        "source": "https://en.wikipedia.org/wiki/Sydney_Opera_House",
+        "approximate": false
+      }
+    },
+    {
+      "id": "burj",
+      "title": "Burdż Chalifa",
+      "rank": 10,
+      "topic": "icons",
+      "regions": [
+        "asia-west"
+      ],
+      "art": "tower",
+      "intro": "Rozpoznawalny symbol i opowieść zapisana w jego wymiarach.",
+      "note": "Wysokość architektoniczna obejmuje iglicę.",
+      "checkedOn": "2026-10-19",
+      "year": {
+        "value": 2010,
+        "label": "Rok oficjalnego otwarcia",
+        "kind": "opened",
+        "unit": "r.",
+        "source": "https://en.wikipedia.org/wiki/Burj_Khalifa",
+        "approximate": false
+      },
+      "measure": {
+        "value": 828,
+        "label": "Wysokość architektoniczna wraz z iglicą",
+        "kind": "height",
+        "unit": "m",
+        "source": "https://en.wikipedia.org/wiki/Burj_Khalifa",
+        "approximate": false
+      }
+    },
+    {
+      "id": "machu",
+      "title": "Machu Picchu",
+      "rank": 11,
+      "topic": "ancient",
+      "regions": [
+        "sa-north"
+      ],
+      "art": "mountain",
+      "intro": "Ślad dawnych cywilizacji, który przetrwał do naszych czasów.",
+      "note": "To wysokość położenia miasta w Andach, a nie wysokość pojedynczej budowli.",
+      "checkedOn": "2026-10-19",
+      "year": {
+        "value": 1983,
+        "label": "Rok wpisania na listę UNESCO",
+        "kind": "unesco",
+        "unit": "r.",
+        "source": "https://whc.unesco.org/en/list/274/",
+        "approximate": false
+      },
+      "measure": {
+        "value": 2430,
+        "label": "Wysokość położenia ruin nad poziomem morza",
+        "kind": "height",
+        "unit": "m",
+        "source": "https://en.wikipedia.org/wiki/Machu_Picchu",
+        "approximate": false
+      }
+    },
+    {
+      "id": "golden-gate",
+      "title": "Golden Gate",
+      "rank": 12,
+      "topic": "engineering",
+      "regions": [
+        "na-west"
+      ],
+      "art": "bridge",
+      "intro": "Droga, most lub kanał, który połączył odległe brzegi.",
+      "note": "Główne przęsło ma 1280 m; pytanie obejmuje cały most z dojazdami.",
+      "checkedOn": "2026-10-19",
+      "year": {
+        "value": 1937,
+        "label": "Rok otwarcia mostu",
+        "kind": "opened",
+        "unit": "r.",
+        "source": "https://en.wikipedia.org/wiki/Golden_Gate_Bridge",
+        "approximate": false
+      },
+      "measure": {
+        "value": 2737,
+        "label": "Całkowita długość mostu wraz z dojazdami",
+        "kind": "length",
+        "unit": "m",
+        "source": "https://en.wikipedia.org/wiki/Golden_Gate_Bridge",
+        "approximate": false
+      }
+    },
+    {
+      "id": "canyon",
+      "title": "Wielki Kanion",
+      "rank": 13,
+      "topic": "mountains",
+      "regions": [
+        "na-west"
+      ],
+      "art": "canyon",
+      "intro": "Krajobraz, którego skalę trudno ocenić jednym spojrzeniem.",
+      "note": "Długość mierzymy wzdłuż rzeki, od Lees Ferry do Grand Wash Cliffs.",
+      "checkedOn": "2026-10-19",
+      "year": {
+        "value": 1919,
+        "label": "Rok ustanowienia parku narodowego",
+        "kind": "protected",
+        "unit": "r.",
+        "source": "https://en.wikipedia.org/wiki/Grand_Canyon",
+        "approximate": false
+      },
+      "measure": {
+        "value": 446,
+        "label": "Długość kanionu wzdłuż rzeki Kolorado",
+        "kind": "length",
+        "unit": "km",
+        "source": "https://en.wikipedia.org/wiki/Grand_Canyon",
+        "approximate": false
+      }
+    },
+    {
+      "id": "pisa",
+      "title": "Krzywa Wieża w Pizie",
+      "rank": 14,
+      "topic": "icons",
+      "regions": [
+        "eu-west"
+      ],
+      "art": "tower",
+      "intro": "Rozpoznawalny symbol i opowieść zapisana w jego wymiarach.",
+      "note": "Z powodu przechyłu wysokości mierzone po obu stronach wieży różnią się.",
+      "checkedOn": "2026-10-19",
+      "year": {
+        "value": 1372,
+        "label": "Rok ukończenia budowy wieży",
+        "kind": "completed",
+        "unit": "r.",
+        "source": "https://en.wikipedia.org/wiki/Leaning_Tower_of_Pisa",
+        "approximate": false
+      },
+      "measure": {
+        "value": 56.67,
+        "label": "Wysokość wieży po wyższej stronie",
+        "kind": "height",
+        "unit": "m",
+        "source": "https://en.wikipedia.org/wiki/Leaning_Tower_of_Pisa",
+        "approximate": false
+      }
+    },
+    {
+      "id": "everest",
+      "title": "Mount Everest",
+      "rank": 15,
+      "topic": "mountains",
+      "regions": [
+        "asia-south",
+        "asia-east"
+      ],
+      "art": "mountain",
+      "intro": "Krajobraz, którego skalę trudno ocenić jednym spojrzeniem.",
+      "note": "Szczyt leży na granicy Nepalu i Chin; akceptowane są oba obszary mapy.",
+      "checkedOn": "2026-10-19",
+      "year": {
+        "value": 1953,
+        "label": "Rok pierwszego potwierdzonego wejścia na szczyt",
+        "kind": "first-ascent",
+        "unit": "r.",
+        "source": "https://en.wikipedia.org/wiki/Mount_Everest",
+        "approximate": false
+      },
+      "measure": {
+        "value": 8848.86,
+        "label": "Wysokość szczytu n.p.m. według pomiaru ogłoszonego w 2020 r.",
+        "kind": "height",
+        "unit": "m",
+        "source": "https://en.wikipedia.org/wiki/Mount_Everest",
+        "approximate": false
+      }
+    },
+    {
+      "id": "stonehenge",
+      "title": "Stonehenge",
+      "rank": 16,
+      "topic": "ancient",
+      "regions": [
+        "eu-west"
+      ],
+      "art": "stones",
+      "intro": "Ślad dawnych cywilizacji, który przetrwał do naszych czasów.",
+      "note": "Pytanie dotyczy najwyższego zachowanego pionowego kamienia, nie średnicy kręgu.",
+      "checkedOn": "2026-10-19",
+      "year": {
+        "value": 1986,
+        "label": "Rok wpisania zespołu na listę UNESCO",
+        "kind": "unesco",
+        "unit": "r.",
+        "source": "https://whc.unesco.org/en/list/373/",
+        "approximate": false
+      },
+      "measure": {
+        "value": 7,
+        "label": "Wysokość najwyższego stojącego kamienia ponad gruntem (około)",
+        "kind": "height",
+        "unit": "m",
+        "source": "https://historicengland.org.uk/listing/the-list/list-entry/1010140?section=official-list-entry",
+        "approximate": true
+      }
+    },
+    {
+      "id": "niagara",
+      "title": "Wodospad Niagara",
+      "rank": 17,
+      "topic": "water",
+      "regions": [
+        "na-east"
+      ],
+      "art": "waterfall",
+      "intro": "Woda i czas wyrzeźbiły ten charakterystyczny krajobraz.",
+      "note": "Wielkość dotyczy Horseshoe Falls, a rok amerykańskiego parku nad wodospadami.",
+      "checkedOn": "2026-10-19",
+      "year": {
+        "value": 1885,
+        "label": "Rok utworzenia amerykańskiego Niagara Falls State Park",
+        "kind": "protected",
+        "unit": "r.",
+        "source": "https://en.wikipedia.org/wiki/Niagara_Falls",
+        "approximate": false
+      },
+      "measure": {
+        "value": 57,
+        "label": "Wysokość kanadyjskiego Horseshoe Falls",
+        "kind": "height",
+        "unit": "m",
+        "source": "https://en.wikipedia.org/wiki/Niagara_Falls",
+        "approximate": false
+      }
+    },
+    {
+      "id": "sagrada",
+      "title": "Sagrada Família",
+      "rank": 18,
+      "topic": "sacred",
+      "regions": [
+        "eu-west"
+      ],
+      "art": "temple",
+      "intro": "Miejsce tradycji, architektury i spotkań wielu pokoleń.",
+      "note": "Pytanie dotyczy docelowej wysokości z projektu, a nie stanu prac w konkretnym dniu.",
+      "checkedOn": "2026-10-19",
+      "year": {
+        "value": 1882,
+        "label": "Rok rozpoczęcia budowy",
+        "kind": "started",
+        "unit": "r.",
+        "source": "https://en.wikipedia.org/wiki/Sagrada_Fam%C3%ADlia",
+        "approximate": false
+      },
+      "measure": {
+        "value": 172.5,
+        "label": "Projektowa wysokość wieży Jezusa Chrystusa",
+        "kind": "height",
+        "unit": "m",
+        "source": "https://en.wikipedia.org/wiki/Sagrada_Fam%C3%ADlia",
+        "approximate": false
+      }
+    },
+    {
+      "id": "louvre",
+      "title": "Luwr i szklana piramida",
+      "rank": 19,
+      "topic": "palaces",
+      "regions": [
+        "eu-west"
+      ],
+      "art": "pyramids",
+      "intro": "Historia zapisana w murach i przestrzeni.",
+      "note": "Obie wartości dotyczą szklanej piramidy przed pałacem, nie całej historii muzeum.",
+      "checkedOn": "2026-10-19",
+      "year": {
+        "value": 1989,
+        "label": "Rok otwarcia szklanej piramidy",
+        "kind": "opened",
+        "unit": "r.",
+        "source": "https://presse.louvre.fr/the-louvre-pyramidnbspturns-30/?lang=en",
+        "approximate": false
+      },
+      "measure": {
+        "value": 21.6,
+        "label": "Wysokość szklanej piramidy (około)",
+        "kind": "height",
+        "unit": "m",
+        "source": "https://www.lego.com/cdn/product-assets/product.bi.core.pdf/6129472.pdf",
+        "approximate": true
+      }
+    },
+    {
+      "id": "petra",
+      "title": "Petra",
+      "rank": 20,
+      "topic": "ancient",
+      "regions": [
+        "asia-west"
+      ],
+      "art": "temple",
+      "intro": "Ślad dawnych cywilizacji, który przetrwał do naszych czasów.",
+      "note": "Pytanie o wielkość dotyczy najbardziej rozpoznawalnej fasady Petry.",
+      "checkedOn": "2026-10-19",
+      "year": {
+        "value": 1985,
+        "label": "Rok wpisania Petry na listę UNESCO",
+        "kind": "unesco",
+        "unit": "r.",
+        "source": "https://whc.unesco.org/en/list/326/",
+        "approximate": false
+      },
+      "measure": {
+        "value": 39.5,
+        "label": "Wysokość fasady Skarbca Al-Chazna",
+        "kind": "height",
+        "unit": "m",
+        "source": "https://www.visitpetra.jo/en/Location/2",
+        "approximate": false
+      }
+    },
+    {
+      "id": "acropolis",
+      "title": "Akropol w Atenach",
+      "rank": 21,
+      "topic": "ancient",
+      "regions": [
+        "eu-east"
+      ],
+      "art": "temple",
+      "intro": "Ślad dawnych cywilizacji, który przetrwał do naszych czasów.",
+      "note": "Wysokość dotyczy świątyni Partenon, a nie całego wzgórza.",
+      "checkedOn": "2026-10-19",
+      "year": {
+        "value": 1987,
+        "label": "Rok wpisania Akropolu na listę UNESCO",
+        "kind": "unesco",
+        "unit": "r.",
+        "source": "https://whc.unesco.org/en/list/404/",
+        "approximate": false
+      },
+      "measure": {
+        "value": 13.72,
+        "label": "Wysokość Partenonu",
+        "kind": "height",
+        "unit": "m",
+        "source": "https://en.wikipedia.org/wiki/Parthenon",
+        "approximate": false
+      }
+    },
+    {
+      "id": "angkor",
+      "title": "Angkor Wat",
+      "rank": 22,
+      "topic": "sacred",
+      "regions": [
+        "asia-se"
+      ],
+      "art": "temple",
+      "intro": "Miejsce tradycji, architektury i spotkań wielu pokoleń.",
+      "note": "Centralna wieża dominuje nad wielopoziomowym zespołem świątynnym.",
+      "checkedOn": "2026-10-19",
+      "year": {
+        "value": 1992,
+        "label": "Rok wpisania Angkoru na listę UNESCO",
+        "kind": "unesco",
+        "unit": "r.",
+        "source": "https://whc.unesco.org/en/list/668/",
+        "approximate": false
+      },
+      "measure": {
+        "value": 65,
+        "label": "Wysokość centralnej wieży nad gruntem",
+        "kind": "height",
+        "unit": "m",
+        "source": "https://en.wikipedia.org/wiki/Angkor_Wat",
+        "approximate": false
+      }
+    },
+    {
+      "id": "fuji",
+      "title": "Góra Fudżi",
+      "rank": 23,
+      "topic": "mountains",
+      "regions": [
+        "asia-east"
+      ],
+      "art": "mountain",
+      "intro": "Krajobraz, którego skalę trudno ocenić jednym spojrzeniem.",
+      "note": "Fudżi jest najwyższą górą Japonii.",
+      "checkedOn": "2026-10-19",
+      "year": {
+        "value": 2013,
+        "label": "Rok wpisania Fudżi na listę UNESCO",
+        "kind": "unesco",
+        "unit": "r.",
+        "source": "https://whc.unesco.org/en/list/1418/",
+        "approximate": false
+      },
+      "measure": {
+        "value": 3776,
+        "label": "Wysokość szczytu nad poziomem morza",
+        "kind": "height",
+        "unit": "m",
+        "source": "https://en.wikipedia.org/wiki/Mount_Fuji",
+        "approximate": false
+      }
+    },
+    {
+      "id": "moai",
+      "title": "Moai na Rapa Nui",
+      "rank": 24,
+      "topic": "ancient",
+      "regions": [
+        "oceania"
+      ],
+      "art": "statue",
+      "intro": "Ślad dawnych cywilizacji, który przetrwał do naszych czasów.",
+      "note": "Posąg Paro leży dziś przewrócony. Rapa Nui zaliczamy w grze do Oceanii.",
+      "checkedOn": "2026-10-19",
+      "year": {
+        "value": 1995,
+        "label": "Rok wpisania Parku Narodowego Rapa Nui na listę UNESCO",
+        "kind": "unesco",
+        "unit": "r.",
+        "source": "https://whc.unesco.org/en/list/715/",
+        "approximate": false
+      },
+      "measure": {
+        "value": 9.8,
+        "label": "Wysokość posągu Paro bez podstawy",
+        "kind": "height",
+        "unit": "m",
+        "source": "https://www.pbs.org/wgbh/nova/easter/civilization/giants.html",
+        "approximate": false
+      }
+    },
+    {
+      "id": "saint-peter",
+      "title": "Bazylika św. Piotra",
+      "rank": 25,
+      "topic": "sacred",
+      "regions": [
+        "eu-west"
+      ],
+      "art": "temple",
+      "intro": "Miejsce tradycji, architektury i spotkań wielu pokoleń.",
+      "note": "Obecna bazylika zastąpiła wcześniejszą świątynię w tym miejscu.",
+      "checkedOn": "2026-10-19",
+      "year": {
+        "value": 1626,
+        "label": "Rok konsekracji obecnej bazyliki",
+        "kind": "consecrated",
+        "unit": "r.",
+        "source": "https://en.wikipedia.org/wiki/St._Peter%27s_Basilica",
+        "approximate": false
+      },
+      "measure": {
+        "value": 136.57,
+        "label": "Wysokość od posadzki bazyliki do szczytu krzyża kopuły",
+        "kind": "height",
+        "unit": "m",
+        "source": "https://en.wikipedia.org/wiki/St._Peter%27s_Basilica",
+        "approximate": false
+      }
+    },
+    {
+      "id": "great-barrier",
+      "title": "Wielka Rafa Koralowa",
+      "rank": 26,
+      "topic": "nature",
+      "regions": [
+        "oceania",
+        "ocean-pacific-south"
+      ],
+      "art": "reef",
+      "intro": "Fragment świata chroniony dla kolejnych pokoleń.",
+      "note": "Obszar UNESCO ma inne granice niż sam park morski. Akceptujemy Oceanię lub południowy Pacyfik.",
+      "checkedOn": "2026-10-19",
+      "year": {
+        "value": 1981,
+        "label": "Rok wpisania rafy na listę UNESCO",
+        "kind": "unesco",
+        "unit": "r.",
+        "source": "https://whc.unesco.org/en/list/154/",
+        "approximate": false
+      },
+      "measure": {
+        "value": 348700,
+        "label": "Powierzchnia obszaru światowego dziedzictwa",
+        "kind": "area",
+        "unit": "km²",
+        "source": "https://whc.unesco.org/en/list/154/",
+        "approximate": false
+      }
+    },
+    {
+      "id": "kaaba",
+      "title": "Al-Kaba w Mekce",
+      "rank": 27,
+      "topic": "sacred",
+      "regions": [
+        "asia-west"
+      ],
+      "art": "temple",
+      "intro": "Miejsce tradycji, architektury i spotkań wielu pokoleń.",
+      "note": "Pytanie dotyczy samej Al-Kaby, nie minaretów otaczającego ją meczetu.",
+      "checkedOn": "2026-10-19",
+      "year": {
+        "value": 630,
+        "label": "Rok zdobycia Mekki przez Mahometa",
+        "kind": "historic-event",
+        "unit": "r.",
+        "source": "https://en.wikipedia.org/wiki/Kaaba",
+        "approximate": false
+      },
+      "measure": {
+        "value": 13.1,
+        "label": "Wysokość budowli (około)",
+        "kind": "height",
+        "unit": "m",
+        "source": "https://en.wikipedia.org/wiki/Kaaba",
+        "approximate": true
+      }
+    },
+    {
+      "id": "notre-dame",
+      "title": "Katedra Notre-Dame w Paryżu",
+      "rank": 28,
+      "topic": "sacred",
+      "regions": [
+        "eu-west"
+      ],
+      "art": "temple",
+      "intro": "Miejsce tradycji, architektury i spotkań wielu pokoleń.",
+      "note": "Wielkość dotyczy dwóch zachodnich wież, nie wyższej iglicy.",
+      "checkedOn": "2026-10-19",
+      "year": {
+        "value": 1345,
+        "label": "Tradycyjnie podawany rok ukończenia średniowiecznej katedry",
+        "kind": "completed",
+        "unit": "r.",
+        "source": "https://en.wikipedia.org/wiki/Notre-Dame_de_Paris",
+        "approximate": true
+      },
+      "measure": {
+        "value": 69,
+        "label": "Wysokość zachodnich wież",
+        "kind": "height",
+        "unit": "m",
+        "source": "https://en.wikipedia.org/wiki/Notre-Dame_de_Paris",
+        "approximate": false
+      }
+    },
+    {
+      "id": "hagia-sophia",
+      "title": "Hagia Sophia",
+      "rank": 29,
+      "topic": "sacred",
+      "regions": [
+        "asia-west"
+      ],
+      "art": "temple",
+      "intro": "Miejsce tradycji, architektury i spotkań wielu pokoleń.",
+      "note": "Wysokość dotyczy kopuły, nie późniejszych minaretów.",
+      "checkedOn": "2026-10-19",
+      "year": {
+        "value": 537,
+        "label": "Rok konsekracji świątyni Justyniana",
+        "kind": "consecrated",
+        "unit": "r.",
+        "source": "https://en.wikipedia.org/wiki/Hagia_Sophia",
+        "approximate": false
+      },
+      "measure": {
+        "value": 55.6,
+        "label": "Wysokość wnętrza do szczytu kopuły",
+        "kind": "height",
+        "unit": "m",
+        "source": "https://en.wikipedia.org/wiki/Hagia_Sophia",
+        "approximate": false
+      }
+    },
+    {
+      "id": "hollywood",
+      "title": "Napis Hollywood",
+      "rank": 30,
+      "topic": "icons",
+      "regions": [
+        "na-west"
+      ],
+      "art": "city",
+      "intro": "Rozpoznawalny symbol i opowieść zapisana w jego wymiarach.",
+      "note": "Pierwotnie napis brzmiał HOLLYWOODLAND; litery mają około 45 stóp wysokości.",
+      "checkedOn": "2026-10-19",
+      "year": {
+        "value": 1923,
+        "label": "Rok postawienia pierwotnego napisu",
+        "kind": "opened",
+        "unit": "r.",
+        "source": "https://en.wikipedia.org/wiki/Hollywood_Sign",
+        "approximate": false
+      },
+      "measure": {
+        "value": 13.7,
+        "label": "Wysokość obecnych liter (około)",
+        "kind": "height",
+        "unit": "m",
+        "source": "https://en.wikipedia.org/wiki/Hollywood_Sign",
+        "approximate": true
+      }
+    },
+    {
+      "id": "uluru",
+      "title": "Uluru",
+      "rank": 31,
+      "topic": "mountains",
+      "regions": [
+        "oceania"
+      ],
+      "art": "rock",
+      "intro": "Krajobraz, którego skalę trudno ocenić jednym spojrzeniem.",
+      "note": "To wysokość ponad równiną, nie wysokość nad poziomem morza.",
+      "checkedOn": "2026-10-19",
+      "year": {
+        "value": 1987,
+        "label": "Rok pierwszego wpisu parku na listę UNESCO",
+        "kind": "unesco",
+        "unit": "r.",
+        "source": "https://whc.unesco.org/en/list/447/",
+        "approximate": false
+      },
+      "measure": {
+        "value": 348,
+        "label": "Wysokość skały ponad otaczającą równiną",
+        "kind": "height",
+        "unit": "m",
+        "source": "https://en.wikipedia.org/wiki/Uluru",
+        "approximate": false
+      }
+    },
+    {
+      "id": "empire-state",
+      "title": "Empire State Building",
+      "rank": 32,
+      "topic": "icons",
+      "regions": [
+        "na-east"
+      ],
+      "art": "tower",
+      "intro": "Rozpoznawalny symbol i opowieść zapisana w jego wymiarach.",
+      "note": "Wysokość do dachu jest mniejsza niż wysokość całkowita z anteną.",
+      "checkedOn": "2026-10-19",
+      "year": {
+        "value": 1931,
+        "label": "Rok oficjalnego otwarcia",
+        "kind": "opened",
+        "unit": "r.",
+        "source": "https://en.wikipedia.org/wiki/Empire_State_Building",
+        "approximate": false
+      },
+      "measure": {
+        "value": 443.2,
+        "label": "Wysokość wraz z anteną",
+        "kind": "height",
+        "unit": "m",
+        "source": "https://en.wikipedia.org/wiki/Empire_State_Building",
+        "approximate": false
+      }
+    },
+    {
+      "id": "rushmore",
+      "title": "Mount Rushmore",
+      "rank": 33,
+      "topic": "icons",
+      "regions": [
+        "na-west"
+      ],
+      "art": "rock",
+      "intro": "Rozpoznawalny symbol i opowieść zapisana w jego wymiarach.",
+      "note": "Wielkość dotyczy twarzy prezydentów, nie wysokości całej góry.",
+      "checkedOn": "2026-10-19",
+      "year": {
+        "value": 1941,
+        "label": "Rok zakończenia prac nad pomnikiem",
+        "kind": "completed",
+        "unit": "r.",
+        "source": "https://en.wikipedia.org/wiki/Mount_Rushmore",
+        "approximate": false
+      },
+      "measure": {
+        "value": 18,
+        "label": "Wysokość wyrzeźbionych twarzy (około)",
+        "kind": "height",
+        "unit": "m",
+        "source": "https://en.wikipedia.org/wiki/Mount_Rushmore",
+        "approximate": true
+      }
+    },
+    {
+      "id": "chichen-itza",
+      "title": "Chichén Itzá",
+      "rank": 34,
+      "topic": "ancient",
+      "regions": [
+        "central-america"
+      ],
+      "art": "pyramids",
+      "intro": "Ślad dawnych cywilizacji, który przetrwał do naszych czasów.",
+      "note": "Wielkość obejmuje budowlę stojącą na szczycie piramidy.",
+      "checkedOn": "2026-10-19",
+      "year": {
+        "value": 1988,
+        "label": "Rok wpisania miasta na listę UNESCO",
+        "kind": "unesco",
+        "unit": "r.",
+        "source": "https://whc.unesco.org/en/list/483/",
+        "approximate": false
+      },
+      "measure": {
+        "value": 30,
+        "label": "Wysokość piramidy Kukulkana wraz ze świątynią",
+        "kind": "height",
+        "unit": "m",
+        "source": "https://en.wikipedia.org/wiki/El_Castillo,_Chichen_Itza",
+        "approximate": false
+      }
+    },
+    {
+      "id": "forbidden-city",
+      "title": "Zakazane Miasto",
+      "rank": 35,
+      "topic": "palaces",
+      "regions": [
+        "asia-east"
+      ],
+      "art": "palace",
+      "intro": "Historia zapisana w murach i przestrzeni.",
+      "note": "To powierzchnia całego zespołu, nie suma powierzchni użytkowych sal.",
+      "checkedOn": "2026-10-19",
+      "year": {
+        "value": 1420,
+        "label": "Rok ukończenia budowy zespołu pałacowego",
+        "kind": "completed",
+        "unit": "r.",
+        "source": "https://en.wikipedia.org/wiki/Forbidden_City",
+        "approximate": false
+      },
+      "measure": {
+        "value": 720000,
+        "label": "Powierzchnia zespołu pałacowego (około)",
+        "kind": "area",
+        "unit": "m²",
+        "source": "https://en.wikipedia.org/wiki/Forbidden_City",
+        "approximate": true
+      }
+    },
+    {
+      "id": "tower-bridge",
+      "title": "Tower Bridge",
+      "rank": 36,
+      "topic": "engineering",
+      "regions": [
+        "eu-west"
+      ],
+      "art": "bridge",
+      "intro": "Droga, most lub kanał, który połączył odległe brzegi.",
+      "note": "Tower Bridge to most z dwiema wieżami i zwodzonym przęsłem.",
+      "checkedOn": "2026-10-19",
+      "year": {
+        "value": 1894,
+        "label": "Rok otwarcia mostu",
+        "kind": "opened",
+        "unit": "r.",
+        "source": "https://en.wikipedia.org/wiki/Tower_Bridge",
+        "approximate": false
+      },
+      "measure": {
+        "value": 244,
+        "label": "Całkowita długość mostu",
+        "kind": "length",
+        "unit": "m",
+        "source": "https://en.wikipedia.org/wiki/Tower_Bridge",
+        "approximate": false
+      }
+    },
+    {
+      "id": "pompeii",
+      "title": "Pompeje",
+      "rank": 37,
+      "topic": "ancient",
+      "regions": [
+        "eu-west"
+      ],
+      "art": "arena",
+      "intro": "Ślad dawnych cywilizacji, który przetrwał do naszych czasów.",
+      "note": "Rok dotyczy katastrofy, a powierzchnia miasta — nie całego wpisu UNESCO z innymi stanowiskami.",
+      "checkedOn": "2026-10-19",
+      "year": {
+        "value": 79,
+        "label": "Rok erupcji Wezuwiusza, która zasypała miasto",
+        "kind": "historic-event",
+        "unit": "r.",
+        "source": "https://en.wikipedia.org/wiki/Pompeii",
+        "approximate": false
+      },
+      "measure": {
+        "value": 66,
+        "label": "Powierzchnia starożytnego miasta (około)",
+        "kind": "area",
+        "unit": "ha",
+        "source": "https://en.wikipedia.org/wiki/Pompeii",
+        "approximate": true
+      }
+    },
+    {
+      "id": "versailles",
+      "title": "Pałac wersalski",
+      "rank": 38,
+      "topic": "palaces",
+      "regions": [
+        "eu-west"
+      ],
+      "art": "palace",
+      "intro": "Historia zapisana w murach i przestrzeni.",
+      "note": "Wielkość dotyczy parku, nie powierzchni samego pałacu.",
+      "checkedOn": "2026-10-19",
+      "year": {
+        "value": 1682,
+        "label": "Rok przeniesienia dworu Ludwika XIV do Wersalu",
+        "kind": "historic-event",
+        "unit": "r.",
+        "source": "https://en.wikipedia.org/wiki/Palace_of_Versailles",
+        "approximate": false
+      },
+      "measure": {
+        "value": 800,
+        "label": "Powierzchnia parku pałacowego (około)",
+        "kind": "area",
+        "unit": "ha",
+        "source": "https://en.wikipedia.org/wiki/Palace_of_Versailles",
+        "approximate": true
+      }
+    },
+    {
+      "id": "victoria-falls",
+      "title": "Wodospady Wiktorii",
+      "rank": 39,
+      "topic": "water",
+      "regions": [
+        "af-south"
+      ],
+      "art": "waterfall",
+      "intro": "Woda i czas wyrzeźbiły ten charakterystyczny krajobraz.",
+      "note": "Wodospady leżą na granicy Zambii i Zimbabwe; oba kraje należą do tego samego obszaru gry.",
+      "checkedOn": "2026-10-19",
+      "year": {
+        "value": 1989,
+        "label": "Rok wpisania wodospadów na listę UNESCO",
+        "kind": "unesco",
+        "unit": "r.",
+        "source": "https://whc.unesco.org/en/list/509/",
+        "approximate": false
+      },
+      "measure": {
+        "value": 108,
+        "label": "Maksymalna wysokość spadku",
+        "kind": "height",
+        "unit": "m",
+        "source": "https://en.wikipedia.org/wiki/Victoria_Falls",
+        "approximate": false
+      }
+    },
+    {
+      "id": "iguazu",
+      "title": "Wodospady Iguazú",
+      "rank": 40,
+      "topic": "water",
+      "regions": [
+        "sa-south"
+      ],
+      "art": "waterfall",
+      "intro": "Woda i czas wyrzeźbiły ten charakterystyczny krajobraz.",
+      "note": "Rok dotyczy argentyńskiego parku; brazylijski wpis nastąpił później.",
+      "checkedOn": "2026-10-19",
+      "year": {
+        "value": 1984,
+        "label": "Rok wpisania argentyńskiego parku na listę UNESCO",
+        "kind": "unesco",
+        "unit": "r.",
+        "source": "https://whc.unesco.org/en/list/303/",
+        "approximate": false
+      },
+      "measure": {
+        "value": 82,
+        "label": "Maksymalna wysokość spadku (około)",
+        "kind": "height",
+        "unit": "m",
+        "source": "https://en.wikipedia.org/wiki/Iguazu_Falls",
+        "approximate": true
+      }
+    },
+    {
+      "id": "kilimanjaro",
+      "title": "Kilimandżaro",
+      "rank": 41,
+      "topic": "mountains",
+      "regions": [
+        "af-east"
+      ],
+      "art": "mountain",
+      "intro": "Krajobraz, którego skalę trudno ocenić jednym spojrzeniem.",
+      "note": "Uhuru jest najwyższym wierzchołkiem masywu.",
+      "checkedOn": "2026-10-19",
+      "year": {
+        "value": 1987,
+        "label": "Rok wpisania parku na listę UNESCO",
+        "kind": "unesco",
+        "unit": "r.",
+        "source": "https://whc.unesco.org/en/list/403/",
+        "approximate": false
+      },
+      "measure": {
+        "value": 5895,
+        "label": "Wysokość szczytu Uhuru nad poziomem morza",
+        "kind": "height",
+        "unit": "m",
+        "source": "https://en.wikipedia.org/wiki/Mount_Kilimanjaro",
+        "approximate": false
+      }
+    },
+    {
+      "id": "yellowstone",
+      "title": "Park Narodowy Yellowstone",
+      "rank": 42,
+      "topic": "nature",
+      "regions": [
+        "na-west"
+      ],
+      "art": "forest",
+      "intro": "Fragment świata chroniony dla kolejnych pokoleń.",
+      "note": "Obszar parku jest znacznie większy od samego terenu gejzerów.",
+      "checkedOn": "2026-10-19",
+      "year": {
+        "value": 1872,
+        "label": "Rok utworzenia parku narodowego",
+        "kind": "protected",
+        "unit": "r.",
+        "source": "https://en.wikipedia.org/wiki/Yellowstone_National_Park",
+        "approximate": false
+      },
+      "measure": {
+        "value": 8983,
+        "label": "Powierzchnia parku narodowego (około)",
+        "kind": "area",
+        "unit": "km²",
+        "source": "https://en.wikipedia.org/wiki/Yellowstone_National_Park",
+        "approximate": true
+      }
+    },
+    {
+      "id": "neuschwanstein",
+      "title": "Zamek Neuschwanstein",
+      "rank": 43,
+      "topic": "palaces",
+      "regions": [
+        "eu-west"
+      ],
+      "art": "castle",
+      "intro": "Historia zapisana w murach i przestrzeni.",
+      "note": "Rok dotyczy rozpoczęcia budowy; część planowanych wnętrz nigdy nie została ukończona.",
+      "checkedOn": "2026-10-19",
+      "year": {
+        "value": 1869,
+        "label": "Rok rozpoczęcia budowy zamku",
+        "kind": "started",
+        "unit": "r.",
+        "source": "https://en.wikipedia.org/wiki/Neuschwanstein_Castle",
+        "approximate": false
+      },
+      "measure": {
+        "value": 65,
+        "label": "Wysokość najwyższej wieży (około)",
+        "kind": "height",
+        "unit": "m",
+        "source": "https://en.wikipedia.org/wiki/Neuschwanstein_Castle",
+        "approximate": true
+      }
+    },
+    {
+      "id": "terracotta",
+      "title": "Terakotowa Armia",
+      "rank": 44,
+      "topic": "ancient",
+      "regions": [
+        "asia-east"
+      ],
+      "art": "statue",
+      "intro": "Ślad dawnych cywilizacji, który przetrwał do naszych czasów.",
+      "note": "Pierwsza hala kryje największy z głównych zespołów figur.",
+      "checkedOn": "2026-10-19",
+      "year": {
+        "value": 1974,
+        "label": "Rok odkrycia armii przez współczesnych znalazców",
+        "kind": "discovered",
+        "unit": "r.",
+        "source": "https://en.wikipedia.org/wiki/Terracotta_Army",
+        "approximate": false
+      },
+      "measure": {
+        "value": 14260,
+        "label": "Powierzchnia pierwszego dołu wykopaliskowego",
+        "kind": "area",
+        "unit": "m²",
+        "source": "https://ise.ciit.edu.cn/2023/0604/c5035a113359/page.htm",
+        "approximate": false
+      }
+    },
+    {
+      "id": "brandenburg",
+      "title": "Brama Brandenburska",
+      "rank": 45,
+      "topic": "icons",
+      "regions": [
+        "eu-west"
+      ],
+      "art": "gate",
+      "intro": "Rozpoznawalny symbol i opowieść zapisana w jego wymiarach.",
+      "note": "Wielkość obejmuje rzeźbiarskie zwieńczenie bramy.",
+      "checkedOn": "2026-10-19",
+      "year": {
+        "value": 1791,
+        "label": "Rok ukończenia budowy bramy",
+        "kind": "completed",
+        "unit": "r.",
+        "source": "https://en.wikipedia.org/wiki/Brandenburg_Gate",
+        "approximate": false
+      },
+      "measure": {
+        "value": 26,
+        "label": "Wysokość bramy wraz z kwadrygą (około)",
+        "kind": "height",
+        "unit": "m",
+        "source": "https://en.wikipedia.org/wiki/Brandenburg_Gate",
+        "approximate": true
+      }
+    },
+    {
+      "id": "oia",
+      "title": "Oia na Santorynie",
+      "rank": 46,
+      "topic": "water",
+      "regions": [
+        "eu-east"
+      ],
+      "art": "island",
+      "intro": "Woda i czas wyrzeźbiły ten charakterystyczny krajobraz.",
+      "note": "Pytanie o powierzchnię dotyczy głównej wyspy, a nie całego archipelagu.",
+      "checkedOn": "2026-10-19",
+      "year": {
+        "value": 1956,
+        "label": "Rok silnego trzęsienia ziemi na Santorynie",
+        "kind": "historic-event",
+        "unit": "r.",
+        "source": "https://en.wikipedia.org/wiki/Santorini",
+        "approximate": false
+      },
+      "measure": {
+        "value": 73,
+        "label": "Powierzchnia głównej wyspy Thira (około)",
+        "kind": "area",
+        "unit": "km²",
+        "source": "https://en.wikipedia.org/wiki/Santorini",
+        "approximate": true
+      }
+    },
+    {
+      "id": "alhambra",
+      "title": "Alhambra",
+      "rank": 47,
+      "topic": "palaces",
+      "regions": [
+        "eu-west"
+      ],
+      "art": "palace",
+      "intro": "Historia zapisana w murach i przestrzeni.",
+      "note": "Wielkość dotyczy zespołu Alhambry, nie całego obszaru miasta Grenada.",
+      "checkedOn": "2026-10-19",
+      "year": {
+        "value": 1984,
+        "label": "Rok wpisania Alhambry na listę UNESCO",
+        "kind": "unesco",
+        "unit": "r.",
+        "source": "https://whc.unesco.org/en/list/314/",
+        "approximate": false
+      },
+      "measure": {
+        "value": 142000,
+        "label": "Powierzchnia zespołu pałacowo-obronnego (około)",
+        "kind": "area",
+        "unit": "m²",
+        "source": "https://en.wikipedia.org/wiki/Alhambra",
+        "approximate": true
+      }
+    },
+    {
+      "id": "golden-temple",
+      "title": "Złota Świątynia w Amritsarze",
+      "rank": 48,
+      "topic": "sacred",
+      "regions": [
+        "asia-south"
+      ],
+      "art": "temple",
+      "intro": "Miejsce tradycji, architektury i spotkań wielu pokoleń.",
+      "note": "Wielkość dotyczy basenu otaczającego główne sanktuarium.",
+      "checkedOn": "2026-10-19",
+      "year": {
+        "value": 1604,
+        "label": "Rok umieszczenia Adi Granth w świątyni",
+        "kind": "historic-event",
+        "unit": "r.",
+        "source": "https://en.wikipedia.org/wiki/Golden_Temple",
+        "approximate": false
+      },
+      "measure": {
+        "value": 150,
+        "label": "Długość boku świętego basenu Amrit Sarovar (około)",
+        "kind": "length",
+        "unit": "m",
+        "source": "https://en.wikipedia.org/wiki/Golden_Temple",
+        "approximate": true
+      }
+    },
+    {
+      "id": "burj-arab",
+      "title": "Burdż al-Arab",
+      "rank": 49,
+      "topic": "icons",
+      "regions": [
+        "asia-west"
+      ],
+      "art": "tower",
+      "intro": "Rozpoznawalny symbol i opowieść zapisana w jego wymiarach.",
+      "note": "Bryła budynku nawiązuje do żagla.",
+      "checkedOn": "2026-10-19",
+      "year": {
+        "value": 1999,
+        "label": "Rok otwarcia hotelu",
+        "kind": "opened",
+        "unit": "r.",
+        "source": "https://en.wikipedia.org/wiki/Burj_Al_Arab",
+        "approximate": false
+      },
+      "measure": {
+        "value": 321,
+        "label": "Całkowita wysokość budynku",
+        "kind": "height",
+        "unit": "m",
+        "source": "https://en.wikipedia.org/wiki/Burj_Al_Arab",
+        "approximate": false
+      }
+    },
+    {
+      "id": "ha-long",
+      "title": "Zatoka Hạ Long",
+      "rank": 50,
+      "topic": "water",
+      "regions": [
+        "asia-se"
+      ],
+      "art": "island",
+      "intro": "Woda i czas wyrzeźbiły ten charakterystyczny krajobraz.",
+      "note": "Powierzchnia całej zatoki różni się od granic obszaru wpisanego na UNESCO.",
+      "checkedOn": "2026-10-19",
+      "year": {
+        "value": 1994,
+        "label": "Rok pierwszego wpisu zatoki na listę UNESCO",
+        "kind": "unesco",
+        "unit": "r.",
+        "source": "https://whc.unesco.org/en/list/672/",
+        "approximate": false
+      },
+      "measure": {
+        "value": 1553,
+        "label": "Powierzchnia całej zatoki (około)",
+        "kind": "area",
+        "unit": "km²",
+        "source": "https://en.wikipedia.org/wiki/H%E1%BA%A1_Long_Bay",
+        "approximate": true
+      }
+    },
+    {
+      "id": "panama",
+      "title": "Kanał Panamski",
+      "rank": 51,
+      "topic": "engineering",
+      "regions": [
+        "central-america"
+      ],
+      "art": "canal",
+      "intro": "Droga, most lub kanał, który połączył odległe brzegi.",
+      "note": "To długość drogi łączącej oba oceany.",
+      "checkedOn": "2026-10-19",
+      "year": {
+        "value": 1914,
+        "label": "Rok otwarcia kanału",
+        "kind": "opened",
+        "unit": "r.",
+        "source": "https://en.wikipedia.org/wiki/Panama_Canal",
+        "approximate": false
+      },
+      "measure": {
+        "value": 80,
+        "label": "Przybliżona długość drogi wodnej",
+        "kind": "length",
+        "unit": "km",
+        "source": "https://en.wikipedia.org/wiki/Panama_Canal",
+        "approximate": false
+      }
+    },
+    {
+      "id": "petronas",
+      "title": "Petronas Towers",
+      "rank": 52,
+      "topic": "icons",
+      "regions": [
+        "asia-se"
+      ],
+      "art": "tower",
+      "intro": "Rozpoznawalny symbol i opowieść zapisana w jego wymiarach.",
+      "note": "Oficjalna inauguracja nastąpiła po ukończeniu głównych prac budowlanych.",
+      "checkedOn": "2026-10-19",
+      "year": {
+        "value": 1999,
+        "label": "Rok oficjalnej inauguracji wież",
+        "kind": "opened",
+        "unit": "r.",
+        "source": "https://en.wikipedia.org/wiki/Petronas_Towers",
+        "approximate": false
+      },
+      "measure": {
+        "value": 451.9,
+        "label": "Wysokość architektoniczna wraz z iglicami",
+        "kind": "height",
+        "unit": "m",
+        "source": "https://en.wikipedia.org/wiki/Petronas_Towers",
+        "approximate": false
+      }
+    },
+    {
+      "id": "buckingham",
+      "title": "Pałac Buckingham",
+      "rank": 53,
+      "topic": "palaces",
+      "regions": [
+        "eu-west"
+      ],
+      "art": "palace",
+      "intro": "Historia zapisana w murach i przestrzeni.",
+      "note": "Pytanie dotyczy fasady pałacu, nie długości ogrodów.",
+      "checkedOn": "2026-10-19",
+      "year": {
+        "value": 1837,
+        "label": "Rok ustanowienia oficjalnej londyńskiej rezydencji monarchy",
+        "kind": "historic-event",
+        "unit": "r.",
+        "source": "https://en.wikipedia.org/wiki/Buckingham_Palace",
+        "approximate": false
+      },
+      "measure": {
+        "value": 108,
+        "label": "Długość głównej fasady",
+        "kind": "length",
+        "unit": "m",
+        "source": "https://en.wikipedia.org/wiki/Buckingham_Palace",
+        "approximate": false
+      }
+    },
+    {
+      "id": "tower-london",
+      "title": "Tower of London",
+      "rank": 54,
+      "topic": "palaces",
+      "regions": [
+        "eu-west"
+      ],
+      "art": "castle",
+      "intro": "Historia zapisana w murach i przestrzeni.",
+      "note": "Wielkość dotyczy centralnej White Tower.",
+      "checkedOn": "2026-10-19",
+      "year": {
+        "value": 1988,
+        "label": "Rok wpisania twierdzy na listę UNESCO",
+        "kind": "unesco",
+        "unit": "r.",
+        "source": "https://whc.unesco.org/en/list/488/",
+        "approximate": false
+      },
+      "measure": {
+        "value": 27,
+        "label": "Wysokość White Tower ponad terenem (około)",
+        "kind": "height",
+        "unit": "m",
+        "source": "https://en.wikipedia.org/wiki/White_Tower_(Tower_of_London)",
+        "approximate": true
+      }
+    },
+    {
+      "id": "marina-bay",
+      "title": "Marina Bay Sands",
+      "rank": 55,
+      "topic": "icons",
+      "regions": [
+        "asia-se"
+      ],
+      "art": "city",
+      "intro": "Rozpoznawalny symbol i opowieść zapisana w jego wymiarach.",
+      "note": "Wielkość dotyczy tarasu łączącego dachy trzech wież.",
+      "checkedOn": "2026-10-19",
+      "year": {
+        "value": 2010,
+        "label": "Rok otwarcia kompleksu",
+        "kind": "opened",
+        "unit": "r.",
+        "source": "https://en.wikipedia.org/wiki/Marina_Bay_Sands",
+        "approximate": false
+      },
+      "measure": {
+        "value": 340,
+        "label": "Długość tarasu Sands SkyPark",
+        "kind": "length",
+        "unit": "m",
+        "source": "https://hk.marinabaysands.com/content/dam/singapore/marinabaysands/master/main/home/company-information/media-centre/may2012/051512%20AWARD%20WINNING%20SINGAPORE%20ICON%20TO%20REDUCE%20CARBON%20FOOTPRINT.pdf",
+        "approximate": false
+      }
+    },
+    {
+      "id": "times-square",
+      "title": "Times Square",
+      "rank": 56,
+      "topic": "icons",
+      "regions": [
+        "na-east"
+      ],
+      "art": "city",
+      "intro": "Rozpoznawalny symbol i opowieść zapisana w jego wymiarach.",
+      "note": "Rok dotyczy nazwy placu, a wysokość budynku znanego z noworocznego opuszczania kuli.",
+      "checkedOn": "2026-10-19",
+      "year": {
+        "value": 1904,
+        "label": "Rok nadania placowi nazwy Times Square",
+        "kind": "historic-event",
+        "unit": "r.",
+        "source": "https://en.wikipedia.org/wiki/One_Times_Square",
+        "approximate": false
+      },
+      "measure": {
+        "value": 111,
+        "label": "Wysokość budynku One Times Square (około)",
+        "kind": "height",
+        "unit": "m",
+        "source": "https://en.wikipedia.org/wiki/One_Times_Square",
+        "approximate": true
+      }
+    },
+    {
+      "id": "saint-mark",
+      "title": "Plac św. Marka w Wenecji",
+      "rank": 57,
+      "topic": "icons",
+      "regions": [
+        "eu-west"
+      ],
+      "art": "tower",
+      "intro": "Rozpoznawalny symbol i opowieść zapisana w jego wymiarach.",
+      "note": "Obecna dzwonnica jest odbudową wieży, która zawaliła się w 1902 roku.",
+      "checkedOn": "2026-10-19",
+      "year": {
+        "value": 1912,
+        "label": "Rok inauguracji odbudowanej dzwonnicy",
+        "kind": "opened",
+        "unit": "r.",
+        "source": "https://en.wikipedia.org/wiki/St_Mark%27s_Campanile",
+        "approximate": false
+      },
+      "measure": {
+        "value": 98.6,
+        "label": "Wysokość dzwonnicy św. Marka",
+        "kind": "height",
+        "unit": "m",
+        "source": "https://en.wikipedia.org/wiki/St_Mark%27s_Campanile",
+        "approximate": false
+      }
+    },
+    {
+      "id": "mont-saint-michel",
+      "title": "Mont-Saint-Michel",
+      "rank": 58,
+      "topic": "sacred",
+      "regions": [
+        "eu-west"
+      ],
+      "art": "castle",
+      "intro": "Miejsce tradycji, architektury i spotkań wielu pokoleń.",
+      "note": "Wysokość obejmuje wzgórze i opactwo wraz z iglicą.",
+      "checkedOn": "2026-10-19",
+      "year": {
+        "value": 1979,
+        "label": "Rok wpisania opactwa i zatoki na listę UNESCO",
+        "kind": "unesco",
+        "unit": "r.",
+        "source": "https://whc.unesco.org/en/list/80/",
+        "approximate": false
+      },
+      "measure": {
+        "value": 157,
+        "label": "Wysokość szczytu iglicy nad poziomem morza",
+        "kind": "height",
+        "unit": "m",
+        "source": "https://en.wikipedia.org/wiki/Mont-Saint-Michel",
+        "approximate": false
+      }
+    },
+    {
+      "id": "suez",
+      "title": "Kanał Sueski",
+      "rank": 59,
+      "topic": "engineering",
+      "regions": [
+        "af-north"
+      ],
+      "art": "canal",
+      "intro": "Droga, most lub kanał, który połączył odległe brzegi.",
+      "note": "Wielkość odnosi się do całej trasy wraz z podejściami.",
+      "checkedOn": "2026-10-19",
+      "year": {
+        "value": 1869,
+        "label": "Rok otwarcia kanału",
+        "kind": "opened",
+        "unit": "r.",
+        "source": "https://en.wikipedia.org/wiki/Suez_Canal",
+        "approximate": false
+      },
+      "measure": {
+        "value": 193.3,
+        "label": "Długość kanału wraz z torami podejściowymi",
+        "kind": "length",
+        "unit": "km",
+        "source": "https://en.wikipedia.org/wiki/Suez_Canal",
+        "approximate": false
+      }
+    },
+    {
+      "id": "table-mountain",
+      "title": "Góra Stołowa",
+      "rank": 60,
+      "topic": "mountains",
+      "regions": [
+        "af-south"
+      ],
+      "art": "mountain",
+      "intro": "Krajobraz, którego skalę trudno ocenić jednym spojrzeniem.",
+      "note": "Najwyższy punkt znajduje się przy Maclear’s Beacon.",
+      "checkedOn": "2026-10-19",
+      "year": {
+        "value": 1998,
+        "label": "Rok utworzenia parku narodowego obejmującego górę",
+        "kind": "protected",
+        "unit": "r.",
+        "source": "https://en.wikipedia.org/wiki/Table_Mountain",
+        "approximate": false
+      },
+      "measure": {
+        "value": 1085,
+        "label": "Wysokość najwyższego punktu n.p.m.",
+        "kind": "height",
+        "unit": "m",
+        "source": "https://en.wikipedia.org/wiki/Table_Mountain",
+        "approximate": false
+      }
+    },
+    {
+      "id": "matterhorn",
+      "title": "Matterhorn",
+      "rank": 61,
+      "topic": "mountains",
+      "regions": [
+        "eu-west"
+      ],
+      "art": "mountain",
+      "intro": "Krajobraz, którego skalę trudno ocenić jednym spojrzeniem.",
+      "note": "Góra leży na granicy Szwajcarii i Włoch, w tym samym obszarze gry.",
+      "checkedOn": "2026-10-19",
+      "year": {
+        "value": 1865,
+        "label": "Rok pierwszego wejścia na szczyt",
+        "kind": "first-ascent",
+        "unit": "r.",
+        "source": "https://en.wikipedia.org/wiki/Matterhorn",
+        "approximate": false
+      },
+      "measure": {
+        "value": 4478,
+        "label": "Wysokość szczytu nad poziomem morza",
+        "kind": "height",
+        "unit": "m",
+        "source": "https://en.wikipedia.org/wiki/Matterhorn",
+        "approximate": false
+      }
+    },
+    {
+      "id": "galapagos",
+      "title": "Wyspy Galapagos",
+      "rank": 62,
+      "topic": "nature",
+      "regions": [
+        "sa-north"
+      ],
+      "art": "island",
+      "intro": "Fragment świata chroniony dla kolejnych pokoleń.",
+      "note": "Pytanie obejmuje ląd, bez rozległego rezerwatu morskiego.",
+      "checkedOn": "2026-10-19",
+      "year": {
+        "value": 1978,
+        "label": "Rok wpisania wysp na listę UNESCO",
+        "kind": "unesco",
+        "unit": "r.",
+        "source": "https://whc.unesco.org/en/list/1/",
+        "approximate": false
+      },
+      "measure": {
+        "value": 7880,
+        "label": "Łączna powierzchnia lądowa archipelagu (około)",
+        "kind": "area",
+        "unit": "km²",
+        "source": "https://en.wikipedia.org/wiki/Gal%C3%A1pagos_Islands",
+        "approximate": true
+      }
+    },
+    {
+      "id": "uyuni",
+      "title": "Salar de Uyuni",
+      "rank": 63,
+      "topic": "nature",
+      "regions": [
+        "sa-south"
+      ],
+      "art": "lake",
+      "intro": "Fragment świata chroniony dla kolejnych pokoleń.",
+      "note": "Rok dotyczy pobliskiego miasta; powierzchnia samego solniska.",
+      "checkedOn": "2026-10-19",
+      "year": {
+        "value": 1890,
+        "label": "Rok założenia pobliskiego miasta Uyuni",
+        "kind": "historic-event",
+        "unit": "r.",
+        "source": "https://en.wikipedia.org/wiki/Uyuni",
+        "approximate": false
+      },
+      "measure": {
+        "value": 10582,
+        "label": "Powierzchnia solniska",
+        "kind": "area",
+        "unit": "km²",
+        "source": "https://en.wikipedia.org/wiki/Salar_de_Uyuni",
+        "approximate": false
+      }
+    },
+    {
+      "id": "kinkakuji",
+      "title": "Złoty Pawilon Kinkaku-ji",
+      "rank": 64,
+      "topic": "sacred",
+      "regions": [
+        "asia-east"
+      ],
+      "art": "temple",
+      "intro": "Miejsce tradycji, architektury i spotkań wielu pokoleń.",
+      "note": "Dzisiejszy pawilon odbudowano po pożarze z 1950 roku.",
+      "checkedOn": "2026-10-19",
+      "year": {
+        "value": 1955,
+        "label": "Rok ukończenia powojennej rekonstrukcji pawilonu",
+        "kind": "rebuilt",
+        "unit": "r.",
+        "source": "https://en.wikipedia.org/wiki/Kinkaku-ji",
+        "approximate": false
+      },
+      "measure": {
+        "value": 12.5,
+        "label": "Wysokość Złotego Pawilonu",
+        "kind": "height",
+        "unit": "m",
+        "source": "https://en.wikipedia.org/wiki/Kinkaku-ji",
+        "approximate": false
+      }
+    },
+    {
+      "id": "abu-simbel",
+      "title": "Świątynie w Abu Simbel",
+      "rank": 65,
+      "topic": "ancient",
+      "regions": [
+        "af-north"
+      ],
+      "art": "temple",
+      "intro": "Ślad dawnych cywilizacji, który przetrwał do naszych czasów.",
+      "note": "Świątynie przeniesiono, aby ochronić je przed wodami zbiornika.",
+      "checkedOn": "2026-10-19",
+      "year": {
+        "value": 1968,
+        "label": "Rok zakończenia przenoszenia świątyń",
+        "kind": "historic-event",
+        "unit": "r.",
+        "source": "https://en.wikipedia.org/wiki/Abu_Simbel",
+        "approximate": false
+      },
+      "measure": {
+        "value": 20,
+        "label": "Wysokość siedzących posągów Ramzesa II (około)",
+        "kind": "height",
+        "unit": "m",
+        "source": "https://en.wikipedia.org/wiki/Abu_Simbel",
+        "approximate": true
+      }
+    },
+    {
+      "id": "borobudur",
+      "title": "Borobudur",
+      "rank": 66,
+      "topic": "sacred",
+      "regions": [
+        "asia-se"
+      ],
+      "art": "temple",
+      "intro": "Miejsce tradycji, architektury i spotkań wielu pokoleń.",
+      "note": "Wielkość dotyczy obecnej wysokości buddyjskiego monumentu.",
+      "checkedOn": "2026-10-19",
+      "year": {
+        "value": 1991,
+        "label": "Rok wpisania zespołu na listę UNESCO",
+        "kind": "unesco",
+        "unit": "r.",
+        "source": "https://whc.unesco.org/en/list/592/",
+        "approximate": false
+      },
+      "measure": {
+        "value": 35,
+        "label": "Wysokość obecnej budowli",
+        "kind": "height",
+        "unit": "m",
+        "source": "https://en.wikipedia.org/wiki/Borobudur",
+        "approximate": false
+      }
+    },
+    {
+      "id": "potala",
+      "title": "Pałac Potala",
+      "rank": 67,
+      "topic": "palaces",
+      "regions": [
+        "asia-east"
+      ],
+      "art": "palace",
+      "intro": "Historia zapisana w murach i przestrzeni.",
+      "note": "Wysokość budynku nie jest wysokością położenia Lhasy nad morzem.",
+      "checkedOn": "2026-10-19",
+      "year": {
+        "value": 1994,
+        "label": "Rok wpisania pałacu na listę UNESCO",
+        "kind": "unesco",
+        "unit": "r.",
+        "source": "https://whc.unesco.org/en/list/707/",
+        "approximate": false
+      },
+      "measure": {
+        "value": 117,
+        "label": "Wysokość pałacu od podstawy do dachu",
+        "kind": "height",
+        "unit": "m",
+        "source": "https://en.chinaculture.org/created/2006-01/20/content_78350_5.htm",
+        "approximate": false
+      }
+    },
+    {
+      "id": "bagan",
+      "title": "Świątynie Baganu",
+      "rank": 68,
+      "topic": "ancient",
+      "regions": [
+        "asia-se"
+      ],
+      "art": "temple",
+      "intro": "Ślad dawnych cywilizacji, który przetrwał do naszych czasów.",
+      "note": "Wielkość dotyczy granic wpisu UNESCO, nie całego współczesnego miasta.",
+      "checkedOn": "2026-10-19",
+      "year": {
+        "value": 2019,
+        "label": "Rok wpisania Baganu na listę UNESCO",
+        "kind": "unesco",
+        "unit": "r.",
+        "source": "https://whc.unesco.org/en/list/1588/",
+        "approximate": false
+      },
+      "measure": {
+        "value": 5005.49,
+        "label": "Powierzchnia obszaru wpisanego na UNESCO",
+        "kind": "area",
+        "unit": "ha",
+        "source": "https://whc.unesco.org/en/list/1588/",
+        "approximate": false
+      }
+    },
+    {
+      "id": "cn-tower",
+      "title": "CN Tower",
+      "rank": 69,
+      "topic": "icons",
+      "regions": [
+        "na-east"
+      ],
+      "art": "tower",
+      "intro": "Rozpoznawalny symbol i opowieść zapisana w jego wymiarach.",
+      "note": "Wysokość obejmuje maszt antenowy.",
+      "checkedOn": "2026-10-19",
+      "year": {
+        "value": 1976,
+        "label": "Rok otwarcia wieży",
+        "kind": "opened",
+        "unit": "r.",
+        "source": "https://en.wikipedia.org/wiki/CN_Tower",
+        "approximate": false
+      },
+      "measure": {
+        "value": 553.33,
+        "label": "Całkowita wysokość wieży",
+        "kind": "height",
+        "unit": "m",
+        "source": "https://en.wikipedia.org/wiki/CN_Tower",
+        "approximate": false
+      }
+    },
+    {
+      "id": "milan",
+      "title": "Katedra w Mediolanie",
+      "rank": 70,
+      "topic": "sacred",
+      "regions": [
+        "eu-west"
+      ],
+      "art": "temple",
+      "intro": "Miejsce tradycji, architektury i spotkań wielu pokoleń.",
+      "note": "Budowa i rozbudowy trwały wiele stuleci.",
+      "checkedOn": "2026-10-19",
+      "year": {
+        "value": 1386,
+        "label": "Rok rozpoczęcia budowy katedry",
+        "kind": "started",
+        "unit": "r.",
+        "source": "https://en.wikipedia.org/wiki/Milan_Cathedral",
+        "approximate": false
+      },
+      "measure": {
+        "value": 108.5,
+        "label": "Wysokość najwyższej iglicy ze statuą Madonniny",
+        "kind": "height",
+        "unit": "m",
+        "source": "https://en.wikipedia.org/wiki/Milan_Cathedral",
+        "approximate": false
+      }
+    },
+    {
+      "id": "budapest-parliament",
+      "title": "Parlament w Budapeszcie",
+      "rank": 71,
+      "topic": "icons",
+      "regions": [
+        "eu-east"
+      ],
+      "art": "palace",
+      "intro": "Rozpoznawalny symbol i opowieść zapisana w jego wymiarach.",
+      "note": "Wielkość dotyczy najwyższego punktu budynku nad Dunajem.",
+      "checkedOn": "2026-10-19",
+      "year": {
+        "value": 1902,
+        "label": "Rok oddania budynku parlamentu do użytku",
+        "kind": "opened",
+        "unit": "r.",
+        "source": "https://en.wikipedia.org/wiki/Hungarian_Parliament_Building",
+        "approximate": false
+      },
+      "measure": {
+        "value": 96,
+        "label": "Wysokość do szczytu kopuły",
+        "kind": "height",
+        "unit": "m",
+        "source": "https://en.wikipedia.org/wiki/Hungarian_Parliament_Building",
+        "approximate": false
+      }
+    },
+    {
+      "id": "gardens-bay",
+      "title": "Gardens by the Bay",
+      "rank": 72,
+      "topic": "nature",
+      "regions": [
+        "asia-se"
+      ],
+      "art": "forest",
+      "intro": "Fragment świata chroniony dla kolejnych pokoleń.",
+      "note": "Najwyższe z charakterystycznych sztucznych drzew osiąga 50 m.",
+      "checkedOn": "2026-10-19",
+      "year": {
+        "value": 2012,
+        "label": "Rok oficjalnego otwarcia ogrodów",
+        "kind": "opened",
+        "unit": "r.",
+        "source": "https://en.wikipedia.org/wiki/Gardens_by_the_Bay",
+        "approximate": false
+      },
+      "measure": {
+        "value": 50,
+        "label": "Wysokość najwyższego Supertree",
+        "kind": "height",
+        "unit": "m",
+        "source": "https://en.wikipedia.org/wiki/Gardens_by_the_Bay",
+        "approximate": false
+      }
+    },
+    {
+      "id": "angel",
+      "title": "Wodospad Salto Ángel",
+      "rank": 73,
+      "topic": "water",
+      "regions": [
+        "sa-north"
+      ],
+      "art": "waterfall",
+      "intro": "Woda i czas wyrzeźbiły ten charakterystyczny krajobraz.",
+      "note": "Wysokość całkowita obejmuje więcej niż jeden odcinek spadku.",
+      "checkedOn": "2026-10-19",
+      "year": {
+        "value": 1933,
+        "label": "Rok przelotu Jimmiego Angela, który rozsławił wodospad",
+        "kind": "historic-event",
+        "unit": "r.",
+        "source": "https://en.wikipedia.org/wiki/Angel_Falls",
+        "approximate": false
+      },
+      "measure": {
+        "value": 979,
+        "label": "Całkowita wysokość wodospadu",
+        "kind": "height",
+        "unit": "m",
+        "source": "https://en.wikipedia.org/wiki/Angel_Falls",
+        "approximate": false
+      }
+    },
+    {
+      "id": "serengeti",
+      "title": "Park Narodowy Serengeti",
+      "rank": 74,
+      "topic": "nature",
+      "regions": [
+        "af-east"
+      ],
+      "art": "forest",
+      "intro": "Fragment świata chroniony dla kolejnych pokoleń.",
+      "note": "Pytanie dotyczy parku, nie całego ekosystemu Serengeti–Mara.",
+      "checkedOn": "2026-10-19",
+      "year": {
+        "value": 1951,
+        "label": "Rok ustanowienia parku narodowego",
+        "kind": "protected",
+        "unit": "r.",
+        "source": "https://tanzaniaparks.go.tz/serengeti/about",
+        "approximate": false
+      },
+      "measure": {
+        "value": 14763,
+        "label": "Powierzchnia parku narodowego",
+        "kind": "area",
+        "unit": "km²",
+        "source": "https://www.tanzaniaparks.go.tz/uploads/publications/en-1633712781-TNP%20InvProspectusFINAL21.pdf",
+        "approximate": false
+      }
+    },
+    {
+      "id": "fushimi-inari",
+      "title": "Sanktuarium Fushimi Inari",
+      "rank": 75,
+      "topic": "sacred",
+      "regions": [
+        "asia-east"
+      ],
+      "art": "gate",
+      "intro": "Miejsce tradycji, architektury i spotkań wielu pokoleń.",
+      "note": "Wielkość dotyczy góry, po której biegną ścieżki z bramami torii.",
+      "checkedOn": "2026-10-19",
+      "year": {
+        "value": 711,
+        "label": "Tradycyjnie podawany rok założenia sanktuarium",
+        "kind": "founded",
+        "unit": "r.",
+        "source": "https://en.wikipedia.org/wiki/Fushimi_Inari-taisha",
+        "approximate": true
+      },
+      "measure": {
+        "value": 233,
+        "label": "Wysokość góry Inari nad poziomem morza",
+        "kind": "height",
+        "unit": "m",
+        "source": "https://en.wikipedia.org/wiki/Fushimi_Inari-taisha",
+        "approximate": false
+      }
+    },
+    {
+      "id": "giants-causeway",
+      "title": "Grobla Olbrzyma",
+      "rank": 76,
+      "topic": "mountains",
+      "regions": [
+        "eu-west"
+      ],
+      "art": "rock",
+      "intro": "Krajobraz, którego skalę trudno ocenić jednym spojrzeniem.",
+      "note": "Wielkość dotyczy kolumn, nie wysokości całego klifu.",
+      "checkedOn": "2026-10-19",
+      "year": {
+        "value": 1986,
+        "label": "Rok wpisania wybrzeża na listę UNESCO",
+        "kind": "unesco",
+        "unit": "r.",
+        "source": "https://whc.unesco.org/en/list/369/",
+        "approximate": false
+      },
+      "measure": {
+        "value": 12,
+        "label": "Wysokość najwyższych bazaltowych kolumn",
+        "kind": "height",
+        "unit": "m",
+        "source": "https://en.wikipedia.org/wiki/Giant%27s_Causeway",
+        "approximate": false
+      }
+    },
+    {
+      "id": "moher",
+      "title": "Klify Moheru",
+      "rank": 77,
+      "topic": "water",
+      "regions": [
+        "eu-west"
+      ],
+      "art": "canyon",
+      "intro": "Woda i czas wyrzeźbiły ten charakterystyczny krajobraz.",
+      "note": "Najwyższy fragment klifów jest wyższy niż punkt przy wieży O’Briena.",
+      "checkedOn": "2026-10-19",
+      "year": {
+        "value": 2007,
+        "label": "Rok otwarcia obecnego centrum dla zwiedzających",
+        "kind": "opened",
+        "unit": "r.",
+        "source": "https://en.wikipedia.org/wiki/Cliffs_of_Moher",
+        "approximate": false
+      },
+      "measure": {
+        "value": 214,
+        "label": "Maksymalna wysokość klifów nad oceanem",
+        "kind": "height",
+        "unit": "m",
+        "source": "https://en.wikipedia.org/wiki/Cliffs_of_Moher",
+        "approximate": false
+      }
+    },
+    {
+      "id": "pamukkale",
+      "title": "Pamukkale",
+      "rank": 78,
+      "topic": "water",
+      "regions": [
+        "asia-west"
+      ],
+      "art": "rock",
+      "intro": "Woda i czas wyrzeźbiły ten charakterystyczny krajobraz.",
+      "note": "Białe tarasy tworzą pas długości około 2,7 km.",
+      "checkedOn": "2026-10-19",
+      "year": {
+        "value": 1988,
+        "label": "Rok wpisania Hierapolis–Pamukkale na listę UNESCO",
+        "kind": "unesco",
+        "unit": "r.",
+        "source": "https://whc.unesco.org/en/list/485/",
+        "approximate": false
+      },
+      "measure": {
+        "value": 2700,
+        "label": "Długość obszaru trawertynowych tarasów (około)",
+        "kind": "length",
+        "unit": "m",
+        "source": "https://en.wikipedia.org/wiki/Pamukkale",
+        "approximate": true
+      }
+    },
+    {
+      "id": "sigiriya",
+      "title": "Sigirija",
+      "rank": 79,
+      "topic": "ancient",
+      "regions": [
+        "asia-south"
+      ],
+      "art": "rock",
+      "intro": "Ślad dawnych cywilizacji, który przetrwał do naszych czasów.",
+      "note": "Wielkość dotyczy wyniesienia skały ponad równinę, nie wysokości n.p.m.",
+      "checkedOn": "2026-10-19",
+      "year": {
+        "value": 1982,
+        "label": "Rok wpisania starożytnego miasta na listę UNESCO",
+        "kind": "unesco",
+        "unit": "r.",
+        "source": "https://whc.unesco.org/en/list/202/",
+        "approximate": false
+      },
+      "measure": {
+        "value": 180,
+        "label": "Wysokość skały ponad otaczającą równiną (około)",
+        "kind": "height",
+        "unit": "m",
+        "source": "https://en.wikipedia.org/wiki/Sigiriya",
+        "approximate": true
+      }
+    },
+    {
+      "id": "goreme",
+      "title": "Göreme i Kapadocja",
+      "rank": 80,
+      "topic": "mountains",
+      "regions": [
+        "asia-west"
+      ],
+      "art": "rock",
+      "intro": "Krajobraz, którego skalę trudno ocenić jednym spojrzeniem.",
+      "note": "Pytanie dotyczy obszaru wpisu UNESCO, nie całej historycznej Kapadocji.",
+      "checkedOn": "2026-10-19",
+      "year": {
+        "value": 1985,
+        "label": "Rok wpisania Göreme i skalnych obiektów na listę UNESCO",
+        "kind": "unesco",
+        "unit": "r.",
+        "source": "https://whc.unesco.org/en/list/357/",
+        "approximate": false
+      },
+      "measure": {
+        "value": 9883.81,
+        "label": "Powierzchnia obszaru wpisanego na UNESCO",
+        "kind": "area",
+        "unit": "ha",
+        "source": "https://whc.unesco.org/en/list/357/",
+        "approximate": false
+      }
+    },
+    {
+      "id": "pantheon",
+      "title": "Panteon w Rzymie",
+      "rank": 81,
+      "topic": "ancient",
+      "regions": [
+        "eu-west"
+      ],
+      "art": "temple",
+      "intro": "Ślad dawnych cywilizacji, który przetrwał do naszych czasów.",
+      "note": "Średnica kopuły jest zbliżona do wysokości jej wnętrza.",
+      "checkedOn": "2026-10-19",
+      "year": {
+        "value": 126,
+        "label": "Przybliżony rok ukończenia obecnego Panteonu",
+        "kind": "completed",
+        "unit": "r.",
+        "source": "https://en.wikipedia.org/wiki/Pantheon,_Rome",
+        "approximate": true
+      },
+      "measure": {
+        "value": 43.3,
+        "label": "Wewnętrzna średnica kopuły",
+        "kind": "length",
+        "unit": "m",
+        "source": "https://en.wikipedia.org/wiki/Pantheon,_Rome",
+        "approximate": false
+      }
+    },
+    {
+      "id": "saint-basil",
+      "title": "Sobór Wasyla Błogosławionego",
+      "rank": 82,
+      "topic": "sacred",
+      "regions": [
+        "eu-east"
+      ],
+      "art": "temple",
+      "intro": "Miejsce tradycji, architektury i spotkań wielu pokoleń.",
+      "note": "Wielkość dotyczy zespołu świątynnego na Placu Czerwonym.",
+      "checkedOn": "2026-10-19",
+      "year": {
+        "value": 1561,
+        "label": "Rok ukończenia budowy soboru",
+        "kind": "completed",
+        "unit": "r.",
+        "source": "https://en.wikipedia.org/wiki/Saint_Basil%27s_Cathedral",
+        "approximate": false
+      },
+      "measure": {
+        "value": 47.5,
+        "label": "Wysokość centralnej budowli",
+        "kind": "height",
+        "unit": "m",
+        "source": "https://en.wikipedia.org/wiki/Saint_Basil%27s_Cathedral",
+        "approximate": false
+      }
+    },
+    {
+      "id": "prophets-mosque",
+      "title": "Meczet Proroka w Medynie",
+      "rank": 83,
+      "topic": "sacred",
+      "regions": [
+        "asia-west"
+      ],
+      "art": "temple",
+      "intro": "Miejsce tradycji, architektury i spotkań wielu pokoleń.",
+      "note": "Pytanie o wysokość dotyczy współczesnych minaretów.",
+      "checkedOn": "2026-10-19",
+      "year": {
+        "value": 622,
+        "label": "Rok założenia meczetu",
+        "kind": "founded",
+        "unit": "r.",
+        "source": "https://en.wikipedia.org/wiki/Al-Masjid_an-Nabawi",
+        "approximate": false
+      },
+      "measure": {
+        "value": 105,
+        "label": "Wysokość najwyższych minaretów (około)",
+        "kind": "height",
+        "unit": "m",
+        "source": "https://en.wikipedia.org/wiki/Al-Masjid_an-Nabawi",
+        "approximate": true
+      }
+    },
+    {
+      "id": "banaue",
+      "title": "Tarasy ryżowe Banaue i Batad",
+      "rank": 84,
+      "topic": "nature",
+      "regions": [
+        "asia-se"
+      ],
+      "art": "mountain",
+      "intro": "Fragment świata chroniony dla kolejnych pokoleń.",
+      "note": "Powierzchnia dotyczy pól ryżowych w Batad według planu 2010–2014 (s. 16), nie sumy pięciu zespołów UNESCO ani całego regionu Banaue.",
+      "checkedOn": "2026-10-19",
+      "year": {
+        "value": 1995,
+        "label": "Rok wpisania tarasów Filipińskich Kordylierów na listę UNESCO",
+        "kind": "unesco",
+        "unit": "r.",
+        "source": "https://whc.unesco.org/en/list/722/",
+        "approximate": false
+      },
+      "measure": {
+        "value": 50.86,
+        "label": "Powierzchnia upraw ryżu w Batad według planu 2010–2014",
+        "kind": "area",
+        "unit": "ha",
+        "source": "https://whc.unesco.org/document/139925",
+        "approximate": false
+      }
+    },
+    {
+      "id": "nazca",
+      "title": "Linie i geoglify Nazca",
+      "rank": 85,
+      "topic": "ancient",
+      "regions": [
+        "sa-north"
+      ],
+      "art": "geoglyph",
+      "intro": "Ślad dawnych cywilizacji, który przetrwał do naszych czasów.",
+      "note": "Wielkość dotyczy jednego rysunku — kolibra — nie całego obszaru geoglifów.",
+      "checkedOn": "2026-10-19",
+      "year": {
+        "value": 1994,
+        "label": "Rok wpisania linii i geoglifów na listę UNESCO",
+        "kind": "unesco",
+        "unit": "r.",
+        "source": "https://whc.unesco.org/en/list/700/",
+        "approximate": false
+      },
+      "measure": {
+        "value": 93,
+        "label": "Długość geoglifu kolibra (około)",
+        "kind": "length",
+        "unit": "m",
+        "source": "https://en.wikipedia.org/wiki/Nazca_Lines",
+        "approximate": true
+      }
+    },
+    {
+      "id": "teotihuacan",
+      "title": "Teotihuacán",
+      "rank": 86,
+      "topic": "ancient",
+      "regions": [
+        "central-america"
+      ],
+      "art": "pyramids",
+      "intro": "Ślad dawnych cywilizacji, który przetrwał do naszych czasów.",
+      "note": "Wielkość dotyczy Piramidy Słońca.",
+      "checkedOn": "2026-10-19",
+      "year": {
+        "value": 1987,
+        "label": "Rok wpisania miasta na listę UNESCO",
+        "kind": "unesco",
+        "unit": "r.",
+        "source": "https://whc.unesco.org/en/list/414/",
+        "approximate": false
+      },
+      "measure": {
+        "value": 65.5,
+        "label": "Wysokość Piramidy Słońca (około)",
+        "kind": "height",
+        "unit": "m",
+        "source": "https://en.wikipedia.org/wiki/Pyramid_of_the_Sun",
+        "approximate": true
+      }
+    },
+    {
+      "id": "milford",
+      "title": "Milford Sound",
+      "rank": 87,
+      "topic": "water",
+      "regions": [
+        "oceania"
+      ],
+      "art": "mountain",
+      "intro": "Woda i czas wyrzeźbiły ten charakterystyczny krajobraz.",
+      "note": "Milford Sound leży w regionie Te Wāhipounamu objętym wpisem UNESCO.",
+      "checkedOn": "2026-10-19",
+      "year": {
+        "value": 1990,
+        "label": "Rok wpisania regionu Te Wāhipounamu na listę UNESCO",
+        "kind": "unesco",
+        "unit": "r.",
+        "source": "https://whc.unesco.org/en/list/551/",
+        "approximate": false
+      },
+      "measure": {
+        "value": 15,
+        "label": "Długość fiordu (około)",
+        "kind": "length",
+        "unit": "km",
+        "source": "https://en.wikipedia.org/wiki/Milford_Sound",
+        "approximate": true
+      }
+    },
+    {
+      "id": "perito-moreno",
+      "title": "Lodowiec Perito Moreno",
+      "rank": 88,
+      "topic": "water",
+      "regions": [
+        "sa-south"
+      ],
+      "art": "glacier",
+      "intro": "Woda i czas wyrzeźbiły ten charakterystyczny krajobraz.",
+      "note": "Długość lodowca zmienia się naturalnie; używamy przybliżenia ze źródła.",
+      "checkedOn": "2026-10-19",
+      "year": {
+        "value": 1981,
+        "label": "Rok wpisania Parku Los Glaciares na listę UNESCO",
+        "kind": "unesco",
+        "unit": "r.",
+        "source": "https://whc.unesco.org/en/list/145/",
+        "approximate": false
+      },
+      "measure": {
+        "value": 30,
+        "label": "Długość lodowca (około)",
+        "kind": "length",
+        "unit": "km",
+        "source": "https://en.wikipedia.org/wiki/Perito_Moreno_Glacier",
+        "approximate": true
+      }
+    },
+    {
+      "id": "komodo",
+      "title": "Park Narodowy Komodo",
+      "rank": 89,
+      "topic": "nature",
+      "regions": [
+        "asia-se"
+      ],
+      "art": "island",
+      "intro": "Fragment świata chroniony dla kolejnych pokoleń.",
+      "note": "Powierzchnia obejmuje wyspy oraz chronione wody.",
+      "checkedOn": "2026-10-19",
+      "year": {
+        "value": 1991,
+        "label": "Rok wpisania parku na listę UNESCO",
+        "kind": "unesco",
+        "unit": "r.",
+        "source": "https://whc.unesco.org/en/list/609/",
+        "approximate": false
+      },
+      "measure": {
+        "value": 1733,
+        "label": "Powierzchnia parku wraz z obszarem morskim (około)",
+        "kind": "area",
+        "unit": "km²",
+        "source": "https://en.wikipedia.org/wiki/Komodo_National_Park",
+        "approximate": true
+      }
+    },
+    {
+      "id": "torres-paine",
+      "title": "Park Narodowy Torres del Paine",
+      "rank": 90,
+      "topic": "nature",
+      "regions": [
+        "sa-south"
+      ],
+      "art": "mountain",
+      "intro": "Fragment świata chroniony dla kolejnych pokoleń.",
+      "note": "Wielkość dotyczy najwyższego szczytu masywu, a nie samych trzech skalnych wież.",
+      "checkedOn": "2026-10-19",
+      "year": {
+        "value": 1959,
+        "label": "Rok utworzenia parku narodowego",
+        "kind": "protected",
+        "unit": "r.",
+        "source": "https://en.wikipedia.org/wiki/Torres_del_Paine_National_Park",
+        "approximate": false
+      },
+      "measure": {
+        "value": 2884,
+        "label": "Wysokość szczytu Cerro Paine Grande n.p.m.",
+        "kind": "height",
+        "unit": "m",
+        "source": "https://en.wikipedia.org/wiki/Torres_del_Paine_National_Park",
+        "approximate": false
+      }
+    },
+    {
+      "id": "bromo",
+      "title": "Wulkan Bromo",
+      "rank": 91,
+      "topic": "mountains",
+      "regions": [
+        "asia-se"
+      ],
+      "art": "mountain",
+      "intro": "Krajobraz, którego skalę trudno ocenić jednym spojrzeniem.",
+      "note": "Bromo to jeden z wulkanów parku Bromo Tengger Semeru.",
+      "checkedOn": "2026-10-19",
+      "year": {
+        "value": 1982,
+        "label": "Rok ustanowienia Parku Bromo Tengger Semeru",
+        "kind": "protected",
+        "unit": "r.",
+        "source": "https://en.wikipedia.org/wiki/Mount_Bromo",
+        "approximate": false
+      },
+      "measure": {
+        "value": 2329,
+        "label": "Wysokość wulkanu nad poziomem morza",
+        "kind": "height",
+        "unit": "m",
+        "source": "https://en.wikipedia.org/wiki/Mount_Bromo",
+        "approximate": false
+      }
+    },
+    {
+      "id": "preikestolen",
+      "title": "Preikestolen",
+      "rank": 92,
+      "topic": "mountains",
+      "regions": [
+        "eu-west"
+      ],
+      "art": "rock",
+      "intro": "Krajobraz, którego skalę trudno ocenić jednym spojrzeniem.",
+      "note": "Rok dotyczy schroniska przy szlaku, a wysokość tarasu nad fiordem.",
+      "checkedOn": "2026-10-19",
+      "year": {
+        "value": 1949,
+        "label": "Rok budowy pierwszego schroniska Preikestolhytta",
+        "kind": "opened",
+        "unit": "r.",
+        "source": "https://preikestolenbasecamp.com/en/preikestolen-lodge/",
+        "approximate": false
+      },
+      "measure": {
+        "value": 604,
+        "label": "Wysokość skalnego tarasu nad Lysefjordem",
+        "kind": "height",
+        "unit": "m",
+        "source": "https://en.wikipedia.org/wiki/Preikestolen",
+        "approximate": false
+      }
+    },
+    {
+      "id": "blue-lagoon",
+      "title": "Błękitna Laguna",
+      "rank": 93,
+      "topic": "water",
+      "regions": [
+        "eu-west"
+      ],
+      "art": "lake",
+      "intro": "Woda i czas wyrzeźbiły ten charakterystyczny krajobraz.",
+      "note": "Rok dotyczy firmy, nie powstania wód geotermalnych; powierzchnia kąpieliska jest datowana.",
+      "checkedOn": "2026-10-19",
+      "year": {
+        "value": 1992,
+        "label": "Rok powstania firmy Blue Lagoon",
+        "kind": "founded",
+        "unit": "r.",
+        "source": "https://www.bluelagoon.com/30years/timeline",
+        "approximate": false
+      },
+      "measure": {
+        "value": 8700,
+        "label": "Powierzchnia kąpieliska po rozbudowie w 2016 r.",
+        "kind": "area",
+        "unit": "m²",
+        "source": "https://www.bluelagoon.com/30years/timeline",
+        "approximate": false
+      }
+    },
+    {
+      "id": "zhangjiajie",
+      "title": "Park Narodowy Lasu Zhangjiajie",
+      "rank": 94,
+      "topic": "mountains",
+      "regions": [
+        "asia-east"
+      ],
+      "art": "rock",
+      "intro": "Krajobraz, którego skalę trudno ocenić jednym spojrzeniem.",
+      "note": "To park leśny, nie cały większy obszar Wulingyuan.",
+      "checkedOn": "2026-10-19",
+      "year": {
+        "value": 1982,
+        "label": "Rok utworzenia parku leśnego",
+        "kind": "protected",
+        "unit": "r.",
+        "source": "https://en.wikipedia.org/wiki/Zhangjiajie_National_Forest_Park",
+        "approximate": false
+      },
+      "measure": {
+        "value": 4810,
+        "label": "Powierzchnia parku leśnego",
+        "kind": "area",
+        "unit": "ha",
+        "source": "https://en.wikipedia.org/wiki/Zhangjiajie_National_Forest_Park",
+        "approximate": false
+      }
+    },
+    {
+      "id": "djenne",
+      "title": "Wielki Meczet w Dżenne",
+      "rank": 95,
+      "topic": "sacred",
+      "regions": [
+        "af-west"
+      ],
+      "art": "temple",
+      "intro": "Miejsce tradycji, architektury i spotkań wielu pokoleń.",
+      "note": "Obecna budowla powstała na miejscu starszego meczetu.",
+      "checkedOn": "2026-10-19",
+      "year": {
+        "value": 1907,
+        "label": "Rok ukończenia obecnego meczetu",
+        "kind": "completed",
+        "unit": "r.",
+        "source": "https://en.wikipedia.org/wiki/Great_Mosque_of_Djenn%C3%A9",
+        "approximate": false
+      },
+      "measure": {
+        "value": 16,
+        "label": "Wysokość najwyższych wież (około)",
+        "kind": "height",
+        "unit": "m",
+        "source": "https://en.wikipedia.org/wiki/Great_Mosque_of_Djenn%C3%A9",
+        "approximate": true
+      }
+    },
+    {
+      "id": "lalibela",
+      "title": "Skalne kościoły w Lalibeli",
+      "rank": 96,
+      "topic": "sacred",
+      "regions": [
+        "af-east"
+      ],
+      "art": "temple",
+      "intro": "Miejsce tradycji, architektury i spotkań wielu pokoleń.",
+      "note": "Wielkość dotyczy pojedynczego kościoła św. Jerzego, nie głębokości całego wykopu.",
+      "checkedOn": "2026-10-19",
+      "year": {
+        "value": 1978,
+        "label": "Rok wpisania kościołów na listę UNESCO",
+        "kind": "unesco",
+        "unit": "r.",
+        "source": "https://whc.unesco.org/en/list/18/",
+        "approximate": false
+      },
+      "measure": {
+        "value": 12,
+        "label": "Wysokość kościoła Biete Giyorgis (około)",
+        "kind": "height",
+        "unit": "m",
+        "source": "https://www.research-collection.ethz.ch/bitstreams/33deb11c-29fd-48a3-8aba-e11e34cb1396/download",
+        "approximate": true
+      }
+    },
+    {
+      "id": "sossusvlei",
+      "title": "Wydmy Sossusvlei",
+      "rank": 97,
+      "topic": "mountains",
+      "regions": [
+        "af-south"
+      ],
+      "art": "dune",
+      "intro": "Krajobraz, którego skalę trudno ocenić jednym spojrzeniem.",
+      "note": "Wielkość dotyczy konkretnej wydmy Big Daddy.",
+      "checkedOn": "2026-10-19",
+      "year": {
+        "value": 1979,
+        "label": "Rok utworzenia Parku Namib-Naukluft",
+        "kind": "protected",
+        "unit": "r.",
+        "source": "https://en.wikipedia.org/wiki/Sossusvlei",
+        "approximate": false
+      },
+      "measure": {
+        "value": 325,
+        "label": "Wysokość wydmy Big Daddy ponad podstawą (około)",
+        "kind": "height",
+        "unit": "m",
+        "source": "https://en.wikipedia.org/wiki/Sossusvlei",
+        "approximate": true
+      }
+    },
+    {
+      "id": "wawel",
+      "title": "Zamek Królewski na Wawelu",
+      "rank": 98,
+      "topic": "palaces",
+      "regions": [
+        "eu-east"
+      ],
+      "art": "castle",
+      "intro": "Historia zapisana w murach i przestrzeni.",
+      "note": "Wielkość dotyczy wysokości położenia wzgórza n.p.m., nie jednej z wież zamku.",
+      "checkedOn": "2026-10-19",
+      "year": {
+        "value": 1978,
+        "label": "Rok wpisania historycznego Krakowa na listę UNESCO",
+        "kind": "unesco",
+        "unit": "r.",
+        "source": "https://whc.unesco.org/en/list/29/",
+        "approximate": false
+      },
+      "measure": {
+        "value": 228,
+        "label": "Wysokość wzgórza wawelskiego nad poziomem morza",
+        "kind": "height",
+        "unit": "m",
+        "source": "https://en.wikipedia.org/wiki/Wawel",
+        "approximate": true
+      }
+    },
+    {
+      "id": "wieliczka",
+      "title": "Kopalnia Soli Wieliczka",
+      "rank": 99,
+      "topic": "ancient",
+      "regions": [
+        "eu-east"
+      ],
+      "art": "cave",
+      "intro": "Ślad dawnych cywilizacji, który przetrwał do naszych czasów.",
+      "note": "Głębokość kopalni jest większa niż głębokość udostępnionej trasy turystycznej.",
+      "checkedOn": "2026-10-19",
+      "year": {
+        "value": 1978,
+        "label": "Rok wpisania kopalni na listę UNESCO",
+        "kind": "unesco",
+        "unit": "r.",
+        "source": "https://whc.unesco.org/en/list/32/",
+        "approximate": false
+      },
+      "measure": {
+        "value": 327,
+        "label": "Głębokość najniższego poziomu kopalni",
+        "kind": "height",
+        "unit": "m",
+        "source": "https://en.wikipedia.org/wiki/Wieliczka_Salt_Mine",
+        "approximate": false
+      }
+    },
+    {
+      "id": "cape-good-hope",
+      "title": "Przylądek Dobrej Nadziei",
+      "rank": 100,
+      "topic": "nature",
+      "regions": [
+        "af-south"
+      ],
+      "art": "island",
+      "intro": "Fragment świata chroniony dla kolejnych pokoleń.",
+      "note": "Wielkość dotyczy rezerwatu, nie wysokości pobliskiego Cape Point.",
+      "checkedOn": "2026-10-19",
+      "year": {
+        "value": 1488,
+        "label": "Rok opłynięcia przylądka przez Bartolomeu Diasa",
+        "kind": "historic-event",
+        "unit": "r.",
+        "source": "https://www.sanparks.org/wp-content/uploads/2024/02/cape-point-brochure.pdf",
+        "approximate": false
+      },
+      "measure": {
+        "value": 7750,
+        "label": "Powierzchnia rezerwatu (około)",
+        "kind": "area",
+        "unit": "ha",
+        "source": "https://www.sanparks.org/wp-content/uploads/2024/02/cape-point-brochure.pdf",
+        "approximate": true
+      }
+    }
+  ]
+}
