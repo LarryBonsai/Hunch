@@ -22,7 +22,7 @@ async function fixture(t) {
 }
 test('serves the app, exposes health and never serves private source or traversal paths', async t => {
   const { base } = await fixture(t);
-  for (const route of ['/', '/style.css', '/app.js', '/board.mjs', '/art.mjs', '/card-intro.mjs', '/round-results.mjs', '/hero-card.mjs', '/favicon.svg']) {
+  for (const route of ['/', '/style.css', '/app.js', '/board.mjs', '/art.mjs', '/card-intro.mjs', '/round-results.mjs', '/hero-card.mjs', '/motion.mjs', '/favicon.svg']) {
     const response = await fetch(base + route);
     assert.equal(response.status, 200, route);
     assert.ok(response.headers.get('content-security-policy'));
