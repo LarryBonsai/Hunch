@@ -4,3 +4,6 @@ node_modules/
 coverage/
 .DS_Store
 artifacts/
+
+data/*.sqlite
+data/*.sqlite.*.tmp

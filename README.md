@@ -6,11 +6,12 @@ Przeglądarkowa gra geograficzna dla 2–6 osób, inspirowana mechaniką szacowa
 
 ## Uruchomienie
 
-Wymagany Node.js 20 lub nowszy; do nowego wdrożenia zalecany Node.js 24. Projekt nie ma zewnętrznych zależności ani etapu budowania.
+Wymagany Node.js 20 lub nowszy; do nowego wdrożenia zalecany Node.js 24. Baza SQLite korzysta z `sql.js` na serwerze. Nie wymaga konta w zewnętrznej usłudze, osobnego serwera bazy ani etapu budowania aplikacji.
 
 ```sh
 git clone https://github.com/LarryBonsai/Hunch.git
 cd Hunch
+npm ci
 npm start
 ```
 
@@ -23,6 +24,7 @@ Przy tworzeniu pokoju wybierz **Klasyczny** albo **Ukryte odpowiedzi · 30 sekun
 ## Co działa
 
 - Pokoje na sześcioznakowy kod i zaproszenia przez link, bez rejestracji.
+- Trwały katalog SQLite: 100 kart w kolekcji „Znane miejsca świata”. Przy tworzeniu pokoju rozwiń kolekcję, aby wybrać temat oraz wysokość/głębokość, długość/średnicę lub powierzchnię. Wybór działa również w treningu z Atlasem i obu trybach gry. Liczba kart ogranicza dostępne długości partii. Losowanie nie powtarza kart w partii; przy mieszanej talii przechodzi naprzemiennie przez tematy.
 - 2–6 graczy, partie po 3, 6 lub 9 rund; trening z botem.
 - Klikalna mapa 17 regionów lądowych i 7 obszarów oceanicznych na konturach Natural Earth oraz dwie skale przedziałowe. Wybór bezpośrednio na mapie lub z listy podzielonej na lądy i oceany.
 - Tryb klasyczny: ruchy na zmianę, jeden znacznik albo pas; 45 sekund na ruch.
@@ -80,9 +82,17 @@ npm run check
 npm run dev
 ```
 
-Testy obejmują zasady obu trybów, kolejność tur, uprawnienia gospodarza, prywatność typów w HTTP/SSE, wspólny zegar, poprawianie i zatwierdzanie zestawu, częściowe odpowiedzi po czasie, punktację, znaczniki, zakończenie i rewanż, bota, współdzielenie stanu między sesjami, wznowienie sesji i odrzucanie niepoprawnych żądań. GitHub Actions uruchamia sprawdzenie składni i testy na Node.js 22 oraz 24.
+Testy obejmują bazę SQLite i jej ponowne otwarcie, import 100 kart, walidację danych, dobór kategorii, prywatność odpowiedzi oraz zasady obu trybów i integrację HTTP/SSE. GitHub Actions instaluje zależności i uruchamia sprawdzenie składni i testy na Node.js 20, 22 oraz 24.
 
-Nową kartę dodaj do `src/questions.mjs`, podając unikalne `id`, tytuł, kategorię, wariant ilustracji, opis, region, rok, wartość i jednostkę, jednoznaczne pytania oraz źródła. Nie dodawaj odpowiedzi do katalogu `public/`.
+## Baza kart
+
+`data/known-places.json` zawiera 100 rekordów źródłowych w kolejności wcześniejszej listy popularności (orientacyjnej, nie statystycznego rankingu). `data/schema.sql` definiuje kolekcje, tematy, miejsca, przypisania regionów i pytania. Przy pierwszym użyciu serwer tworzy rzeczywisty plik SQLite `data/hunch.sqlite`; baza pozostaje po restarcie. Gdy zmieni się odcisk danych źródłowych, serwer transakcyjnie odtwarza katalog. Plik bazy nie trafia do Git. Sprawdzenie importu i liczebności: `npm run db:check`.
+
+Każde miejsce ma pytanie o obszar obecnej mapy, jednoznacznie opisany rok i wielkość z jednostką. Rok może dotyczyć otwarcia, ukończenia, rozpoczęcia budowy, odkrycia, ustanowienia ochrony albo wpisu UNESCO; treść karty zawsze wskazuje zdarzenie. Przy obiektach naturalnych nie przypisujemy arbitralnego roku ich powstania. Wysokość określa również, czy obejmuje cokół, oznacza wysokość n.p.m. albo głębokość. Powierzchnie są podawane w m², km² lub ha, zgodnie z jednostką widoczną na karcie i skali. Przybliżenia i historycznie datowane pomiary są opisane. Każde pytanie ma własny link źródłowy; linki są ujawniane po rundzie. Cały katalog z odpowiedziami pozostaje na serwerze; `/api/catalog` udostępnia jedynie nazwy filtrów i liczebności.
+
+Osiem tematów: wieże i pomniki; świątynie i sanktuaria; pałace, zamki i muzea; ślady dawnych cywilizacji; mosty i kanały; góry i formacje skalne; wodospady, wybrzeża i lodowce; parki, wyspy i ogrody. Przypisania odpowiadają identyfikatorom obecnej mapy, a nie państwom. Everest akceptuje Azję Południową lub Wschodnią, Wielka Rafa — Oceanię lub południowy Pacyfik. Na mapie po odkryciu podświetlane są wszystkie akceptowane pola.
+
+Aktualizacje faktów wprowadzaj w `data/known-places.json`, zachowując unikalne identyfikatory i rangi, temat, regiony, datę przeglądu oraz źródła obu pytań. Obecny import celowo wymaga dokładnie 100 kart; przy rozszerzaniu kolekcji dostosuj limit w walidatorze i schemacie. Ręczne edycje wygenerowanego SQLite zostaną zastąpione po zmianie danych źródłowych. Nie dodawaj odpowiedzi do `public/`.
 
 Dla kart wodnych użyj `region` z `public/water-regions.mjs`, np. `ocean-atlantic-north`, `ocean-indian` albo `ocean-pacific-north`. Każde `id` oznacza jedno pole także przy przejściu przez krawędź mapy. Do odtworzenia pól akwenów pobierz [Natural Earth Marine Polygons 1:50m](https://raw.githubusercontent.com/nvkelso/natural-earth-vector/master/geojson/ne_50m_geography_marine_polys.geojson) do `artifacts/natural-earth-marine.geojson`, zainstaluj Shapely 2.1.2 w środowisku Pythona i uruchom `python tools/build-water-map.py`. Generator korzysta również z istniejących `public/map-paths.mjs`. Python i Shapely nie są potrzebne do uruchomienia gry ani testów.
 
@@ -102,14 +112,15 @@ Zmienne środowiskowe:
 | `PORT` | `3000` | Port serwera |
 | `HOST` | `0.0.0.0` | Adres nasłuchiwania |
 | `COOKIE_SECURE` | `0` | Ustaw `1`, gdy aplikacja działa przez HTTPS |
+| `HUNCH_DB_PATH` | `data/hunch.sqlite` | Ścieżka pliku SQLite z katalogiem kart; katalog nadrzędny musi być zapisywalny |
 
 Przykładowe wartości są w `.env.example`. Aplikacja czyta środowisko procesu; nie ładuje sama pliku `.env`. Przy reverse proxy włącz HTTP/1.1, wyłącz buforowanie dla `/api/events`, pozostaw ciasteczka i oryginalny nagłówek `Host`, a limit czasu połączenia SSE ustaw powyżej 60 sekund. Serwer wysyła heartbeat co 15 sekund. Endpoint monitorowania: `GET /health`.
 
 ### Zakres pierwszej wersji
 
-Stan pokojów i sesji jest przechowywany **w pamięci**. Restart procesu usuwa rozgrywki; nie ma bazy danych, logowania ani trwałej historii graczy. Nie uruchamiaj wielu replik bez wspólnego magazynu stanu i synchronizacji. Nieaktywne pokoje wygasają po 24 godzinach. Nowi gracze mogą dołączyć przed startem partii; gracz, który świadomie opuścił rozpoczętą partię, nie może wrócić do niej jako nowy uczestnik. Przy pozostaniu mniej niż dwóch graczy partia kończy się wcześniej.
+Katalog kart jest przechowywany **w SQLite**, a stan pokojów i sesji **w pamięci**. Restart procesu zachowuje karty, ale usuwa trwające rozgrywki; nie ma logowania ani trwałej historii graczy. W Dockerze dla zachowania pliku między odtworzeniami kontenera ustaw `HUNCH_DB_PATH` w zapisywalnym wolumenie. Nie uruchamiaj wielu replik bez wspólnego magazynu stanu i synchronizacji. Nieaktywne pokoje wygasają po 24 godzinach. Nowi gracze mogą dołączyć przed startem partii; gracz, który świadomie opuścił rozpoczętą partię, nie może wrócić do niej jako nowy uczestnik. Przy pozostaniu mniej niż dwóch graczy partia kończy się wcześniej.
 
-To działająca wersja startowa z małą talią i umownym podziałem regionów. Następne rozszerzenia to większa baza pytań, trwały magazyn pokojów i publiczny hosting.
+Kolejne rozszerzenia mogą obejmować następne kolekcje pytań, trwały magazyn pokojów i publiczny hosting.
 
 ## Inspiracja i materiały
 

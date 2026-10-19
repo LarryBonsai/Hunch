@@ -4,3 +4,5 @@ node_modules
 test
 artifacts
 *.log
+data/*.sqlite
+data/*.tmp

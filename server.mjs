@@ -3,6 +3,7 @@ import { randomBytes, randomInt } from 'node:crypto';
 import { readFile } from 'node:fs/promises';
 import { fileURLToPath, pathToFileURL } from 'node:url';
 import path from 'node:path';
+import { getCatalog } from './src/catalog.mjs';
 import { GameError, createRoom, addPlayer, startGame, place, pass, submitAnswers, expireRound, nextRound, restart, leave, botMove, publicRoom } from './src/game.mjs';
 
 const PUBLIC = path.resolve(fileURLToPath(new URL('./public/', import.meta.url)));
@@ -80,6 +81,7 @@ export function createApp() {
         if (!['GET', 'POST'].includes(req.method)) throw new GameError('Niedozwolona metoda.', 405);
         if (req.method === 'POST' && req.headers.origin && new URL(req.headers.origin).host !== req.headers.host)
           throw new GameError('Niedozwolone pochodzenie żądania.', 403);
+        if (req.method === 'GET' && url.pathname === '/api/catalog') return send(res, 200, getCatalog().summary());
         const session = sessionFor(req, res);
         if (req.method === 'GET' && url.pathname === '/api/session') return send(res, 200, { playerId: session.id, room: publicRoom(roomOf(session), session.id), serverTime: Date.now() });
         if (req.method === 'GET' && url.pathname === '/api/events') {
@@ -108,7 +110,7 @@ export function createApp() {
           const alphabet = 'ABCDEFGHJKLMNPQRSTUVWXYZ23456789';
           let code;
           do { code = Array.from({ length: 6 }, () => alphabet[randomInt(alphabet.length)]).join(''); } while (rooms.has(code));
-          const room = createRoom(code, session.id, body.name, body.rounds ?? 6, body.practice === true, body.mode ?? 'classic');
+          const room = createRoom(code, session.id, body.name, body.rounds ?? 6, body.practice === true, body.mode ?? 'classic', body.catalog ?? {});
           rooms.set(code, room);
           session.roomCode = code;
           room.players[0].connected = Boolean(streams.get(session.id)?.size);
