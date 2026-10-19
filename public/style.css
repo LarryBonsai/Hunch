@@ -214,9 +214,10 @@ body.card-is-docking .game-sidebar>.question-card{opacity:1;transition:opacity .
 @keyframes next-discovery-in{from{opacity:0;transform:translateX(32px) scale(.97)}to{opacity:1;transform:translateX(0) scale(1)}}
 @media(max-width:520px){.setup-option-badge{font-size:6px;padding:3px 5px}.setup-options>[role=option]{padding:9px 7px}.setup-value>small{font-size:8px}.setup-picker>summary{padding:10px;gap:9px}.round-results-card .results-next{min-width:0;width:100%}}
 @media(prefers-reduced-motion:reduce){.setup-options,.card-reveal-card.from-results,.results-page{animation:none}.setup-chevron,.results-next>.icon{transition:none}}
-/* A stable pointer surface surrounds two faces of the same physical card. */
-.sample-flip{position:relative;width:280px;margin:105px auto 0;perspective:1300px;perspective-origin:50% 45%;transform:rotate(5deg);border-radius:10px;cursor:ew-resize;touch-action:pan-y;outline-offset:8px;--card-turn:0deg}
-.sample-card-turner{display:grid;transform-style:preserve-3d;transform:translate3d(var(--card-x,0px),var(--card-y,0px),0) rotateY(var(--card-turn));pointer-events:none;border-radius:inherit}
+/* The whole card travels between the two marked stops; its faces turn in place. */
+.sample-flip{position:absolute;left:0;top:0;z-index:2;width:280px;margin:0;perspective:1300px;perspective-origin:50% 45%;transform:translate3d(var(--card-x,0px),var(--card-y,0px),0) rotate(5deg);border-radius:10px;cursor:e-resize;touch-action:pan-y;outline-offset:8px;--card-turn:0deg}
+.sample-flip[data-stop=right]{cursor:w-resize}
+.sample-card-turner{display:grid;transform-style:preserve-3d;transform:rotateY(var(--card-turn));pointer-events:none;border-radius:inherit}
 .sample-flip .sample-card{grid-area:1/1;display:flex;flex-direction:column;min-width:0;width:100%;margin:0;transform:translateZ(1px);backface-visibility:hidden;-webkit-backface-visibility:hidden;box-shadow:0 22px 45px #263c2b15,inset 0 0 0 1px #ffffff80;user-select:none}
 .sample-flip .sample-card>.landmark{flex-shrink:0}
 .sample-flip .sample-questions{margin-top:auto}
@@ -224,9 +225,9 @@ body.card-is-docking .game-sidebar>.question-card{opacity:1;transition:opacity .
 .sample-flip .sample-card-back h2{font-size:30px;color:#64583c}
 .sample-card-back .sample-bottom{background:#eee7d4;border-color:#ded4bc}
 .sample-card-back .sample-stamp,.sample-card-back .sample-questions{border-color:#dfd7c4}
-.home-card-hint{position:absolute;left:-10px;right:-10px;top:calc(100% + 16px);text-align:center;color:#839078;font-size:8px;letter-spacing:.025em;transform:rotate(-5deg);pointer-events:none}
 .sample-flip:focus-visible{outline:2px solid #72916b}
-@media(min-width:1450px){.sample-flip{width:298px;margin-top:120px}}
-@media(max-width:1100px) and (min-width:761px){.sample-flip{width:238px;margin-top:115px}.sample-flip .sample-card-back h2{font-size:26px}}
-@media(max-width:760px){.sample-flip{width:209px;margin-top:55px;cursor:pointer}.sample-flip .sample-card-back h2{font-size:22px}.home-card-hint{font-size:7px;top:calc(100% + 12px)}}
+@media(min-width:1450px){.sample-flip{width:298px}}
+@media(max-width:1100px) and (min-width:761px){.sample-flip{width:238px}.sample-flip .sample-card-back h2{font-size:26px}}
+@media(max-width:760px){.sample-flip{width:min(209px,calc(100% - 32px))}.sample-flip .sample-card-back h2{font-size:22px}}
+@media(hover:none){.sample-flip[data-home-card]{cursor:pointer}}
 @media(prefers-reduced-motion:reduce){.sample-card-turner{transition:none}}

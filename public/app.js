@@ -26,7 +26,7 @@ const cardIntro = mountCardIntro({ renderCard: introCard, getTarget: () => docum
 const roundResults = mountRoundResults({ renderResults: roundResultsCard,
   getTarget: () => document.querySelector('.next-controls button:not(:disabled)') ?? document.querySelector('.game-sidebar .question-card'),
   getControls: roundAdvanceState, onAdvance: () => action('next') });
-const heroCard = mountHeroCard(app);
+const heroCard = mountHeroCard(app, state.tab);
 function toast(message, error = false) {
   const el = document.querySelector('#toast');
   el.textContent = message;
@@ -102,7 +102,7 @@ function worldMap(preview = false) {
     <path d="${COASTLINE}" class="coastline" aria-hidden="true"/>
     ${preview ? '<text x="144" y="27" class="ocean-name">ARKTYKA</text><text x="344" y="213" class="ocean-name ocean-vertical">ATLANTYK</text><text x="80" y="330" class="ocean-name">PACYFIK</text><text x="615" y="350" class="ocean-name">OCEAN INDYJSKI</text>' : WATER_REGIONS.filter(r => r.kind === 'ocean').map(r => `<text x="${r.x}" y="${r.y + (r.id === 'ocean-arctic' ? 6 : -12)}" class="ocean-name water-label" text-anchor="middle">${esc(r.short)}</text>`).join('')}
     <g transform="translate(903 417)" class="compass-rose"><path d="M0-21 5-5 21 0 5 5 0 21-5 5-21 0-5-5Z" fill="none" stroke="currentColor" stroke-width=".7"/><path d="M0-21 5-5 0 0Z" fill="currentColor"/><text y="-29" text-anchor="middle">N</text></g>
-    ${preview ? '<path d="M273 132Q550 64 827 306" fill="none" stroke="#b65c3e" stroke-width="1.2" opacity=".4"/><circle cx="500" cy="129" r="7" fill="#b65c3e" stroke="#f6f4ec" stroke-width="3"/><circle cx="273" cy="132" r="6" fill="#386d69" stroke="#f6f4ec" stroke-width="3"/><circle cx="827" cy="306" r="6" fill="#b18b2c" stroke="#f6f4ec" stroke-width="3"/>' : ''}
+    ${preview ? '<path data-card-route d="M273 132Q550 64 827 306" fill="none" stroke="#b65c3e" stroke-width="1.2" stroke-dasharray="5 7" opacity=".45"/><circle data-card-stop="left" cx="273" cy="132" r="6" fill="#386d69" stroke="#f6f4ec" stroke-width="3"/><circle data-card-stop="right" cx="827" cy="306" r="6" fill="#b18b2c" stroke="#f6f4ec" stroke-width="3"/>' : ''}
   </svg>`;
 }
 function home() {
@@ -130,7 +130,7 @@ function homeDiscoveryCard() {
     { side: 'front', art: 'eiffel', index: '01', category: 'Wielkie konstrukcje', title: 'Wieża Eiffla', note: 'Nie musisz znać odpowiedzi.' },
     { side: 'back', art: 'pyramids', index: '02', category: 'Cuda dawnego świata', title: 'Piramidy w Gizie', note: 'Świat ma wiele do odkrycia.' }
   ];
-  return `<div class="sample-flip" data-home-card data-side="front" role="button" tabindex="0" aria-pressed="false" aria-describedby="home-card-hint"><div class="sample-card-turner">${faces.map(face => `<div class="sample-card sample-card-${face.side}" data-card-face="${face.side}" aria-hidden="${face.side === 'back'}"><span class="sample-stamp">KARTA ODKRYWCY <span>${face.index} / 10</span></span>${illustration(face.art)}<span class="eyebrow">${face.category}</span><h2>${face.title}</h2><div class="sample-questions"><span>${icon('pin')} Gdzie?</span><span>${icon('time')} Kiedy?</span><span>${icon('chart')} Jak wysoko?</span></div><div class="sample-bottom"><span class="sample-dots"><i></i><i></i><i></i></span>${face.note}</div></div>`).join('')}</div><span class="home-card-hint" id="home-card-hint">Przesuń mysz w poprzek karty ↔</span></div>`;
+  return `<div class="sample-flip" data-home-card data-side="front" role="button" tabindex="0" aria-pressed="false"><div class="sample-card-turner">${faces.map(face => `<div class="sample-card sample-card-${face.side}" data-card-face="${face.side}" aria-hidden="${face.side === 'back'}"><span class="sample-stamp">KARTA ODKRYWCY <span>${face.index} / 10</span></span>${illustration(face.art)}<span class="eyebrow">${face.category}</span><h2>${face.title}</h2><div class="sample-questions"><span>${icon('pin')} Gdzie?</span><span>${icon('time')} Kiedy?</span><span>${icon('chart')} Jak wysoko?</span></div><div class="sample-bottom"><span class="sample-dots"><i></i><i></i><i></i></span>${face.note}</div></div>`).join('')}</div></div>`;
 }
 function setupPicker(key, label, symbol, value, options) {
   const selected = options.find(option => option.value === value);
@@ -302,7 +302,13 @@ document.addEventListener('click', event => {
   }
   if (event.target.closest('[data-close-rules]')) { rules.close(); return; }
   const tab = event.target.closest('[data-tab]');
-  if (tab) { state.tab = tab.dataset.tab; render(); return; }
+  if (tab) {
+    if (state.tab === tab.dataset.tab) return;
+    state.tab = tab.dataset.tab;
+    render();
+    heroCard.setTab(state.tab);
+    return;
+  }
   const region = event.target.closest('[data-region]');
   if (region) { select('map', region.dataset.region); return; }
   const slot = event.target.closest('[data-axis]');
