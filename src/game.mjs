@@ -1,5 +1,5 @@
 import { randomInt } from 'node:crypto';
-import { QUESTIONS } from './questions.mjs';
+import { getCatalog } from './catalog.mjs';
 import { REGIONS, NEIGHBORS, YEAR_SCALE, NUMBER_SCALE, COLORS, CATEGORIES, usedCategories, bucket } from '../public/board.mjs';
 
 export const TURN_MS = 45_000;
@@ -23,10 +23,15 @@ const shuffle = cards => {
   }
   return result;
 };
-export function createRoom(code, hostId, name, rounds = 6, practice = false, mode = 'classic') {
+export function createRoom(code, hostId, name, rounds = 6, practice = false, mode = 'classic', filters = {}) {
   requireThat([3, 6, 9].includes(rounds), 'Wybierz 3, 6 lub 9 rund.');
   requireThat(['classic', 'hidden'].includes(mode), 'Wybierz dostępny tryb gry.');
-  const room = { code, hostId, rounds, practice, mode, phase: 'lobby', players: [], round: 0,
+  requireThat(filters && typeof filters === 'object' && !Array.isArray(filters), 'Niepoprawne ustawienia talii.');
+  const catalog = { collection: filters.collection ?? 'known-places', topic: filters.topic ?? 'all', metric: filters.metric ?? 'all' };
+  let available;
+  try { available = getCatalog().getCards(catalog).length; } catch (error) { if (error instanceof RangeError) throw new GameError(error.message); throw error; }
+  requireThat(available >= rounds, `W tym zestawie jest ${available} kart. Wybierz mniej rund lub szerszą tematykę.`);
+  const room = { code, hostId, rounds, practice, mode, catalog, phase: 'lobby', players: [], round: 0,
     deck: [], placements: [], turnId: 0, currentPlayerId: null, deadline: null,
     result: null, history: [], activityAt: Date.now() };
   addPlayer(room, hostId, name);
@@ -49,7 +54,14 @@ export function startGame(room, id) {
   isHost(room, id);
   requireThat(room.phase === 'lobby', 'Rozgrywka już się rozpoczęła.', 409);
   requireThat(activePlayers(room).length >= 2, 'Do gry potrzeba co najmniej 2 osób.', 409);
-  room.deck = shuffle(QUESTIONS).slice(0, room.rounds);
+  const cards = getCatalog().getCards(room.catalog);
+  requireThat(cards.length >= room.rounds, 'W wybranym zestawie jest za mało kart.');
+  // Mixed games draw across topics; every selected card remains frozen for this game.
+  const groups = shuffle([...new Set(cards.map(card => card.topic))]).map(topic => shuffle(cards.filter(card => card.topic === topic)));
+  room.deck = [];
+  while (room.deck.length < room.rounds) for (const group of groups) {
+    if (group.length && room.deck.length < room.rounds) room.deck.push(group.pop());
+  }
   room.round = 0;
   beginRound(room);
 }
@@ -86,7 +98,10 @@ function requireTurn(room, id, turnId) {
   requireThat(room.turnId === turnId, 'Tura już się zmieniła. Spróbuj ponownie.', 409);
 }
 export function scorePlacement(card, axis, slot) {
-  if (axis === 'map') return slot === card.region ? 7 : NEIGHBORS[card.region].includes(slot) ? 3 : 0;
+  if (axis === 'map') {
+    const regions = card.regions ?? [card.region];
+    return regions.includes(slot) ? 7 : regions.some(id => NEIGHBORS[id].includes(slot)) ? 3 : 0;
+  }
   const correct = bucket(axis === 'year' ? card.year : card.number, axis === 'year' ? YEAR_SCALE : NUMBER_SCALE);
   const distance = Math.abs(slot - correct);
   return distance === 0 ? 7 : distance === 1 ? 3 : 0;
@@ -231,12 +246,12 @@ export function publicRoom(room, viewerId) {
   const shown = card ? { title: card.title, category: card.category, art: card.art, intro: card.intro,
     location: card.location, yearLabel: card.yearLabel, numberLabel: card.numberLabel, unit: card.unit } : null;
   const hidden = room.mode === 'hidden' && room.phase === 'playing';
-  return { code: room.code, version: room.version ?? 0, hostId: room.hostId, rounds: room.rounds, practice: room.practice, mode: room.mode,
+  return { code: room.code, version: room.version ?? 0, hostId: room.hostId, rounds: room.rounds, practice: room.practice, mode: room.mode, catalog: { ...room.catalog },
     phase: room.phase, round: room.round, turnId: room.turnId, deadline: room.deadline, answerStartsAt: room.answerStartsAt ?? null,
     currentPlayerId: room.currentPlayerId, players: room.players.map(p => ({ ...p })),
     placements: room.placements.filter(p => !hidden || p.playerId === viewerId).map(p => ({ ...p })), question: shown,
     answer: ['reveal', 'finished'].includes(room.phase) && card ? {
-      region: card.region, place: card.place, year: card.year, number: card.number, fact: card.fact,
+      region: card.region, regions: card.regions ?? [card.region], place: card.place, year: card.year, number: card.number, fact: card.fact,
       sources: card.sources, yearSlot: bucket(card.year, YEAR_SCALE), numberSlot: bucket(card.number, NUMBER_SCALE)
     } : null, result: room.result, history: room.history };
 }
