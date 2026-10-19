@@ -1,3 +1,5 @@
+import { pulseCardStop } from './motion.mjs';
+
 export function mountHeroCard(root, initialTab = 'create') {
   let stop = initialTab === 'join' ? 1 : 0, position = stop, frame = null, geometry = null, gesture = null, suppressClick = false;
   const findCard = target => target instanceof Element ? target.closest('[data-home-card]') : null;
@@ -108,7 +110,7 @@ export function mountHeroCard(root, initialTab = 'create') {
       if (progress === 1 || !card) {
         position = target;
         frame = null;
-        if (card) draw(card);
+        if (card) { draw(card); pulseCardStop(card, target === 1 ? 'right' : 'left'); }
         return;
       }
       draw(card);

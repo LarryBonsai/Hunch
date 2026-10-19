@@ -3,6 +3,7 @@ import { icon, illustration } from './art.mjs';
 import { mountCardIntro } from './card-intro.mjs';
 import { mountRoundResults } from './round-results.mjs';
 import { mountHeroCard } from './hero-card.mjs';
+import { mountMotion } from './motion.mjs';
 
 const app = document.querySelector('#app');
 const rules = document.querySelector('#rules');
@@ -27,6 +28,7 @@ const roundResults = mountRoundResults({ renderResults: roundResultsCard,
   getTarget: () => document.querySelector('.next-controls button:not(:disabled)') ?? document.querySelector('.game-sidebar .question-card'),
   getControls: roundAdvanceState, onAdvance: () => action('next') });
 const heroCard = mountHeroCard(app, state.tab);
+const motion = mountMotion(app);
 function toast(message, error = false) {
   const el = document.querySelector('#toast');
   el.textContent = message;
@@ -93,7 +95,7 @@ function worldMap(preview = false) {
       const tokens = placements.map((p, i) => {
         const owner = room.players.find(player => player.id === p.playerId);
         const x = r.x + (i - (placements.length - 1) / 2) * 19;
-        return `<g class="map-token" style="--player:${owner.color}" aria-hidden="true"><rect x="${x - 9}" y="${r.y - 9}" width="18" height="18" rx="4"/><text x="${x}" y="${r.y + 4}">${esc(owner.name[0].toUpperCase())}</text></g>`;
+        return `<g class="map-token" data-motion-token="${room.code}:${room.round}:${p.playerId}:map:${p.slot}" style="--player:${owner.color}" aria-hidden="true"><rect x="${x - 9}" y="${r.y - 9}" width="18" height="18" rx="4"/><text x="${x}" y="${r.y + 4}">${esc(owner.name[0].toUpperCase())}</text></g>`;
       }).join('');
       const names = placements.map(p => room.players.find(player => player.id === p.playerId).name).join(', ');
       return `<path d="${r.path}" fill-rule="evenodd" class="region ${r.kind === 'land' ? 'land' : 'water'} ${selected === r.id ? 'selected' : ''} ${correct ? 'correct' : ''} ${placed ? 'occupied' : ''} ${available ? 'available' : ''}" ${preview ? '' : `data-region="${r.id}" tabindex="${available ? 0 : -1}" role="button" aria-label="${esc(r.name)}${placed ? ` — ${hiddenMode() ? 'typy' : 'zajęte'}: ${esc(names)}` : ''}${correct ? ' — poprawna odpowiedź' : ''}" aria-disabled="${!available}" aria-pressed="${selected === r.id}"`}><title>${esc(r.name)}${player ? ` — ${esc(names)}` : ''}</title></path>${tokens}`;
@@ -107,7 +109,7 @@ function worldMap(preview = false) {
 }
 function home() {
   return `<main class="home"><section class="hero-copy"><div class="eyebrow"><span class="tiny-star">✳</span> Dla ciekawych świata</div><h1>Świat jest wielki.<br>Zaufaj <em>przeczuciu.</em></h1><p class="hero-description">Wiesz, gdzie? Pamiętasz, kiedy? Zgadniesz, ile?<br>Zbierz znajomych i sprawdźcie, dokąd zaprowadzi was intuicja.</p><div class="hero-badges"><span>${icon('users')} 2–6 odkrywców</span><span>${icon('time')} 15–25 minut</span><span>${icon('globe')} Bez konta</span></div>
-    <div class="entry-card"><div class="tabs" role="tablist" aria-label="Wybierz sposób gry"><button class="tab ${state.tab === 'create' ? 'active' : ''}" role="tab" aria-selected="${state.tab === 'create'}" data-tab="create">Stwórz pokój</button><button class="tab ${state.tab === 'join' ? 'active' : ''}" role="tab" aria-selected="${state.tab === 'join'}" data-tab="join">Dołącz do znajomych</button></div>
+    <div class="entry-card"><div class="tabs" role="tablist" aria-label="Wybierz sposób gry"><button class="tab ${state.tab === 'create' ? 'active' : ''}" role="tab" aria-selected="${state.tab === 'create'}" data-tab="create">Stwórz pokój</button><button class="tab ${state.tab === 'join' ? 'active' : ''}" role="tab" aria-selected="${state.tab === 'join'}" data-tab="join">Dołącz do znajomych</button><span class="tab-indicator" data-motion="1" aria-hidden="true"></span></div>
     <form id="room-form"><label for="player-name">Twój pseudonim</label><input id="player-name" name="name" autocomplete="nickname" placeholder="Jak mamy cię nazywać?" required minlength="2" maxlength="20" value="${esc(state.name)}">
       ${state.tab === 'create' ? setupPicker('rounds', 'Długość wyprawy', 'time', state.rounds, [
         { value: 3, title: '3 rundy', detail: 'Szybki wypad', badge: 'Na rozgrzewkę' },
@@ -143,7 +145,7 @@ function playerList(final = false) {
     const current = room.currentPlayerId === p.id;
     const result = room.result?.[p.id];
     const hiddenStatus = hiddenMode() && room.phase === 'playing' ? p.ready ? 'Zestaw zatwierdzony' : 'Odpowiada w tajemnicy' : null;
-    return `<li class="player-row ${current ? 'current' : ''} ${p.left ? 'left' : ''}" style="--player:${p.color}">${final ? `<span class="rank">${players.filter(other => other.score > p.score).length + 1}</span>` : ''}<span class="avatar">${esc(p.name[0].toUpperCase())}<i class="presence ${p.connected && !p.left ? 'on' : ''}"></i></span><div class="player-info"><strong>${esc(p.name)}${p.id === state.id ? ' <span>(ty)</span>' : ''}</strong><span>${p.left ? 'Opuścił pokój' : hiddenStatus ?? (p.bot ? 'Towarzysz treningu' : room.phase === 'lobby' ? (p.id === room.hostId ? 'Gospodarz wyprawy' : 'Gotowy na przygodę') : final ? `${room.history.length} rozegranych rund` : current ? 'Teraz obstawia' : p.passed || p.cubes === 0 || usedCategories(room, p.id).length === CATEGORIES.length ? 'Koniec ruchów' : `${p.cubes} znaczników`)}</span></div><div class="player-score"><strong>${p.score}</strong><span>${['reveal', 'finished'].includes(room.phase) && result && !final ? `+${result.gained} w rundzie` : 'pkt'}</span></div></li>`;
+    return `<li class="player-row ${current ? 'current' : ''} ${p.left ? 'left' : ''}" style="--player:${p.color}">${final ? `<span class="rank">${players.filter(other => other.score > p.score).length + 1}</span>` : ''}<span class="avatar">${esc(p.name[0].toUpperCase())}<i class="presence ${p.connected && !p.left ? 'on' : ''}"></i></span><div class="player-info"><strong>${esc(p.name)}${p.id === state.id ? ' <span>(ty)</span>' : ''}</strong><span>${p.left ? 'Opuścił pokój' : hiddenStatus ?? (p.bot ? 'Towarzysz treningu' : room.phase === 'lobby' ? (p.id === room.hostId ? 'Gospodarz wyprawy' : 'Gotowy na przygodę') : final ? `${room.history.length} rozegranych rund` : current ? 'Teraz obstawia' : p.passed || p.cubes === 0 || usedCategories(room, p.id).length === CATEGORIES.length ? 'Koniec ruchów' : `${p.cubes} znaczników`)}</span></div><div class="player-score"><strong data-score-player="${p.id}" data-score-value="${p.score}" aria-label="${p.score} punktów">${p.score}</strong><span>${['reveal', 'finished'].includes(room.phase) && result && !final ? `+${result.gained} w rundzie` : 'pkt'}</span></div></li>`;
   }).join('')}</ol>`;
 }
 function roomTop() {
@@ -213,7 +215,7 @@ function roundAdvanceState() {
 function roundResultsCard(room) {
   const players = [...room.players].sort((a, b) => b.score - a.score);
   const controls = roundAdvanceState();
-  return `<section class="card-reveal-card round-results-card"><div class="question-top"><span class="eyebrow">Karty na stół!</span><span>Runda ${room.round} / ${room.rounds}</span><button type="button" class="results-close" data-results-close aria-label="Zamknij wyniki i zobacz planszę" title="Zobacz planszę">×</button></div><div class="results-round-emblem">${icon('trophy')}</div><h2 id="round-results-title">Wyniki rundy</h2><p class="results-round-place">${esc(room.question.title)}</p><div class="results-score-labels"><span>Odkrywca</span><span>W rundzie</span><span>Łącznie</span></div><ol class="round-ranking">${players.map(p => `<li style="--player:${p.color}"><span class="round-ranking-position">${players.filter(other => other.score > p.score).length + 1}</span><span class="avatar">${esc(p.name[0].toUpperCase())}</span><strong class="round-ranking-name">${esc(p.name)}${p.id === state.id ? '<small>To ty</small>' : ''}</strong><span class="round-ranking-gain">+${room.result[p.id]?.gained ?? 0}</span><span class="round-ranking-total"><b>${p.score}</b><small>pkt</small></span></li>`).join('')}</ol><button type="button" class="button primary card-reveal-continue results-next" data-results-next ${controls.enabled ? '' : 'disabled'} autofocus><span data-results-next-label>${controls.label}</span>${icon('arrow')}</button><p id="round-results-instruction">${controls.hint}</p></section>`;
+  return `<section class="card-reveal-card round-results-card"><div class="question-top"><span class="eyebrow">Karty na stół!</span><span>Runda ${room.round} / ${room.rounds}</span><button type="button" class="results-close" data-results-close aria-label="Zamknij wyniki i zobacz planszę" title="Zobacz planszę">×</button></div><div class="results-round-emblem">${icon('trophy')}</div><h2 id="round-results-title">Wyniki rundy</h2><p class="results-round-place">${esc(room.question.title)}</p><div class="results-score-labels"><span>Odkrywca</span><span>W rundzie</span><span>Łącznie</span></div><ol class="round-ranking">${players.map(p => `<li style="--player:${p.color}"><span class="round-ranking-position">${players.filter(other => other.score > p.score).length + 1}</span><span class="avatar">${esc(p.name[0].toUpperCase())}</span><strong class="round-ranking-name">${esc(p.name)}${p.id === state.id ? '<small>To ty</small>' : ''}</strong><span class="round-ranking-gain">+${room.result[p.id]?.gained ?? 0}</span><span class="round-ranking-total"><b data-score-player="${p.id}" data-score-value="${p.score}" aria-label="${p.score} punktów">${p.score}</b><small>pkt</small></span></li>`).join('')}</ol><button type="button" class="button primary card-reveal-continue results-next" data-results-next ${controls.enabled ? '' : 'disabled'} autofocus><span data-results-next-label>${controls.label}</span>${icon('arrow')}</button><p id="round-results-instruction">${controls.hint}</p></section>`;
 }
 function regionOptions(selectedRegion) {
   return [['Lądy', LAND_REGIONS], ['Oceany', WATER_REGIONS]].map(([label, regions]) =>
@@ -253,6 +255,7 @@ function finished() {
   return `<main class="results-page"><div class="result-emblem">${icon('trophy')}</div><span class="eyebrow">${room.round < room.rounds ? 'Wyprawa zakończona wcześniej' : 'Wyprawa zakończona'}</span><h1>${winners.length > 1 ? 'Wspólne zwycięstwo!' : `${esc(winners[0].name)} ma nosa!`}</h1><p>${room.practice ? 'Pierwsze przeczucia za tobą. Następna przygoda może być ze znajomymi.' : 'Dzięki za wspólną podróż. Świat ma jeszcze sporo niespodzianek.'}</p><div class="results-card paper">${playerList(true)}<div class="results-facts"><span><b>${room.history.length}</b>odkrytych miejsc</span><span><b>${room.players.reduce((sum, p) => sum + p.score, 0)}</b>wspólnych punktów</span><span><b>${highest}</b>zwycięski wynik</span></div></div><div class="results-actions"><button class="button secondary" data-action="leave">Wróć na początek</button><button class="button primary" data-action="restart" ${!isHost() || room.players.filter(p => !p.left).length < 2 || state.busy || !state.connected ? 'disabled' : ''}>Jeszcze jedna wyprawa ${icon('arrow')}</button></div>${!isHost() ? '<p class="small">Gospodarz może rozpocząć rewanż.</p>' : ''}<details class="history"><summary>Nasze odkrycia</summary>${room.history.map(h => `<div><span>${h.round}. ${esc(h.title)}</span><strong>+${h.scores[state.id]?.gained ?? 0} pkt</strong></div>`).join('')}</details></main>`;
 }
 function render() {
+  const previousMotion = motion.capture(state.room);
   const scaleScroll = Object.fromEntries([...app.querySelectorAll('[data-scale-scroll]')].map(el => [el.dataset.scaleScroll, el.scrollLeft]));
   const focused = document.activeElement;
   const selector = focused?.id ? `#${CSS.escape(focused.id)}` : focused?.dataset.region ? `[data-region="${focused.dataset.region}"]`
@@ -266,6 +269,7 @@ function render() {
   updateClock();
   roundResults.refresh();
   heroCard.refresh();
+  motion.refresh(previousMotion, state.room);
 }
 function updateClock() {
   const countdown = document.querySelector('.countdown');

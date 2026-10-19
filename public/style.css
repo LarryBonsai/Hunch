@@ -231,3 +231,16 @@ body.card-is-docking .game-sidebar>.question-card{opacity:1;transition:opacity .
 @media(max-width:760px){.sample-flip{width:min(209px,calc(100% - 32px))}.sample-flip .sample-card-back h2{font-size:22px}}
 @media(hover:none){.sample-flip[data-home-card]{cursor:pointer}}
 @media(prefers-reduced-motion:reduce){.sample-card-turner{transition:none}}
+
+/* 1. Travelling tab underline. */
+.entry-card .tabs{position:relative}
+.entry-card .tab.active:after{display:none}
+.tab-indicator{position:absolute;left:0;bottom:-1px;height:2px;background:var(--green);transform-origin:left center;pointer-events:none}
+/* 2. The panel clips its contents only during a form change. */
+.entry-card.form-is-moving{overflow:clip}
+/* 3–4. Small SVG movements stay centred on their own geometry. */
+.map-token,.card-stop-ripple{transform-box:fill-box;transform-origin:center}
+.card-stop-ripple{pointer-events:none;vector-effect:non-scaling-stroke}
+/* 5. Stable digits and a single, transient score gain. */
+.player-score,.round-ranking-total{position:relative;font-variant-numeric:tabular-nums}
+.player-score>.score-rise{position:absolute;right:0;top:-10px;white-space:nowrap;pointer-events:none;color:#779153;font-size:11px;font-weight:600;line-height:1}
