@@ -10,7 +10,8 @@ const rules = document.querySelector('#rules');
 const invite = new URLSearchParams(location.search).get('room')?.toUpperCase() ?? '';
 const saved = key => { try { return sessionStorage.getItem(key) ?? ''; } catch { return ''; } };
 const state = { id: null, room: null, tab: invite ? 'join' : 'create', name: saved('hunch:name'), code: invite,
-  rounds: 6, mode: 'classic', busy: false, connected: false, loaded: false, selection: null, offset: 0 };
+  rounds: 6, mode: 'classic', topic: 'all', metric: 'all', catalogData: null, deckOpen: false,
+  busy: false, connected: false, loaded: false, selection: null, offset: 0 };
 const esc = value => String(value ?? '').replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
 const mine = () => state.room?.players.find(p => p.id === state.id);
 const hiddenMode = () => state.room?.mode === 'hidden';
@@ -90,7 +91,7 @@ function worldMap(preview = false) {
       const placements = preview ? [] : room?.placements.filter(p => p.axis === 'map' && p.slot === r.id) ?? [];
       const placed = placements[0];
       const player = placed && room.players.find(p => p.id === placed.playerId);
-      const correct = !preview && room?.answer?.region === r.id;
+      const correct = !preview && (room?.answer?.regions ?? [room?.answer?.region]).includes(r.id);
       const available = !preview && canSelectCategory('map') && (hiddenMode() || !placed);
       const tokens = placements.map((p, i) => {
         const owner = room.players.find(player => player.id === p.playerId);
@@ -112,14 +113,15 @@ function home() {
     <div class="entry-card"><div class="tabs" role="tablist" aria-label="Wybierz sposób gry"><button class="tab ${state.tab === 'create' ? 'active' : ''}" role="tab" aria-selected="${state.tab === 'create'}" data-tab="create">Stwórz pokój</button><button class="tab ${state.tab === 'join' ? 'active' : ''}" role="tab" aria-selected="${state.tab === 'join'}" data-tab="join">Dołącz do znajomych</button><span class="tab-indicator" data-motion="1" aria-hidden="true"></span></div>
     <form id="room-form"><label for="player-name">Twój pseudonim</label><input id="player-name" name="name" autocomplete="nickname" placeholder="Jak mamy cię nazywać?" required minlength="2" maxlength="20" value="${esc(state.name)}">
       ${state.tab === 'create' ? setupPicker('rounds', 'Długość wyprawy', 'time', state.rounds, [
-        { value: 3, title: '3 rundy', detail: 'Szybki wypad', badge: 'Na rozgrzewkę' },
-        { value: 6, title: '6 rund', detail: 'Mała wyprawa', badge: 'W sam raz' },
-        { value: 9, title: '9 rund', detail: 'Dookoła świata', badge: 'Dłuższa przygoda' }
+        { value: 3, title: '3 rundy', detail: 'Szybki wypad', badge: 'Na rozgrzewkę', disabled: catalogCount() < 3 },
+        { value: 6, title: '6 rund', detail: 'Mała wyprawa', badge: catalogCount() < 6 ? 'Za mało kart' : 'W sam raz', disabled: catalogCount() < 6 },
+        { value: 9, title: '9 rund', detail: 'Dookoła świata', badge: catalogCount() < 9 ? 'Za mało kart' : 'Dłuższa przygoda', disabled: catalogCount() < 9 }
       ]) : `<label for="room-code">Kod pokoju</label><input id="room-code" name="code" class="code-input" placeholder="NP. K7X9PQ" minlength="6" maxlength="6" pattern="[a-zA-Z2-9]{6}" required autocapitalize="characters" spellcheck="false" value="${esc(state.code)}">`}
       ${state.tab === 'create' ? setupPicker('mode', 'Tryb rozgrywki', 'compass', state.mode, [
         { value: 'classic', title: 'Klasyczny', detail: 'Ruchy na zmianę · 45 s na ruch', badge: 'Wspólna plansza' },
         { value: 'hidden', title: 'Ukryte odpowiedzi', detail: 'Wszyscy jednocześnie · do 30 s', badge: 'Tajne typy' }
       ]) : ''}
+      ${state.tab === 'create' ? catalogSettings() : ''}
       <button class="button primary full" type="submit" ${state.busy || !state.loaded ? 'disabled' : ''}>${state.busy ? 'Chwileczkę…' : state.tab === 'create' ? 'Zaczynamy przygodę' : 'Dołącz do wyprawy'} ${icon('arrow')}</button></form>
       <button class="practice-link" data-action="practice" ${state.busy || !state.loaded ? 'disabled' : ''}>${icon('spark')} Najpierw spróbuj treningu z Atlasem ${icon('arrow')}</button>${state.tab === 'create' && state.mode === 'hidden' ? '<p class="practice-mode-note">Test nowego trybu: ukryte odpowiedzi z Atlasem.</p>' : ''}
     </div></section>
@@ -132,11 +134,34 @@ function homeDiscoveryCard() {
     { side: 'front', art: 'eiffel', index: '01', category: 'Wielkie konstrukcje', title: 'Wieża Eiffla', note: 'Nie musisz znać odpowiedzi.' },
     { side: 'back', art: 'pyramids', index: '02', category: 'Cuda dawnego świata', title: 'Piramidy w Gizie', note: 'Świat ma wiele do odkrycia.' }
   ];
-  return `<div class="sample-flip" data-home-card data-side="front" role="button" tabindex="0" aria-pressed="false"><div class="sample-card-turner">${faces.map(face => `<div class="sample-card sample-card-${face.side}" data-card-face="${face.side}" aria-hidden="${face.side === 'back'}"><span class="sample-stamp">KARTA ODKRYWCY <span>${face.index} / 10</span></span>${illustration(face.art)}<span class="eyebrow">${face.category}</span><h2>${face.title}</h2><div class="sample-questions"><span>${icon('pin')} Gdzie?</span><span>${icon('time')} Kiedy?</span><span>${icon('chart')} Jak wysoko?</span></div><div class="sample-bottom"><span class="sample-dots"><i></i><i></i><i></i></span>${face.note}</div></div>`).join('')}</div></div>`;
+  return `<div class="sample-flip" data-home-card data-side="front" role="button" tabindex="0" aria-pressed="false"><div class="sample-card-turner">${faces.map(face => `<div class="sample-card sample-card-${face.side}" data-card-face="${face.side}" aria-hidden="${face.side === 'back'}"><span class="sample-stamp">KARTA ODKRYWCY <span>${face.index} / ${state.catalogData?.collection.count ?? 100}</span></span>${illustration(face.art)}<span class="eyebrow">${face.category}</span><h2>${face.title}</h2><div class="sample-questions"><span>${icon('pin')} Gdzie?</span><span>${icon('time')} Kiedy?</span><span>${icon('chart')} Jak wysoko?</span></div><div class="sample-bottom"><span class="sample-dots"><i></i><i></i><i></i></span>${face.note}</div></div>`).join('')}</div></div>`;
 }
 function setupPicker(key, label, symbol, value, options) {
   const selected = options.find(option => option.value === value);
-  return `<div class="setup-field"><span class="setup-label" id="${key}-label">${label}</span><details class="setup-picker" name="room-settings" id="setup-${key}"><summary id="${key}-control" aria-labelledby="${key}-label ${key}-value" aria-haspopup="listbox" aria-controls="${key}-options"><span class="setup-symbol">${icon(symbol)}</span><span class="setup-value" id="${key}-value"><strong>${selected.title}</strong><small>${selected.detail}</small></span><span class="setup-chevron" aria-hidden="true"></span></summary><div class="setup-options" id="${key}-options" role="listbox" aria-labelledby="${key}-label">${options.map(option => `<button type="button" role="option" aria-selected="${option.value === value}" tabindex="${option.value === value ? 0 : -1}" data-room-choice="${key}" data-value="${option.value}"><span class="setup-option-copy"><strong>${option.title}</strong><small>${option.detail}</small></span><span class="setup-option-badge">${option.badge}</span><span class="setup-option-check" aria-hidden="true">${option.value === value ? icon('check') : ''}</span></button>`).join('')}</div></details></div>`;
+  return `<div class="setup-field"><span class="setup-label" id="${key}-label">${label}</span><details class="setup-picker" name="room-settings" id="setup-${key}"><summary id="${key}-control" aria-labelledby="${key}-label ${key}-value" aria-haspopup="listbox" aria-controls="${key}-options"><span class="setup-symbol">${icon(symbol)}</span><span class="setup-value" id="${key}-value"><strong>${selected.title}</strong><small>${selected.detail}</small></span><span class="setup-chevron" aria-hidden="true"></span></summary><div class="setup-options" id="${key}-options" role="listbox" aria-labelledby="${key}-label">${options.map(option => `<button type="button" role="option" aria-selected="${option.value === value}" tabindex="${option.value === value ? 0 : -1}" data-room-choice="${key}" data-value="${option.value}" ${option.disabled ? 'disabled' : ''}><span class="setup-option-copy"><strong>${option.title}</strong><small>${option.detail}</small></span><span class="setup-option-badge">${option.badge}</span><span class="setup-option-check" aria-hidden="true">${option.value === value ? icon('check') : ''}</span></button>`).join('')}</div></details></div>`;
+}
+const cardCountLabel = n => `${n} ${n === 1 ? 'karta' : n % 10 >= 2 && n % 10 <= 4 && (n % 100 < 12 || n % 100 > 14) ? 'karty' : 'kart'}`;
+function catalogCount(topic = state.topic, metric = state.metric) {
+  const data = state.catalogData;
+  if (!data) return 0;
+  if (topic === 'all') return metric === 'all' ? data.collection.count : data.metrics.find(item => item.id === metric)?.count ?? 0;
+  const item = data.topics.find(item => item.id === topic);
+  return metric === 'all' ? item?.count ?? 0 : item?.metrics[metric] ?? 0;
+}
+function catalogSettings() {
+  const data = state.catalogData;
+  if (!data) return '';
+  const topic = data.topics.find(item => item.id === state.topic)?.name ?? 'Wszystkie tematy';
+  const metric = data.metrics.find(item => item.id === state.metric)?.name ?? 'Różne wielkości';
+  const topics = [{ id: 'all', name: 'Wszystkie tematy' }, ...data.topics].map(item => ({
+    value: item.id, title: item.name, detail: item.id === 'all' ? 'Przekrój miejsc z całego świata' : 'Pytania z jednej tematyki',
+    badge: cardCountLabel(catalogCount(item.id)), disabled: catalogCount(item.id) < 3
+  }));
+  const metrics = [{ id: 'all', name: 'Różne wielkości' }, ...data.metrics].map(item => ({
+    value: item.id, title: item.name, detail: item.id === 'all' ? 'Wysokość, długość lub powierzchnia' : 'Jednostka i definicja na każdej karcie',
+    badge: cardCountLabel(catalogCount(state.topic, item.id)), disabled: catalogCount(state.topic, item.id) < 3
+  }));
+  return `<details class="deck-settings" ${state.deckOpen ? 'open' : ''}><summary>${icon('globe')}<span><strong>${esc(data.collection.name)}</strong><small>${cardCountLabel(catalogCount())} · ${esc(topic)} · ${esc(metric)}</small></span><span class="setup-chevron" aria-hidden="true"></span></summary><div class="deck-settings-content">${setupPicker('topic', 'Tematyka kart', 'compass', state.topic, topics)}${setupPicker('metric', 'Pytanie o wielkość', 'chart', state.metric, metrics)}<p class="deck-note">Wybierasz obszar mapy, rok i wielkość. Przy mieszanej talii tematy są dobierane naprzemiennie.</p></div></details>`;
 }
 function playerList(final = false) {
   const room = state.room;
@@ -152,10 +177,16 @@ function roomTop() {
   const room = state.room;
   return `<div class="room-top"><div><span class="eyebrow">${room.practice ? 'Spokojnie, to tylko trening' : 'Wspólny stół'}${hiddenMode() ? ' · Ukryte odpowiedzi · 30 s' : ''}</span><h1>${room.practice ? 'Ty, Atlas i cały świat.' : room.phase === 'lobby' ? 'Przygoda zaczyna się tutaj.' : 'Kierunek: dobre przeczucie.'}</h1></div><div class="room-code-block"><span>${room.practice ? 'Tryb' : 'Kod pokoju'}</span>${room.practice ? '<strong>Trening</strong>' : `<button class="code-copy" data-action="copy-code" title="Kopiuj kod pokoju">${room.code} ${icon('copy')}</button>`}</div></div>`;
 }
+function roomDeckLabel() {
+  const filters = state.room.catalog;
+  const topic = state.catalogData?.topics.find(t => t.id === filters.topic)?.name ?? 'Wszystkie tematy';
+  const metric = state.catalogData?.metrics.find(m => m.id === filters.metric)?.name ?? 'Różne wielkości';
+  return esc(topic + ' · ' + metric);
+}
 function lobby() {
   const room = state.room;
   const count = room.players.length;
-  return `<main class="room-page">${roomTop()}<div class="lobby-layout"><section class="lobby-card paper"><div class="section-label">${icon('users')} Ekipa odkrywców <span>${count} / 6</span></div>${playerList()}${Array.from({ length: Math.max(0, 3 - count) }, () => '<div class="empty-seat"><span>+</span> Miejsce dla kolejnego przeczucia</div>').join('')}<div class="invite-panel"><span class="eyebrow">Dobre rzeczy warto dzielić</span><p>Wyślij znajomym zaproszenie.<br>Dołączą bez zakładania konta.</p><button class="button secondary full" data-action="invite">${icon('copy')} Kopiuj zaproszenie</button></div><div class="lobby-start"><span>${room.rounds} rund · ${hiddenMode() ? 'ukryte odpowiedzi · 30 sekund na rundę' : '45 sekund na ruch'}</span>${isHost() ? `<button class="button primary full" data-action="start" ${count < 2 || state.busy || !state.connected ? 'disabled' : ''}>${count < 2 ? 'Czekamy na drugiego gracza' : 'Wyruszamy!'} ${icon('arrow')}</button>` : '<div class="waiting-text"><i class="status-dot on"></i> Gospodarz za chwilę rozpocznie grę</div>'}</div></section><section class="lobby-map"><div class="eyebrow">Zanim ruszycie w świat</div><h2>Wiedza pomaga.<br><em>Intuicja wygrywa.</em></h2>${worldMap(true)}<div class="score-explainer"><span><b>7</b>Trafienie w punkt</span><span><b>3</b>Bliski strzał</span><span><b>∞</b>Nowe odkrycia</span></div></section></div></main>`;
+  return `<main class="room-page">${roomTop()}<div class="lobby-layout"><section class="lobby-card paper"><div class="section-label">${icon('users')} Ekipa odkrywców <span>${count} / 6</span></div>${playerList()}${Array.from({ length: Math.max(0, 3 - count) }, () => '<div class="empty-seat"><span>+</span> Miejsce dla kolejnego przeczucia</div>').join('')}<div class="invite-panel"><span class="eyebrow">Dobre rzeczy warto dzielić</span><p>Wyślij znajomym zaproszenie.<br>Dołączą bez zakładania konta.</p><button class="button secondary full" data-action="invite">${icon('copy')} Kopiuj zaproszenie</button></div><div class="lobby-start"><p class="deck-note">${roomDeckLabel()}</p><span>${room.rounds} rund · ${hiddenMode() ? 'ukryte odpowiedzi · 30 sekund na rundę' : '45 sekund na ruch'}</span>${isHost() ? `<button class="button primary full" data-action="start" ${count < 2 || state.busy || !state.connected ? 'disabled' : ''}>${count < 2 ? 'Czekamy na drugiego gracza' : 'Wyruszamy!'} ${icon('arrow')}</button>` : '<div class="waiting-text"><i class="status-dot on"></i> Gospodarz za chwilę rozpocznie grę</div>'}</div></section><section class="lobby-map"><div class="eyebrow">Zanim ruszycie w świat</div><h2>Wiedza pomaga.<br><em>Intuicja wygrywa.</em></h2>${worldMap(true)}<div class="score-explainer"><span><b>7</b>Trafienie w punkt</span><span><b>3</b>Bliski strzał</span><span><b>∞</b>Nowe odkrycia</span></div></section></div></main>`;
 }
 function scale(axis, title, label, unit, values) {
   const room = state.room;
@@ -244,7 +275,7 @@ function hiddenResults() {
 function game() {
   const room = state.room;
   const selectedRegion = REGIONS.find(r => r.id === selectedSlot('map'));
-  return `<main class="room-page game-page">${roomTop()}<div class="game-layout"><div class="board-column">${turnBar()}<section class="map-panel paper"><div class="map-heading"><div><span class="eyebrow">01 · Gdzie na świecie?</span><h2>Postaw na dobry kierunek.</h2></div>${categoryLimit('map')}</div>${worldMap()}<div class="map-bottom"><div class="map-legend"><span><i></i> ${room.answer ? 'Poprawny region zaznaczony na zielono' : 'Jeden znacznik na mapie w tej rundzie'}</span><span>17 lądów · 7 obszarów oceanicznych</span></div><label class="sr-only" for="region-picker">Wybierz region z listy</label><select id="region-picker" ${!canSelectCategory('map') ? 'disabled' : ''}><option value="">Wybierz ląd lub akwen…</option>${regionOptions(selectedRegion)}</select>${selectedRegion ? `<p class="neighbors">Sąsiedzi za 3 pkt: ${NEIGHBORS[selectedRegion.id].map(id => esc(REGIONS.find(r => r.id === id).name)).join(', ')}.</p>` : ''}</div></section>
+  return `<main class="room-page game-page">${roomTop()}<div class="game-layout"><div class="board-column">${turnBar()}<section class="map-panel paper"><div class="map-heading"><div><span class="eyebrow">01 · Gdzie na świecie?</span><h2>Postaw na dobry kierunek.</h2></div>${categoryLimit('map')}</div>${worldMap()}<div class="map-bottom"><div class="map-legend"><span><i></i> ${room.answer ? 'Poprawny region zaznaczony na zielono' : 'Jeden znacznik na mapie w tej rundzie'}</span><span>17 lądów · 7 obszarów oceanicznych</span></div><label class="sr-only" for="region-picker">Wybierz region z listy</label><select id="region-picker" ${!canSelectCategory('map') ? 'disabled' : ''}><option value="">Wybierz ląd lub akwen…</option>${regionOptions(selectedRegion)}</select>${selectedRegion && !room.answer ? `<p class="neighbors">Sąsiedzi za 3 pkt: ${NEIGHBORS[selectedRegion.id].map(id => esc(REGIONS.find(r => r.id === id).name)).join(', ')}.</p>` : ''}</div></section>
       ${scale('year', '02 · Kiedy?', room.question.yearLabel, '', YEAR_SCALE)}${scale('number', '03 · Ile?', room.question.numberLabel, room.question.unit, NUMBER_SCALE)}${hiddenResults()}
     </div><aside class="game-sidebar">${questionCard()}<section class="roster paper"><div class="section-label">${icon('users')} Twoja ekipa <span>${room.players.filter(p => !p.left).length} graczy</span></div>${playerList()}<div class="cube-supply"><span>Twoje znaczniki</span><div>${Array.from({ length: 5 }, (_, i) => `<i class="cube ${i < (mine()?.cubes ?? 0) ? 'filled' : ''}" style="--player:${mine()?.color}"></i>`).join('')}</div></div>${moveControls()}</section>${room.phase === 'reveal' && room.result?.[state.id] ? `<div class="round-recap"><span class="eyebrow">Twój bilans rundy</span><strong>+${room.result[state.id].gained}<span>punktów</span></strong><p>${room.result[state.id].hits} celnych · ${room.result[state.id].close} bliskich · ${room.result[state.id].lost} nietrafionych</p></div>` : '<p class="sidebar-note">'+icon('compass')+'Za trafienie 7 pkt. Za dobry trop 3 pkt.<br>Każde przeczucie ma znaczenie.</p>'}</aside></div></main>`;
 }
@@ -300,8 +331,12 @@ document.addEventListener('click', event => {
   for (const other of document.querySelectorAll('.setup-picker[open]')) if (other !== picker) other.open = false;
   const choice = event.target.closest('[data-room-choice]');
   if (choice) {
-    if (choice.dataset.roomChoice === 'rounds' && [3, 6, 9].includes(Number(choice.dataset.value))) state.rounds = Number(choice.dataset.value);
+    if (choice.disabled) return;
+    if (choice.dataset.roomChoice === 'rounds' && [3, 6, 9].includes(Number(choice.dataset.value)) && Number(choice.dataset.value) <= catalogCount()) state.rounds = Number(choice.dataset.value);
     if (choice.dataset.roomChoice === 'mode' && ['classic', 'hidden'].includes(choice.dataset.value)) state.mode = choice.dataset.value;
+    if (choice.dataset.roomChoice === 'topic' && ['all', ...(state.catalogData?.topics.map(item => item.id) ?? [])].includes(choice.dataset.value)) state.topic = choice.dataset.value;
+    if (choice.dataset.roomChoice === 'metric' && ['all', ...(state.catalogData?.metrics.map(item => item.id) ?? [])].includes(choice.dataset.value)) state.metric = choice.dataset.value;
+    if (['topic', 'metric'].includes(choice.dataset.roomChoice)) state.rounds = [9, 6, 3].find(rounds => rounds <= state.rounds && rounds <= catalogCount()) ?? 3;
     render(); return;
   }
   if (event.target.closest('[data-close-rules]')) { rules.close(); return; }
@@ -324,7 +359,7 @@ document.addEventListener('click', event => {
     case 'practice': {
       const name = state.name.trim() || 'Odkrywca';
       if (name.length < 2) { toast('Podaj pseudonim o długości 2–20 znaków.', true); return; }
-      mutate('/api/rooms', { name, rounds: state.rounds, practice: true, mode: state.tab === 'create' ? state.mode : 'classic' }); break;
+      mutate('/api/rooms', { name, rounds: state.rounds, practice: true, mode: state.tab === 'create' ? state.mode : 'classic', catalog: state.tab === 'create' ? { collection: 'known-places', topic: state.topic, metric: state.metric } : {} }); break;
     }
     case 'copy-code': copy(state.room.code, 'Kod pokoju skopiowany.'); break;
     case 'invite': copy(`${location.origin}${location.pathname}?room=${state.room.code}`, 'Zaproszenie skopiowane. Wyślij je znajomym!'); break;
@@ -341,7 +376,7 @@ document.addEventListener('keydown', event => {
   const picker = event.target.closest('.setup-picker');
   if (picker) {
     const summary = picker.querySelector('summary');
-    const options = [...picker.querySelectorAll('[role="option"]')];
+    const options = [...picker.querySelectorAll('[role="option"]')].filter(option => !option.disabled);
     const index = options.indexOf(event.target.closest('[role="option"]'));
     if (event.key === 'Escape') { event.preventDefault(); picker.open = false; summary.focus(); return; }
     if (event.key === 'Tab') { picker.open = false; summary.focus(); return; }
@@ -363,6 +398,7 @@ document.addEventListener('input', event => {
 });
 document.addEventListener('toggle', event => {
   const picker = event.target;
+  if (picker.matches('.deck-settings') && app.contains(picker)) { state.deckOpen = picker.open; return; }
   if (!picker.matches('.setup-picker') || !picker.open) return;
   picker.classList.remove('opens-up');
   const bounds = picker.getBoundingClientRect();
@@ -376,14 +412,15 @@ document.addEventListener('change', event => {
 document.addEventListener('submit', event => {
   if (event.target.id !== 'room-form') return;
   event.preventDefault();
-  mutate(state.tab === 'create' ? '/api/rooms' : '/api/rooms/join', { name: state.name, rounds: state.rounds, code: state.code, ...(state.tab === 'create' ? { mode: state.mode } : {}) });
+  mutate(state.tab === 'create' ? '/api/rooms' : '/api/rooms/join', { name: state.name, rounds: state.rounds, code: state.code, ...(state.tab === 'create' ? { mode: state.mode, catalog: { collection: 'known-places', topic: state.topic, metric: state.metric } } : {}) });
 });
 rules.addEventListener('click', event => { if (event.target === rules) { const r = rules.getBoundingClientRect(); if (event.clientX < r.left || event.clientX > r.right || event.clientY < r.top || event.clientY > r.bottom) rules.close(); } });
 
 async function boot() {
   render();
   try {
-    const session = await api('/api/session');
+    const [session, catalog] = await Promise.all([api('/api/session'), api('/api/catalog')]);
+    state.catalogData = catalog;
     state.id = session.playerId;
     state.offset = session.serverTime - Date.now();
     state.loaded = true;

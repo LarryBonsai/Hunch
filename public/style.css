@@ -244,3 +244,15 @@ body.card-is-docking .game-sidebar>.question-card{opacity:1;transition:opacity .
 /* 5. Stable digits and a single, transient score gain. */
 .player-score,.round-ranking-total{position:relative;font-variant-numeric:tabular-nums}
 .player-score>.score-rise{position:absolute;right:0;top:-10px;white-space:nowrap;pointer-events:none;color:#779153;font-size:11px;font-weight:600;line-height:1}
+.deck-settings{margin:0 0 18px;border:1px solid #d9e1cf;border-radius:10px;background:#f5f7ef;text-align:left}
+.deck-settings>summary{display:flex;align-items:center;gap:10px;padding:12px;cursor:pointer;list-style:none}
+.deck-settings>summary::-webkit-details-marker{display:none}
+.deck-settings>summary>.icon{width:20px;height:20px;color:#718966;flex-shrink:0}
+.deck-settings>summary>span:nth-child(2){display:grid;gap:3px;min-width:0}
+.deck-settings strong{font-size:11px;color:var(--green);font-weight:600}
+.deck-settings small{font-size:8px;color:#7b8b70;line-height:1.5}
+.deck-settings[open]>summary .setup-chevron{transform:translateY(3px) rotate(225deg)}
+.deck-settings-content{padding:4px 12px 12px}
+.deck-settings-content .setup-field:last-of-type{margin-bottom:10px}
+.deck-note{font-size:9px;color:#7b8b70;line-height:1.7}
+.setup-options>[role=option]:disabled{opacity:.4;cursor:default}

@@ -36,7 +36,7 @@ export function mountMotion(root) {
   let seenTokens = new Set();
   const tokenEffects = new Map(), scores = new Map(), scoreEffects = new Map(), boundReveals = new WeakMap();
   const correctTargets = room => !room?.answer ? [] : [
-    { key: 'map', selector: `[data-region="${room.answer.region}"]`, delay: 0, properties: ['fill', 'stroke'] },
+    ...(room.answer.regions ?? [room.answer.region]).map(id => ({ key: `map-${id}`, selector: `[data-region="${id}"]`, delay: 0, properties: ['fill', 'stroke'] })),
     { key: 'year', selector: `[data-axis="year"][data-slot="${room.answer.yearSlot}"]`, delay: 150, properties: ['backgroundColor', 'boxShadow'] },
     { key: 'number', selector: `[data-axis="number"][data-slot="${room.answer.numberSlot}"]`, delay: 300, properties: ['backgroundColor', 'boxShadow'] }
   ];
