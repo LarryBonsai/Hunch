@@ -129,7 +129,7 @@ test('each player can place only one marker in each category per round', () => {
 
 test('water fields support placement, occupancy, scoring and the shared map limit', () => {
   const room = game();
-  room.deck[0] = { ...QUESTIONS[0], region: 'ocean-atlantic-north' };
+  room.deck[0] = { ...QUESTIONS[0], region: 'ocean-atlantic-north', regions: ['ocean-atlantic-north'] };
   assert.throws(() => place(room, 'alice', 'map', 'sea-mediterranean', room.turnId), /region/);
   place(room, 'alice', 'map', 'ocean-atlantic-north', room.turnId);
   assert.throws(() => place(room, 'bob', 'map', 'ocean-atlantic-north', room.turnId), /zajęte/);

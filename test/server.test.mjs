@@ -27,9 +27,38 @@ test('serves the app, exposes health and never serves private source or traversa
     assert.equal(response.status, 200, route);
     assert.ok(response.headers.get('content-security-policy'));
   }
-  for (const route of ['/src/questions.mjs', '/server.mjs', '/package.json', '/%2e%2e%5csrc%5cquestions.mjs'])
+  for (const route of ['/src/questions.mjs', '/src/catalog.mjs', '/data/known-places.json', '/data/hunch.sqlite', '/data/schema.sql', '/server.mjs', '/package.json', '/%2e%2e%5csrc%5cquestions.mjs'])
     assert.equal((await fetch(base + route)).status, 404, route);
   assert.deepEqual(await (await fetch(base + '/health')).json(), { ok: true });
+});
+test('catalog exposes only counts; room filters drive classic and hidden practice without leaking facts', async t => {
+  const {client,base} = await fixture(t);
+  // Metadata must not race the initial session request and overwrite its cookie.
+  assert.equal((await fetch(base+'/api/catalog')).headers.get('set-cookie'),null);
+  const alice=await client();
+  const metadata=await alice.request('/api/catalog');
+  assert.equal(metadata.status,200);
+  assert.equal(metadata.body.collection.count,100);
+  assert.equal(metadata.body.topics.length,8);
+  assert.deepEqual(metadata.body.metrics.map(m=>m.id),['height','length','area']);
+  assert.ok(!JSON.stringify(metadata.body).includes('yearLabel'));
+  for (const catalog of [{topic:'unknown'},{metric:'weight'},{collection:'other'},'bad',{topic:'engineering',metric:'area'}]) {
+    const result=await alice.request('/api/rooms',{name:'Alicja',rounds:3,catalog});
+    assert.equal(result.status,400);
+  }
+  for(const mode of ['classic','hidden']) {
+    const created=await alice.request('/api/rooms',{name:'Alicja',rounds:3,practice:true,mode,catalog:{topic:'nature',metric:'area'}});
+    assert.equal(created.status,201);
+    const room=created.body.room;
+    assert.equal(room.catalog.topic,'nature');
+    assert.equal(room.catalog.metric,'area');
+    assert.equal(room.question.category,'Parki, wyspy i ogrody');
+    assert.ok(['ha','km²','m²'].includes(room.question.unit));
+    assert.equal(room.answer,null);
+    assert.ok(!('regions' in room.question));
+    assert.ok(!('sources' in room.question));
+    await alice.request('/api/room/action',{action:'leave'});
+  }
 });
 test('separate browsers share a real room and session resumes after refresh', async t => {
   const { client } = await fixture(t);
