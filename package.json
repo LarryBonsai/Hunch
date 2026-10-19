@@ -9,6 +9,6 @@
     "start": "node server.mjs",
     "dev": "node --watch server.mjs",
     "test": "node --test",
-    "check": "node --check server.mjs && node --check src/game.mjs && node --check public/app.js"
+    "check": "node --check server.mjs && node --check src/game.mjs && node --check public/app.js && node --check public/hero-card.mjs && node --check public/motion.mjs"
   }
 }
